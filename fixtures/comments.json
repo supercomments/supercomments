@@ -1,0 +1,1333 @@
+[
+  {
+    "kind": "Listing",
+    "data": {
+      "modhash": "",
+      "children": [
+        {
+          "kind": "t3",
+          "data": {
+            "domain": "blog.salsitasoft.com",
+            "banned_by": null,
+            "media_embed": {},
+            "subreddit": "programming",
+            "selftext_html": null,
+            "selftext": "",
+            "likes": null,
+            "user_reports": [],
+            "secure_media": null,
+            "link_flair_text": null,
+            "id": "2tpycj",
+            "gilded": 0,
+            "archived": false,
+            "clicked": false,
+            "report_reasons": null,
+            "author": "iki23",
+            "num_comments": 87,
+            "score": 478,
+            "approved_by": null,
+            "over_18": false,
+            "hidden": false,
+            "thumbnail": "",
+            "subreddit_id": "t5_2fwo",
+            "edited": false,
+            "link_flair_css_class": null,
+            "author_flair_css_class": null,
+            "downs": 0,
+            "mod_reports": [],
+            "secure_media_embed": {},
+            "saved": false,
+            "is_self": false,
+            "name": "t3_2tpycj",
+            "permalink": "/r/programming/comments/2tpycj/what_i_wish_i_knew_when_starting_out_as_a/",
+            "stickied": false,
+            "created": 1422281303,
+            "url": "http://blog.salsitasoft.com/what-i-wish-i-knew-when-starting-out-as-a-software-developer-slow-the-fuck-down/",
+            "author_flair_text": null,
+            "title": "What I Wish I Knew When Starting Out as a Software Developer: Slow the Fuck Down",
+            "created_utc": 1422281303,
+            "ups": 478,
+            "upvote_ratio": 0.88,
+            "media": null,
+            "visited": false,
+            "num_reports": null,
+            "distinguished": null
+          }
+        }
+      ],
+      "after": null,
+      "before": null
+    }
+  },
+  {
+    "kind": "Listing",
+    "data": {
+      "modhash": "",
+      "children": [
+        {
+          "kind": "t1",
+          "data": {
+            "subreddit_id": "t5_2fwo",
+            "banned_by": null,
+            "link_id": "t3_2tpycj",
+            "likes": null,
+            "replies": {
+              "kind": "Listing",
+              "data": {
+                "modhash": "",
+                "children": [
+                  {
+                    "kind": "t1",
+                    "data": {
+                      "subreddit_id": "t5_2fwo",
+                      "banned_by": null,
+                      "link_id": "t3_2tpycj",
+                      "likes": null,
+                      "replies": {
+                        "kind": "Listing",
+                        "data": {
+                          "modhash": "",
+                          "children": [
+                            {
+                              "kind": "t1",
+                              "data": {
+                                "subreddit_id": "t5_2fwo",
+                                "banned_by": null,
+                                "link_id": "t3_2tpycj",
+                                "likes": null,
+                                "replies": {
+                                  "kind": "Listing",
+                                  "data": {
+                                    "modhash": "",
+                                    "children": [
+                                      {
+                                        "kind": "t1",
+                                        "data": {
+                                          "subreddit_id": "t5_2fwo",
+                                          "banned_by": null,
+                                          "link_id": "t3_2tpycj",
+                                          "likes": null,
+                                          "replies": {
+                                            "kind": "Listing",
+                                            "data": {
+                                              "modhash": "",
+                                              "children": [
+                                                {
+                                                  "kind": "more",
+                                                  "data": {
+                                                    "count": 1,
+                                                    "parent_id": "t1_co21jws",
+                                                    "id": "co48q8o",
+                                                    "name": "t1_co48q8o",
+                                                    "children": [
+                                                      "co48q8o"
+                                                    ]
+                                                  }
+                                                }
+                                              ],
+                                              "after": null,
+                                              "before": null
+                                            }
+                                          },
+                                          "user_reports": [],
+                                          "saved": false,
+                                          "id": "co21jws",
+                                          "gilded": 0,
+                                          "archived": false,
+                                          "report_reasons": null,
+                                          "author": "logicalLove",
+                                          "parent_id": "t1_co1nnit",
+                                          "score": 33,
+                                          "approved_by": null,
+                                          "controversiality": 0,
+                                          "body": "Did a quick google of that phrase, nothing on the first page came up, so all in favour of crediting /u/BendingUnit10110 say \"Aye\"",
+                                          "edited": false,
+                                          "author_flair_css_class": null,
+                                          "downs": 0,
+                                          "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;Did a quick google of that phrase, nothing on the first page came up, so all in favour of crediting &lt;a href=\"/u/BendingUnit10110\"&gt;/u/BendingUnit10110&lt;/a&gt; say &amp;quot;Aye&amp;quot;&lt;/p&gt;\n&lt;/div&gt;",
+                                          "subreddit": "programming",
+                                          "score_hidden": false,
+                                          "name": "t1_co21jws",
+                                          "created": 1422331622,
+                                          "author_flair_text": null,
+                                          "created_utc": 1422331622,
+                                          "distinguished": null,
+                                          "mod_reports": [],
+                                          "num_reports": null,
+                                          "ups": 33
+                                        }
+                                      },
+                                      {
+                                        "kind": "t1",
+                                        "data": {
+                                          "subreddit_id": "t5_2fwo",
+                                          "banned_by": null,
+                                          "link_id": "t3_2tpycj",
+                                          "likes": null,
+                                          "replies": {
+                                            "kind": "Listing",
+                                            "data": {
+                                              "modhash": "",
+                                              "children": [
+                                                {
+                                                  "kind": "t1",
+                                                  "data": {
+                                                    "subreddit_id": "t5_2fwo",
+                                                    "banned_by": null,
+                                                    "link_id": "t3_2tpycj",
+                                                    "likes": null,
+                                                    "replies": {
+                                                      "kind": "Listing",
+                                                      "data": {
+                                                        "modhash": "",
+                                                        "children": [
+                                                          {
+                                                            "kind": "t1",
+                                                            "data": {
+                                                              "subreddit_id": "t5_2fwo",
+                                                              "banned_by": null,
+                                                              "link_id": "t3_2tpycj",
+                                                              "likes": null,
+                                                              "replies": "",
+                                                              "user_reports": [],
+                                                              "saved": false,
+                                                              "id": "co2d4ia",
+                                                              "gilded": 0,
+                                                              "archived": false,
+                                                              "report_reasons": null,
+                                                              "author": "Uberhipster",
+                                                              "parent_id": "t1_co1zsg0",
+                                                              "score": 4,
+                                                              "approved_by": null,
+                                                              "controversiality": 0,
+                                                              "body": "You're a good man, Charlie Brown.",
+                                                              "edited": false,
+                                                              "author_flair_css_class": null,
+                                                              "downs": 0,
+                                                              "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;You&amp;#39;re a good man, Charlie Brown.&lt;/p&gt;\n&lt;/div&gt;",
+                                                              "subreddit": "programming",
+                                                              "score_hidden": false,
+                                                              "name": "t1_co2d4ia",
+                                                              "created": 1422369081,
+                                                              "author_flair_text": null,
+                                                              "created_utc": 1422369081,
+                                                              "distinguished": null,
+                                                              "mod_reports": [],
+                                                              "num_reports": null,
+                                                              "ups": 4
+                                                            }
+                                                          }
+                                                        ],
+                                                        "after": null,
+                                                        "before": null
+                                                      }
+                                                    },
+                                                    "user_reports": [],
+                                                    "saved": false,
+                                                    "id": "co1zsg0",
+                                                    "gilded": 0,
+                                                    "archived": false,
+                                                    "report_reasons": null,
+                                                    "author": "BendingUnit10110",
+                                                    "parent_id": "t1_co1sznf",
+                                                    "score": 14,
+                                                    "approved_by": null,
+                                                    "controversiality": 0,
+                                                    "body": "it was, now it's yours as well.",
+                                                    "edited": false,
+                                                    "author_flair_css_class": null,
+                                                    "downs": 0,
+                                                    "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;it was, now it&amp;#39;s yours as well.&lt;/p&gt;\n&lt;/div&gt;",
+                                                    "subreddit": "programming",
+                                                    "score_hidden": false,
+                                                    "name": "t1_co1zsg0",
+                                                    "created": 1422328294,
+                                                    "author_flair_text": null,
+                                                    "created_utc": 1422328294,
+                                                    "ups": 14,
+                                                    "mod_reports": [],
+                                                    "num_reports": null,
+                                                    "distinguished": null
+                                                  }
+                                                },
+                                                {
+                                                  "kind": "t1",
+                                                  "data": {
+                                                    "subreddit_id": "t5_2fwo",
+                                                    "banned_by": null,
+                                                    "link_id": "t3_2tpycj",
+                                                    "likes": null,
+                                                    "replies": {
+                                                      "kind": "Listing",
+                                                      "data": {
+                                                        "modhash": "",
+                                                        "children": [
+                                                          {
+                                                            "kind": "more",
+                                                            "data": {
+                                                              "count": 1,
+                                                              "parent_id": "t1_co2bt2q",
+                                                              "children": [
+                                                                "co2o2re"
+                                                              ],
+                                                              "id": "co2o2re",
+                                                              "name": "t1_co2o2re"
+                                                            }
+                                                          }
+                                                        ],
+                                                        "after": null,
+                                                        "before": null
+                                                      }
+                                                    },
+                                                    "user_reports": [],
+                                                    "saved": false,
+                                                    "id": "co2bt2q",
+                                                    "gilded": 0,
+                                                    "archived": false,
+                                                    "report_reasons": null,
+                                                    "author": "BeowulfShaeffer",
+                                                    "parent_id": "t1_co1sznf",
+                                                    "score": 4,
+                                                    "approved_by": null,
+                                                    "controversiality": 0,
+                                                    "body": "He's actually kind of stealing from a famous Djikstra quote that [Computer science is no more about computers than astronomy is about telescopes.](http://en.m.wikiquote.org/wiki/Edsger_W._Dijkstra)",
+                                                    "edited": false,
+                                                    "author_flair_css_class": null,
+                                                    "downs": 0,
+                                                    "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;He&amp;#39;s actually kind of stealing from a famous Djikstra quote that &lt;a href=\"http://en.m.wikiquote.org/wiki/Edsger_W._Dijkstra\"&gt;Computer science is no more about computers than astronomy is about telescopes.&lt;/a&gt;&lt;/p&gt;\n&lt;/div&gt;",
+                                                    "subreddit": "programming",
+                                                    "score_hidden": false,
+                                                    "name": "t1_co2bt2q",
+                                                    "created": 1422365773,
+                                                    "author_flair_text": null,
+                                                    "created_utc": 1422365773,
+                                                    "ups": 4,
+                                                    "mod_reports": [],
+                                                    "num_reports": null,
+                                                    "distinguished": null
+                                                  }
+                                                },
+                                                {
+                                                  "kind": "more",
+                                                  "data": {
+                                                    "count": 1,
+                                                    "parent_id": "t1_co1sznf",
+                                                    "id": "co1vrd9",
+                                                    "name": "t1_co1vrd9",
+                                                    "children": [
+                                                      "co1vrd9"
+                                                    ]
+                                                  }
+                                                }
+                                              ],
+                                              "after": null,
+                                              "before": null
+                                            }
+                                          },
+                                          "user_reports": [],
+                                          "saved": false,
+                                          "id": "co1sznf",
+                                          "gilded": 0,
+                                          "archived": false,
+                                          "report_reasons": null,
+                                          "author": "sodaco",
+                                          "parent_id": "t1_co1nnit",
+                                          "score": 19,
+                                          "approved_by": null,
+                                          "controversiality": 0,
+                                          "body": "Is this yours? How do I credit you? Cause I'm stealing it",
+                                          "edited": false,
+                                          "author_flair_css_class": null,
+                                          "downs": 0,
+                                          "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;Is this yours? How do I credit you? Cause I&amp;#39;m stealing it&lt;/p&gt;\n&lt;/div&gt;",
+                                          "subreddit": "programming",
+                                          "score_hidden": false,
+                                          "name": "t1_co1sznf",
+                                          "created": 1422316001,
+                                          "author_flair_text": null,
+                                          "created_utc": 1422316001,
+                                          "distinguished": null,
+                                          "mod_reports": [],
+                                          "num_reports": null,
+                                          "ups": 19
+                                        }
+                                      },
+                                      {
+                                        "kind": "t1",
+                                        "data": {
+                                          "subreddit_id": "t5_2fwo",
+                                          "banned_by": null,
+                                          "link_id": "t3_2tpycj",
+                                          "likes": null,
+                                          "replies": "",
+                                          "user_reports": [],
+                                          "saved": false,
+                                          "id": "co1srf7",
+                                          "gilded": 0,
+                                          "archived": false,
+                                          "report_reasons": null,
+                                          "author": "lghitman",
+                                          "parent_id": "t1_co1nnit",
+                                          "score": 9,
+                                          "approved_by": null,
+                                          "controversiality": 0,
+                                          "body": "That's pretty deep(and true), I'll be stealing it!",
+                                          "edited": false,
+                                          "author_flair_css_class": null,
+                                          "downs": 0,
+                                          "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;That&amp;#39;s pretty deep(and true), I&amp;#39;ll be stealing it!&lt;/p&gt;\n&lt;/div&gt;",
+                                          "subreddit": "programming",
+                                          "score_hidden": false,
+                                          "name": "t1_co1srf7",
+                                          "created": 1422315609,
+                                          "author_flair_text": null,
+                                          "created_utc": 1422315609,
+                                          "distinguished": null,
+                                          "mod_reports": [],
+                                          "num_reports": null,
+                                          "ups": 9
+                                        }
+                                      },
+                                      {
+                                        "kind": "t1",
+                                        "data": {
+                                          "subreddit_id": "t5_2fwo",
+                                          "banned_by": null,
+                                          "link_id": "t3_2tpycj",
+                                          "likes": null,
+                                          "replies": {
+                                            "kind": "Listing",
+                                            "data": {
+                                              "modhash": "",
+                                              "children": [
+                                                {
+                                                  "kind": "more",
+                                                  "data": {
+                                                    "count": 2,
+                                                    "parent_id": "t1_co1x1p4",
+                                                    "id": "co22nqo",
+                                                    "name": "t1_co22nqo",
+                                                    "children": [
+                                                      "co22nqo",
+                                                      "co2cp4w"
+                                                    ]
+                                                  }
+                                                }
+                                              ],
+                                              "after": null,
+                                              "before": null
+                                            }
+                                          },
+                                          "user_reports": [],
+                                          "saved": false,
+                                          "id": "co1x1p4",
+                                          "gilded": 0,
+                                          "archived": false,
+                                          "report_reasons": null,
+                                          "author": "andrewmac",
+                                          "parent_id": "t1_co1nnit",
+                                          "score": 7,
+                                          "approved_by": null,
+                                          "controversiality": 0,
+                                          "body": "I want this poster for my cube. ",
+                                          "edited": false,
+                                          "author_flair_css_class": null,
+                                          "downs": 0,
+                                          "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;I want this poster for my cube. &lt;/p&gt;\n&lt;/div&gt;",
+                                          "subreddit": "programming",
+                                          "score_hidden": false,
+                                          "name": "t1_co1x1p4",
+                                          "created": 1422323258,
+                                          "author_flair_text": null,
+                                          "created_utc": 1422323258,
+                                          "distinguished": null,
+                                          "mod_reports": [],
+                                          "num_reports": null,
+                                          "ups": 7
+                                        }
+                                      },
+                                      {
+                                        "kind": "more",
+                                        "data": {
+                                          "count": 4,
+                                          "parent_id": "t1_co1nnit",
+                                          "id": "co2c4uj",
+                                          "children": [
+                                            "co2c4uj",
+                                            "co2e72f"
+                                          ],
+                                          "name": "t1_co2c4uj"
+                                        }
+                                      }
+                                    ],
+                                    "after": null,
+                                    "before": null
+                                  }
+                                },
+                                "user_reports": [],
+                                "saved": false,
+                                "id": "co1nnit",
+                                "gilded": 1,
+                                "archived": false,
+                                "report_reasons": null,
+                                "author": "BendingUnit10110",
+                                "parent_id": "t1_co1fxnm",
+                                "score": 247,
+                                "approved_by": null,
+                                "controversiality": 0,
+                                "body": "software engineering is about writing code like playing chess is about moving pieces.",
+                                "edited": 1422329750,
+                                "author_flair_css_class": null,
+                                "downs": 0,
+                                "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;software engineering is about writing code like playing chess is about moving pieces.&lt;/p&gt;\n&lt;/div&gt;",
+                                "subreddit": "programming",
+                                "score_hidden": false,
+                                "name": "t1_co1nnit",
+                                "created": 1422306884,
+                                "author_flair_text": null,
+                                "created_utc": 1422306884,
+                                "ups": 247,
+                                "mod_reports": [],
+                                "num_reports": null,
+                                "distinguished": null
+                              }
+                            },
+                            {
+                              "kind": "t1",
+                              "data": {
+                                "subreddit_id": "t5_2fwo",
+                                "banned_by": null,
+                                "link_id": "t3_2tpycj",
+                                "likes": null,
+                                "replies": {
+                                  "kind": "Listing",
+                                  "data": {
+                                    "modhash": "",
+                                    "children": [
+                                      {
+                                        "kind": "more",
+                                        "data": {
+                                          "count": 2,
+                                          "parent_id": "t1_co1n6a8",
+                                          "id": "co24lz7",
+                                          "children": [
+                                            "co24lz7",
+                                            "co290y5"
+                                          ],
+                                          "name": "t1_co24lz7"
+                                        }
+                                      }
+                                    ],
+                                    "after": null,
+                                    "before": null
+                                  }
+                                },
+                                "user_reports": [],
+                                "saved": false,
+                                "id": "co1n6a8",
+                                "gilded": 0,
+                                "archived": false,
+                                "report_reasons": null,
+                                "author": "ricodued",
+                                "parent_id": "t1_co1fxnm",
+                                "score": 11,
+                                "approved_by": null,
+                                "controversiality": 0,
+                                "body": "Ahhh I've never met or heard of someone with the exact same sentiments!\n\nEvery morning I get up at about 5 or 6 AM so I can go through about an hour-long drive through the hills so I can be completely  isolated and really think about what I'm supposed to be working on that day. I know it's wasteful and not very green, but I do my *best* work when I'm in my car with nothing but me, some twisty roads, my music, and my thoughts. Then when I actually get into the office I'm energized and I know exactly what I'm doing and the rest of the morning is incredibly productive. I basically walk in and go straight into work mode.\n\nIt helps if management is made up of developers. The one job I had where management was not made up of people with development experience did not go so well.",
+                                "edited": false,
+                                "author_flair_css_class": null,
+                                "downs": 0,
+                                "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;Ahhh I&amp;#39;ve never met or heard of someone with the exact same sentiments!&lt;/p&gt;\n\n&lt;p&gt;Every morning I get up at about 5 or 6 AM so I can go through about an hour-long drive through the hills so I can be completely  isolated and really think about what I&amp;#39;m supposed to be working on that day. I know it&amp;#39;s wasteful and not very green, but I do my &lt;em&gt;best&lt;/em&gt; work when I&amp;#39;m in my car with nothing but me, some twisty roads, my music, and my thoughts. Then when I actually get into the office I&amp;#39;m energized and I know exactly what I&amp;#39;m doing and the rest of the morning is incredibly productive. I basically walk in and go straight into work mode.&lt;/p&gt;\n\n&lt;p&gt;It helps if management is made up of developers. The one job I had where management was not made up of people with development experience did not go so well.&lt;/p&gt;\n&lt;/div&gt;",
+                                "subreddit": "programming",
+                                "score_hidden": false,
+                                "name": "t1_co1n6a8",
+                                "created": 1422306141,
+                                "author_flair_text": null,
+                                "created_utc": 1422306141,
+                                "ups": 11,
+                                "mod_reports": [],
+                                "num_reports": null,
+                                "distinguished": null
+                              }
+                            },
+                            {
+                              "kind": "t1",
+                              "data": {
+                                "subreddit_id": "t5_2fwo",
+                                "banned_by": null,
+                                "link_id": "t3_2tpycj",
+                                "likes": null,
+                                "replies": "",
+                                "user_reports": [],
+                                "saved": false,
+                                "id": "co1h84w",
+                                "gilded": 0,
+                                "archived": false,
+                                "report_reasons": null,
+                                "author": "MrToolBelt",
+                                "parent_id": "t1_co1fxnm",
+                                "score": 7,
+                                "approved_by": null,
+                                "controversiality": 0,
+                                "body": "One thing I really like about the company I work at, is this type of development is encouraged.",
+                                "edited": false,
+                                "author_flair_css_class": null,
+                                "downs": 0,
+                                "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;One thing I really like about the company I work at, is this type of development is encouraged.&lt;/p&gt;\n&lt;/div&gt;",
+                                "subreddit": "programming",
+                                "score_hidden": false,
+                                "name": "t1_co1h84w",
+                                "created": 1422296804,
+                                "author_flair_text": null,
+                                "created_utc": 1422296804,
+                                "ups": 7,
+                                "mod_reports": [],
+                                "num_reports": null,
+                                "distinguished": null
+                              }
+                            },
+                            {
+                              "kind": "more",
+                              "data": {
+                                "count": 4,
+                                "parent_id": "t1_co1fxnm",
+                                "children": [
+                                  "co1qarm",
+                                  "co1sxju",
+                                  "co24o10"
+                                ],
+                                "name": "t1_co1qarm",
+                                "id": "co1qarm"
+                              }
+                            }
+                          ],
+                          "after": null,
+                          "before": null
+                        }
+                      },
+                      "user_reports": [],
+                      "saved": false,
+                      "id": "co1fxnm",
+                      "gilded": 0,
+                      "archived": false,
+                      "report_reasons": null,
+                      "author": "paul_snively",
+                      "parent_id": "t1_co1f55g",
+                      "score": 101,
+                      "approved_by": null,
+                      "controversiality": 0,
+                      "body": "This. I seriously do my most important \"development\" work while enjoying a hot bath or walk around the neighborhood or, better yet, [Lake Balboa](https://www.google.com/search?as_st=y&amp;tbm=isch&amp;hl=en&amp;as_q=lake+…amp;cr=&amp;as_sitesearch=&amp;safe=images&amp;as_filetype=&amp;as_rights=), maybe three miles from where I live.\n\nThe damaging thing—the _toxic_ thing—is the rampant attitude in our industry that if you aren't literally fingers-on-keyboard-coding, you aren't working, when the reality is that this process is really just a transcription process. I've actually had bosses get on my case when they've found me with my feet up on the desk, staring off into space—at which point I've essentially said \"thank you _so much_ for interrupting the part of the job that's actually hard.\"",
+                      "edited": false,
+                      "author_flair_css_class": null,
+                      "downs": 0,
+                      "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;This. I seriously do my most important &amp;quot;development&amp;quot; work while enjoying a hot bath or walk around the neighborhood or, better yet, &lt;a href=\"https://www.google.com/search?as_st=y&amp;amp;tbm=isch&amp;amp;hl=en&amp;am…s_sitesearch=&amp;amp;safe=images&amp;amp;as_filetype=&amp;amp;as_rights=\"&gt;Lake Balboa&lt;/a&gt;, maybe three miles from where I live.&lt;/p&gt;\n\n&lt;p&gt;The damaging thing—the &lt;em&gt;toxic&lt;/em&gt; thing—is the rampant attitude in our industry that if you aren&amp;#39;t literally fingers-on-keyboard-coding, you aren&amp;#39;t working, when the reality is that this process is really just a transcription process. I&amp;#39;ve actually had bosses get on my case when they&amp;#39;ve found me with my feet up on the desk, staring off into space—at which point I&amp;#39;ve essentially said &amp;quot;thank you &lt;em&gt;so much&lt;/em&gt; for interrupting the part of the job that&amp;#39;s actually hard.&amp;quot;&lt;/p&gt;\n&lt;/div&gt;",
+                      "subreddit": "programming",
+                      "score_hidden": false,
+                      "name": "t1_co1fxnm",
+                      "created": 1422294729,
+                      "author_flair_text": null,
+                      "created_utc": 1422294729,
+                      "distinguished": null,
+                      "mod_reports": [],
+                      "num_reports": null,
+                      "ups": 101
+                    }
+                  },
+                  {
+                    "kind": "t1",
+                    "data": {
+                      "subreddit_id": "t5_2fwo",
+                      "banned_by": null,
+                      "link_id": "t3_2tpycj",
+                      "likes": null,
+                      "replies": {
+                        "kind": "Listing",
+                        "data": {
+                          "modhash": "",
+                          "children": [
+                            {
+                              "kind": "t1",
+                              "data": {
+                                "subreddit_id": "t5_2fwo",
+                                "banned_by": null,
+                                "link_id": "t3_2tpycj",
+                                "likes": null,
+                                "replies": "",
+                                "user_reports": [],
+                                "saved": false,
+                                "id": "co1qdxh",
+                                "gilded": 0,
+                                "archived": false,
+                                "report_reasons": null,
+                                "author": "jeremymorgan",
+                                "parent_id": "t1_co1myds",
+                                "score": 4,
+                                "approved_by": null,
+                                "controversiality": 0,
+                                "body": "Yup. I still do strange diagrams and notes that pretty much only I will understand. If it's something big I may use actual UML and real data models, but much of the time it's some scratched up weird thing that ends being revised a bunch of times before I even open my IDE.",
+                                "edited": false,
+                                "author_flair_css_class": null,
+                                "downs": 0,
+                                "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;Yup. I still do strange diagrams and notes that pretty much only I will understand. If it&amp;#39;s something big I may use actual UML and real data models, but much of the time it&amp;#39;s some scratched up weird thing that ends being revised a bunch of times before I even open my IDE.&lt;/p&gt;\n&lt;/div&gt;",
+                                "subreddit": "programming",
+                                "score_hidden": false,
+                                "name": "t1_co1qdxh",
+                                "created": 1422311353,
+                                "author_flair_text": null,
+                                "created_utc": 1422311353,
+                                "ups": 4,
+                                "mod_reports": [],
+                                "num_reports": null,
+                                "distinguished": null
+                              }
+                            },
+                            {
+                              "kind": "more",
+                              "data": {
+                                "count": 1,
+                                "parent_id": "t1_co1myds",
+                                "children": [
+                                  "co1u5kc"
+                                ],
+                                "name": "t1_co1u5kc",
+                                "id": "co1u5kc"
+                              }
+                            }
+                          ],
+                          "after": null,
+                          "before": null
+                        }
+                      },
+                      "user_reports": [],
+                      "saved": false,
+                      "id": "co1myds",
+                      "gilded": 0,
+                      "archived": false,
+                      "report_reasons": null,
+                      "author": "bkv",
+                      "parent_id": "t1_co1f55g",
+                      "score": 11,
+                      "approved_by": null,
+                      "controversiality": 0,
+                      "body": "To follow up on this:  Allow yourself the luxury of writing a proof-of-concept.  Before writing any code, you only have a vague idea of what kind of problems you'll encounter, or even what problems you'll be solving besides the obvious ones.  Being able to figure all this out without the requirement of making it production-like, well-organized, documented, etc is invaluable.",
+                      "edited": false,
+                      "author_flair_css_class": null,
+                      "downs": 0,
+                      "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;To follow up on this:  Allow yourself the luxury of writing a proof-of-concept.  Before writing any code, you only have a vague idea of what kind of problems you&amp;#39;ll encounter, or even what problems you&amp;#39;ll be solving besides the obvious ones.  Being able to figure all this out without the requirement of making it production-like, well-organized, documented, etc is invaluable.&lt;/p&gt;\n&lt;/div&gt;",
+                      "subreddit": "programming",
+                      "score_hidden": false,
+                      "name": "t1_co1myds",
+                      "created": 1422305801,
+                      "author_flair_text": null,
+                      "created_utc": 1422305801,
+                      "distinguished": null,
+                      "mod_reports": [],
+                      "num_reports": null,
+                      "ups": 11
+                    }
+                  },
+                  {
+                    "kind": "more",
+                    "data": {
+                      "count": 1,
+                      "parent_id": "t1_co1f55g",
+                      "children": [
+                        "co1l2hi"
+                      ],
+                      "id": "co1l2hi",
+                      "name": "t1_co1l2hi"
+                    }
+                  }
+                ],
+                "after": null,
+                "before": null
+              }
+            },
+            "user_reports": [],
+            "saved": false,
+            "id": "co1f55g",
+            "gilded": 0,
+            "archived": false,
+            "report_reasons": null,
+            "author": "Vocith",
+            "parent_id": "t3_2tpycj",
+            "score": 69,
+            "approved_by": null,
+            "controversiality": 0,
+            "body": "What I do these days is I sit down, think about the issue for a while. Maybe scribble something on a whiteboard or paper.\n\nThen when I'm ready to start coding I get up, grab my coat and take a short walk to think things through.\n",
+            "edited": false,
+            "author_flair_css_class": null,
+            "downs": 0,
+            "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;What I do these days is I sit down, think about the issue for a while. Maybe scribble something on a whiteboard or paper.&lt;/p&gt;\n\n&lt;p&gt;Then when I&amp;#39;m ready to start coding I get up, grab my coat and take a short walk to think things through.&lt;/p&gt;\n&lt;/div&gt;",
+            "subreddit": "programming",
+            "score_hidden": false,
+            "name": "t1_co1f55g",
+            "created": 1422293457,
+            "author_flair_text": null,
+            "created_utc": 1422293457,
+            "ups": 69,
+            "mod_reports": [],
+            "num_reports": null,
+            "distinguished": null
+          }
+        },
+        {
+          "kind": "t1",
+          "data": {
+            "subreddit_id": "t5_2fwo",
+            "banned_by": null,
+            "link_id": "t3_2tpycj",
+            "likes": null,
+            "replies": {
+              "kind": "Listing",
+              "data": {
+                "modhash": "",
+                "children": [
+                  {
+                    "kind": "t1",
+                    "data": {
+                      "subreddit_id": "t5_2fwo",
+                      "banned_by": null,
+                      "link_id": "t3_2tpycj",
+                      "likes": null,
+                      "replies": {
+                        "kind": "Listing",
+                        "data": {
+                          "modhash": "",
+                          "children": [
+                            {
+                              "kind": "t1",
+                              "data": {
+                                "subreddit_id": "t5_2fwo",
+                                "banned_by": null,
+                                "link_id": "t3_2tpycj",
+                                "likes": null,
+                                "replies": {
+                                  "kind": "Listing",
+                                  "data": {
+                                    "modhash": "",
+                                    "children": [
+                                      {
+                                        "kind": "t1",
+                                        "data": {
+                                          "subreddit_id": "t5_2fwo",
+                                          "banned_by": null,
+                                          "link_id": "t3_2tpycj",
+                                          "likes": null,
+                                          "replies": {
+                                            "kind": "Listing",
+                                            "data": {
+                                              "modhash": "",
+                                              "children": [
+                                                {
+                                                  "kind": "t1",
+                                                  "data": {
+                                                    "subreddit_id": "t5_2fwo",
+                                                    "banned_by": null,
+                                                    "link_id": "t3_2tpycj",
+                                                    "likes": null,
+                                                    "replies": "",
+                                                    "user_reports": [],
+                                                    "saved": false,
+                                                    "id": "co1r9oh",
+                                                    "gilded": 0,
+                                                    "archived": false,
+                                                    "report_reasons": null,
+                                                    "author": "vincentk",
+                                                    "parent_id": "t1_co1pim1",
+                                                    "score": 7,
+                                                    "approved_by": null,
+                                                    "controversiality": 0,
+                                                    "body": "I think a key property of good code is that it round-trips from human language to code back to human language. I once heard a name for that property, though I forgot.\n\nA bit like having google translate go English -&gt; X -&gt; English. If you get something resembling the original back out, the translation process was A/OK.",
+                                                    "edited": false,
+                                                    "author_flair_css_class": null,
+                                                    "downs": 0,
+                                                    "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;I think a key property of good code is that it round-trips from human language to code back to human language. I once heard a name for that property, though I forgot.&lt;/p&gt;\n\n&lt;p&gt;A bit like having google translate go English -&amp;gt; X -&amp;gt; English. If you get something resembling the original back out, the translation process was A/OK.&lt;/p&gt;\n&lt;/div&gt;",
+                                                    "subreddit": "programming",
+                                                    "score_hidden": false,
+                                                    "name": "t1_co1r9oh",
+                                                    "created": 1422312964,
+                                                    "author_flair_text": null,
+                                                    "created_utc": 1422312964,
+                                                    "ups": 7,
+                                                    "mod_reports": [],
+                                                    "num_reports": null,
+                                                    "distinguished": null
+                                                  }
+                                                },
+                                                {
+                                                  "kind": "more",
+                                                  "data": {
+                                                    "count": 1,
+                                                    "parent_id": "t1_co1pim1",
+                                                    "id": "co1r819",
+                                                    "name": "t1_co1r819",
+                                                    "children": [
+                                                      "co1r819"
+                                                    ]
+                                                  }
+                                                }
+                                              ],
+                                              "after": null,
+                                              "before": null
+                                            }
+                                          },
+                                          "user_reports": [],
+                                          "saved": false,
+                                          "id": "co1pim1",
+                                          "gilded": 0,
+                                          "archived": false,
+                                          "report_reasons": null,
+                                          "author": "Terr_",
+                                          "parent_id": "t1_co1lqv1",
+                                          "score": 6,
+                                          "approved_by": null,
+                                          "controversiality": 0,
+                                          "body": "&gt;  what you can't express in pictures, symbols and words (including, possibly code), you will find very hard to express in code alone.\n\nMuch the same reason that [rubber-duck debugging](http://en.wikipedia.org/wiki/Rubber_duck_debugging) is a thing.",
+                                          "edited": false,
+                                          "author_flair_css_class": null,
+                                          "downs": 0,
+                                          "body_html": "&lt;div class=\"md\"&gt;&lt;blockquote&gt;\n&lt;p&gt;what you can&amp;#39;t express in pictures, symbols and words (including, possibly code), you will find very hard to express in code alone.&lt;/p&gt;\n&lt;/blockquote&gt;\n\n&lt;p&gt;Much the same reason that &lt;a href=\"http://en.wikipedia.org/wiki/Rubber_duck_debugging\"&gt;rubber-duck debugging&lt;/a&gt; is a thing.&lt;/p&gt;\n&lt;/div&gt;",
+                                          "subreddit": "programming",
+                                          "score_hidden": false,
+                                          "name": "t1_co1pim1",
+                                          "created": 1422309891,
+                                          "author_flair_text": null,
+                                          "created_utc": 1422309891,
+                                          "distinguished": null,
+                                          "mod_reports": [],
+                                          "num_reports": null,
+                                          "ups": 6
+                                        }
+                                      }
+                                    ],
+                                    "after": null,
+                                    "before": null
+                                  }
+                                },
+                                "user_reports": [],
+                                "saved": false,
+                                "id": "co1lqv1",
+                                "gilded": 0,
+                                "archived": false,
+                                "report_reasons": null,
+                                "author": "vincentk",
+                                "parent_id": "t1_co1erti",
+                                "score": 9,
+                                "approved_by": null,
+                                "controversiality": 0,
+                                "body": "I'm a bit further down the career path, and I can say with some confidence that what you can't express in pictures, symbols and words (including, possibly code), you will find very hard to express in code alone. Thinking and talking things through up front tends to pay off big time. Look at the issue from all possible perspectives. Changing perspective repeatedly is important. Look at the big picture. Explore some details. Zoom in, zoom out. Then implement on what you have achieved clarity, then re-iterate.",
+                                "edited": false,
+                                "author_flair_css_class": null,
+                                "downs": 0,
+                                "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;I&amp;#39;m a bit further down the career path, and I can say with some confidence that what you can&amp;#39;t express in pictures, symbols and words (including, possibly code), you will find very hard to express in code alone. Thinking and talking things through up front tends to pay off big time. Look at the issue from all possible perspectives. Changing perspective repeatedly is important. Look at the big picture. Explore some details. Zoom in, zoom out. Then implement on what you have achieved clarity, then re-iterate.&lt;/p&gt;\n&lt;/div&gt;",
+                                "subreddit": "programming",
+                                "score_hidden": false,
+                                "name": "t1_co1lqv1",
+                                "created": 1422303898,
+                                "author_flair_text": null,
+                                "created_utc": 1422303898,
+                                "ups": 9,
+                                "mod_reports": [],
+                                "num_reports": null,
+                                "distinguished": null
+                              }
+                            },
+                            {
+                              "kind": "more",
+                              "data": {
+                                "count": 6,
+                                "parent_id": "t1_co1erti",
+                                "children": [
+                                  "co1fei9",
+                                  "co1vbdj",
+                                  "co1wgll",
+                                  "co5n4ur"
+                                ],
+                                "name": "t1_co1fei9",
+                                "id": "co1fei9"
+                              }
+                            }
+                          ],
+                          "after": null,
+                          "before": null
+                        }
+                      },
+                      "user_reports": [],
+                      "saved": false,
+                      "id": "co1erti",
+                      "gilded": 0,
+                      "archived": false,
+                      "report_reasons": null,
+                      "author": "wastekid",
+                      "parent_id": "t1_co1byh2",
+                      "score": 33,
+                      "approved_by": null,
+                      "controversiality": 0,
+                      "body": "I don't know, man. I'm pretty green in my career (&lt; 3 years atm), but I had a slightly less than cavalier attitude with my first job: they asked me to write something cool, something that took advantage of my math background, and I dove into it. Over a year later, the prototype was operational, but entirely ad-hoc. They needed *more* from it, and delivering on that consumed way more time than if I had stopped to consider architecture during the project. Fast forward to today, and with my new company I'm building the new flagship product. It has paid off in huge time savings to stop and think things through.\n\nYou might say that my story simply proves your point, and I wouldn't disagree with you, but if I could go back in time, the advice I'd give myself would be not to waste time shotgunning solutions, but rather to slow down and think about the big picture.",
+                      "edited": false,
+                      "author_flair_css_class": null,
+                      "downs": 0,
+                      "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;I don&amp;#39;t know, man. I&amp;#39;m pretty green in my career (&amp;lt; 3 years atm), but I had a slightly less than cavalier attitude with my first job: they asked me to write something cool, something that took advantage of my math background, and I dove into it. Over a year later, the prototype was operational, but entirely ad-hoc. They needed &lt;em&gt;more&lt;/em&gt; from it, and delivering on that consumed way more time than if I had stopped to consider architecture during the project. Fast forward to today, and with my new company I&amp;#39;m building the new flagship product. It has paid off in huge time savings to stop and think things through.&lt;/p&gt;\n\n&lt;p&gt;You might say that my story simply proves your point, and I wouldn&amp;#39;t disagree with you, but if I could go back in time, the advice I&amp;#39;d give myself would be not to waste time shotgunning solutions, but rather to slow down and think about the big picture.&lt;/p&gt;\n&lt;/div&gt;",
+                      "subreddit": "programming",
+                      "score_hidden": false,
+                      "name": "t1_co1erti",
+                      "created": 1422292862,
+                      "author_flair_text": null,
+                      "created_utc": 1422292862,
+                      "distinguished": null,
+                      "mod_reports": [],
+                      "num_reports": null,
+                      "ups": 33
+                    }
+                  },
+                  {
+                    "kind": "more",
+                    "data": {
+                      "count": 8,
+                      "parent_id": "t1_co1byh2",
+                      "children": [
+                        "co1c2dj",
+                        "co1c66e",
+                        "co1cysf",
+                        "co1n2sy"
+                      ],
+                      "id": "co1c2dj",
+                      "name": "t1_co1c2dj"
+                    }
+                  }
+                ],
+                "after": null,
+                "before": null
+              }
+            },
+            "user_reports": [],
+            "saved": false,
+            "id": "co1byh2",
+            "gilded": 0,
+            "archived": false,
+            "report_reasons": null,
+            "author": "Isvara",
+            "parent_id": "t3_2tpycj",
+            "score": 104,
+            "approved_by": null,
+            "controversiality": 0,
+            "body": "When you're starting out? Hell no. Have fun. Dive into everything. Make endless throwaway prototypes. You don't get to be a great developer by starting out with an attitude of \"I must be professional and do things well\"; you do it by getting an intuitive feel for what approaches lead to what mistakes, and you do that by making mistakes over and over and seeing those patterns for yourself.",
+            "edited": false,
+            "author_flair_css_class": null,
+            "downs": 0,
+            "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;When you&amp;#39;re starting out? Hell no. Have fun. Dive into everything. Make endless throwaway prototypes. You don&amp;#39;t get to be a great developer by starting out with an attitude of &amp;quot;I must be professional and do things well&amp;quot;; you do it by getting an intuitive feel for what approaches lead to what mistakes, and you do that by making mistakes over and over and seeing those patterns for yourself.&lt;/p&gt;\n&lt;/div&gt;",
+            "subreddit": "programming",
+            "score_hidden": false,
+            "name": "t1_co1byh2",
+            "created": 1422288005,
+            "author_flair_text": null,
+            "created_utc": 1422288005,
+            "ups": 104,
+            "mod_reports": [],
+            "num_reports": null,
+            "distinguished": null
+          }
+        },
+        {
+          "kind": "t1",
+          "data": {
+            "subreddit_id": "t5_2fwo",
+            "banned_by": null,
+            "link_id": "t3_2tpycj",
+            "likes": null,
+            "replies": {
+              "kind": "Listing",
+              "data": {
+                "modhash": "",
+                "children": [
+                  {
+                    "kind": "more",
+                    "data": {
+                      "count": 2,
+                      "parent_id": "t1_co1cwp1",
+                      "children": [
+                        "co1x74y"
+                      ],
+                      "id": "co1x74y",
+                      "name": "t1_co1x74y"
+                    }
+                  }
+                ],
+                "after": null,
+                "before": null
+              }
+            },
+            "user_reports": [],
+            "saved": false,
+            "id": "co1cwp1",
+            "gilded": 0,
+            "archived": false,
+            "report_reasons": null,
+            "author": "Klockan3",
+            "parent_id": "t3_2tpycj",
+            "score": 7,
+            "approved_by": null,
+            "controversiality": 0,
+            "body": "It is easy to believe that you should have moved slowly from the start in hindsight, but in reality there is no merit in moving slow unless you already have a firm grasp of how the finished product will behave. It isn't that is is better to move slowly, it is that better developers know what to do so they can schedule the time to do it.\n\nOverscheduling is no help since it only leads to spending more time on nonsense, instead you need to seriously try to make a finished product to detect most of the issues and that wont happen until you are close to the deadline.",
+            "edited": false,
+            "author_flair_css_class": null,
+            "downs": 0,
+            "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;It is easy to believe that you should have moved slowly from the start in hindsight, but in reality there is no merit in moving slow unless you already have a firm grasp of how the finished product will behave. It isn&amp;#39;t that is is better to move slowly, it is that better developers know what to do so they can schedule the time to do it.&lt;/p&gt;\n\n&lt;p&gt;Overscheduling is no help since it only leads to spending more time on nonsense, instead you need to seriously try to make a finished product to detect most of the issues and that wont happen until you are close to the deadline.&lt;/p&gt;\n&lt;/div&gt;",
+            "subreddit": "programming",
+            "score_hidden": false,
+            "name": "t1_co1cwp1",
+            "created": 1422289712,
+            "author_flair_text": null,
+            "created_utc": 1422289712,
+            "ups": 7,
+            "mod_reports": [],
+            "num_reports": null,
+            "distinguished": null
+          }
+        },
+        {
+          "kind": "t1",
+          "data": {
+            "subreddit_id": "t5_2fwo",
+            "banned_by": null,
+            "link_id": "t3_2tpycj",
+            "likes": null,
+            "replies": {
+              "kind": "Listing",
+              "data": {
+                "modhash": "",
+                "children": [
+                  {
+                    "kind": "more",
+                    "data": {
+                      "count": 2,
+                      "parent_id": "t1_co1f2x8",
+                      "children": [
+                        "co1j4dn"
+                      ],
+                      "id": "co1j4dn",
+                      "name": "t1_co1j4dn"
+                    }
+                  }
+                ],
+                "after": null,
+                "before": null
+              }
+            },
+            "user_reports": [],
+            "saved": false,
+            "id": "co1f2x8",
+            "gilded": 0,
+            "archived": false,
+            "report_reasons": null,
+            "author": "mycall",
+            "parent_id": "t3_2tpycj",
+            "score": 7,
+            "approved_by": null,
+            "controversiality": 0,
+            "body": "&gt; projects fail far more often because the software never really works properly than because they missed a tight market window.\n\nI say 50/50 on this ratio.  Many projects are time sensitive and funding/use-cases/time-to-market are sometimes key to project's success.\n\nProducts are a different story.",
+            "edited": false,
+            "author_flair_css_class": null,
+            "downs": 0,
+            "body_html": "&lt;div class=\"md\"&gt;&lt;blockquote&gt;\n&lt;p&gt;projects fail far more often because the software never really works properly than because they missed a tight market window.&lt;/p&gt;\n&lt;/blockquote&gt;\n\n&lt;p&gt;I say 50/50 on this ratio.  Many projects are time sensitive and funding/use-cases/time-to-market are sometimes key to project&amp;#39;s success.&lt;/p&gt;\n\n&lt;p&gt;Products are a different story.&lt;/p&gt;\n&lt;/div&gt;",
+            "subreddit": "programming",
+            "score_hidden": false,
+            "name": "t1_co1f2x8",
+            "created": 1422293357,
+            "author_flair_text": null,
+            "created_utc": 1422293357,
+            "ups": 7,
+            "mod_reports": [],
+            "num_reports": null,
+            "distinguished": null
+          }
+        },
+        {
+          "kind": "t1",
+          "data": {
+            "subreddit_id": "t5_2fwo",
+            "banned_by": null,
+            "link_id": "t3_2tpycj",
+            "likes": null,
+            "replies": "",
+            "user_reports": [],
+            "saved": false,
+            "id": "co1qi1s",
+            "gilded": 0,
+            "archived": false,
+            "report_reasons": null,
+            "author": "KingOfAllBlacks",
+            "parent_id": "t3_2tpycj",
+            "score": 8,
+            "approved_by": null,
+            "controversiality": 0,
+            "body": "I just burned out hardcore last week. This article is a godsend.\n\nLess caffeine and pounding out fast code with no documentation from trial and error. More thought, more documentation, easier in the long run big time.",
+            "edited": false,
+            "author_flair_css_class": null,
+            "downs": 0,
+            "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;I just burned out hardcore last week. This article is a godsend.&lt;/p&gt;\n\n&lt;p&gt;Less caffeine and pounding out fast code with no documentation from trial and error. More thought, more documentation, easier in the long run big time.&lt;/p&gt;\n&lt;/div&gt;",
+            "subreddit": "programming",
+            "score_hidden": false,
+            "name": "t1_co1qi1s",
+            "created": 1422311539,
+            "author_flair_text": null,
+            "created_utc": 1422311539,
+            "ups": 8,
+            "mod_reports": [],
+            "num_reports": null,
+            "distinguished": null
+          }
+        },
+        {
+          "kind": "t1",
+          "data": {
+            "subreddit_id": "t5_2fwo",
+            "banned_by": null,
+            "link_id": "t3_2tpycj",
+            "likes": null,
+            "replies": "",
+            "user_reports": [],
+            "saved": false,
+            "id": "co1dmtf",
+            "gilded": 0,
+            "archived": false,
+            "report_reasons": null,
+            "author": "wesw02",
+            "parent_id": "t3_2tpycj",
+            "score": 6,
+            "approved_by": null,
+            "controversiality": 0,
+            "body": "Yes!\n\nSoftware requires a lot of internal wherewithal. All successful developers have to be able to overcome hurdles. This is no secret. But I think what a lot of people miss about this is software development has to be fun and enjoyable. If you're building something cool that you believe in, it makes it a lot easier (and more likely) you'll take the high road.",
+            "edited": false,
+            "author_flair_css_class": null,
+            "downs": 0,
+            "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;Yes!&lt;/p&gt;\n\n&lt;p&gt;Software requires a lot of internal wherewithal. All successful developers have to be able to overcome hurdles. This is no secret. But I think what a lot of people miss about this is software development has to be fun and enjoyable. If you&amp;#39;re building something cool that you believe in, it makes it a lot easier (and more likely) you&amp;#39;ll take the high road.&lt;/p&gt;\n&lt;/div&gt;",
+            "subreddit": "programming",
+            "score_hidden": false,
+            "name": "t1_co1dmtf",
+            "created": 1422290954,
+            "author_flair_text": null,
+            "created_utc": 1422290954,
+            "ups": 6,
+            "mod_reports": [],
+            "num_reports": null,
+            "distinguished": null
+          }
+        },
+        {
+          "kind": "t1",
+          "data": {
+            "subreddit_id": "t5_2fwo",
+            "banned_by": null,
+            "link_id": "t3_2tpycj",
+            "likes": null,
+            "replies": {
+              "kind": "Listing",
+              "data": {
+                "modhash": "",
+                "children": [
+                  {
+                    "kind": "t1",
+                    "data": {
+                      "subreddit_id": "t5_2fwo",
+                      "banned_by": null,
+                      "link_id": "t3_2tpycj",
+                      "likes": null,
+                      "replies": "",
+                      "user_reports": [],
+                      "saved": false,
+                      "id": "co1w17d",
+                      "gilded": 0,
+                      "archived": false,
+                      "report_reasons": null,
+                      "author": "mariox19",
+                      "parent_id": "t1_co1eq34",
+                      "score": 11,
+                      "approved_by": null,
+                      "controversiality": 0,
+                      "body": "Did you see the post from a few days back, [\"Mary live-codes Space Invaders from scratch\"](https://www.reddit.com/r/programming/comments/2tcuyx/mary_livecodes_space_invaders_from_scratch_in/) in 30 minutes while giving a speech before an audience? It's impressive, but after watching it I worried that no manager should ever see this. I fear they wouldn't realize it was a practiced stunt, and instead think that all software projects are grossly over-estimated.",
+                      "edited": false,
+                      "author_flair_css_class": null,
+                      "downs": 0,
+                      "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;Did you see the post from a few days back, &lt;a href=\"https://www.reddit.com/r/programming/comments/2tcuyx/mary_livecodes_space_invaders_from_scratch_in/\"&gt;&amp;quot;Mary live-codes Space Invaders from scratch&amp;quot;&lt;/a&gt; in 30 minutes while giving a speech before an audience? It&amp;#39;s impressive, but after watching it I worried that no manager should ever see this. I fear they wouldn&amp;#39;t realize it was a practiced stunt, and instead think that all software projects are grossly over-estimated.&lt;/p&gt;\n&lt;/div&gt;",
+                      "subreddit": "programming",
+                      "score_hidden": false,
+                      "name": "t1_co1w17d",
+                      "created": 1422321417,
+                      "author_flair_text": null,
+                      "created_utc": 1422321417,
+                      "distinguished": null,
+                      "mod_reports": [],
+                      "num_reports": null,
+                      "ups": 11
+                    }
+                  }
+                ],
+                "after": null,
+                "before": null
+              }
+            },
+            "user_reports": [],
+            "saved": false,
+            "id": "co1eq34",
+            "gilded": 0,
+            "archived": false,
+            "report_reasons": null,
+            "author": "jf442",
+            "parent_id": "t3_2tpycj",
+            "score": 7,
+            "approved_by": null,
+            "controversiality": 0,
+            "body": "Now I just wish you could tell all the managers that are just starting out that software isn't \"easy\" and takes time, and it's worth investing the time instead of getting to market yesterday. part of what is so frustrating for me in this career is getting buy-in from management for proper software development. I estimated a big project rewrite and eventually it got taken away from me and given to a team \"who could do it in half the time.\" ugh. good luck with that.",
+            "edited": false,
+            "author_flair_css_class": null,
+            "downs": 0,
+            "body_html": "&lt;div class=\"md\"&gt;&lt;p&gt;Now I just wish you could tell all the managers that are just starting out that software isn&amp;#39;t &amp;quot;easy&amp;quot; and takes time, and it&amp;#39;s worth investing the time instead of getting to market yesterday. part of what is so frustrating for me in this career is getting buy-in from management for proper software development. I estimated a big project rewrite and eventually it got taken away from me and given to a team &amp;quot;who could do it in half the time.&amp;quot; ugh. good luck with that.&lt;/p&gt;\n&lt;/div&gt;",
+            "subreddit": "programming",
+            "score_hidden": false,
+            "name": "t1_co1eq34",
+            "created": 1422292787,
+            "author_flair_text": null,
+            "created_utc": 1422292787,
+            "ups": 7,
+            "mod_reports": [],
+            "num_reports": null,
+            "distinguished": null
+          }
+        },
+        {
+          "kind": "more",
+          "data": {
+            "count": 28,
+            "parent_id": "t3_2tpycj",
+            "id": "co1aoyj",
+            "name": "t1_co1aoyj",
+            "children": [
+              "co1aoyj",
+              "co1lnnz",
+              "co1wgra",
+              "co1jdpg",
+              "co1ji2u",
+              "co1keaw",
+              "co1u748",
+              "co1zcsx",
+              "co1n3gk",
+              "co2fbw4",
+              "co1tqzv",
+              "co22xii",
+              "co1gv8y",
+              "co1x131",
+              "co28zu7",
+              "co2dsdk",
+              "co24doi",
+              "co27eyk"
+            ]
+          }
+        }
+      ],
+      "after": null,
+      "before": null
+    }
+  }
+]

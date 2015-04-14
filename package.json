@@ -1,0 +1,68 @@
+{
+  "name": "supercomments",
+  "version": "0.0.1",
+  "description": "Hijacking the Disqus comment UI for Reddit, Hacker News (and maybe more!)",
+  "main": "index.js",
+  "dependencies": {
+    "bootstrap": "^3.3.4",
+    "classnames": "^1.2.0",
+    "fluxxor": "^1.5.2",
+    "jquery": "^2.1.3",
+    "react": "^0.13.1",
+    "showdown": "showdownjs/showdown#showdown2",
+    "snoocore": "^2.7.3"
+  },
+  "devDependencies": {
+    "babel-jest": "^5.0.1",
+    "babelify": "^5.0.4",
+    "browser-sync": "^2.4.0",
+    "browserify": "^9.0.3",
+    "connect-history-api-fallback": "0.0.5",
+    "fluxxor-test-utils": "^0.1.1",
+    "gulp": "^3.8.11",
+    "gulp-notify": "^2.2.0",
+    "gulp-util": "^3.0.4",
+    "jest-cli": "^0.4.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^2.6.2"
+  },
+  "scripts": {
+    "test": "jest",
+    "test-debug": "node-debug --nodejs --harmony ./node_modules/jest-cli/bin/jest.js --runInBand"
+  },
+  "browser": {
+    "autosize": "./node_modules/autosize/dest/autosize.min.js"
+  },
+  "browserify-shim": {
+    "autosize": "autosize"
+  },
+  "browserify": {
+    "transform": [ "browserify-shim" ]
+  },
+  "jest": {
+    "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
+    "testFileExtensions": [
+      "es6",
+      "js"
+    ],
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "es6"
+    ],
+    "unmockedModulePathPatterns": [
+      "node_modules/fluxxor",
+      "node_modules/fluxxor-test-utils",
+      "when"
+    ]
+  },
+  "keywords": [
+    "comments",
+    "disqus",
+    "reddit",
+    "hackernews",
+    "reactjs"
+  ],
+  "author": "Matthew Gertner",
+  "license": "MIT"
+}
