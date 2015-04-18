@@ -1,18 +1,18 @@
 var React = require('react');
-var autosize = require('autosize');
 var Fluxxor = require('fluxxor');
+var Textarea = require('react-textarea-autosize');
 
 var FluxMixin = Fluxxor.FluxMixin(React);
 
-var CommentForm = React.createClass({
+var CommentEditForm = React.createClass({
   mixins: [FluxMixin],
+
+  getInitialState: function() {
+    return { body: this.props.item.props.comment.body};
+  },
 
   getStateFromFlux: function() {
     return this.getFlux().store('RedditStore').getState();
-  },
-
-  componentDidMount: function() {
-    autosize($(React.findDOMNode(this)).find('.textarea'));
   },
 
   render: function() {
@@ -20,14 +20,19 @@ var CommentForm = React.createClass({
         <form className="edit">
             <div className="textarea-wrapper" >
                 <div>
-                    <textarea className="textarea"  style={{resize: 'none', overflow: 'hidden', height: '128px'}}>{this.props.comment.body}</textarea>
+                    <Textarea
+                        className="textarea"
+                        style={{resize: 'none', overflow: 'hidden', height: '128px'}}
+                        value={this.state.body}
+                        onChange={this.onChange}
+                    />
                 </div>
                 <div className="post-actions">
                     <div className="logged-in">
                         <section>
                             <div className="temp-post">
-                                <button className="btn" type="submit" onClick={this.onSubmit}>Save Edit</button>
-                                <a className="cancel" href="#" onClick={this.onCancel}>Cancel</a>
+                                <button className="btn" type="button" onClick={this.onSubmit}>Save Edit</button>
+                                <a className="cancel" onClick={this.onCancel}>Cancel</a>
                             </div>
                         </section>
                     </div>
@@ -37,16 +42,21 @@ var CommentForm = React.createClass({
     );
   },
 
-  onSubmit: function(e) {
-    e.preventDefault();
-    var textArea = $(e.target).closest('.textarea-wrapper').find('.textarea');
-    this.props.onSubmit(textArea.val());
+  onChange: function(e) {
+    this.setState({ body: e.target.value });    
   },
 
-  onCancel: function(e) {
-    e.preventDefault();
-    this.props.onSubmit(null); // Null signals that no change was made
+  onSubmit: function() {
+    this.getFlux().actions.editComment({
+      comment: this.props.item.props.comment,
+      body: this.state.body
+    });
+    this.getFlux().actions.itemChanged({ item: this.props.item, newState: { editFormVisible: false }});
+  },
+
+  onCancel: function() {
+    this.getFlux().actions.itemChanged({ item: this.props.item, newState: { editFormVisible: false }});
   }
 });
 
-module.exports = CommentForm;
+module.exports = CommentEditForm;

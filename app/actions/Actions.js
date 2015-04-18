@@ -43,7 +43,16 @@ var Actions = {
 
   reportComment: function(comment) {
     this.dispatch(Constants.REPORT_COMMENT, comment);
+  },
+
+  itemChanged: function(payload) {
+    this.dispatch(Constants.ITEM_CHANGED, payload);
+  },
+
+  itemRemoved: function(item) {
+    this.dispatch(Constants.ITEM_REMOVED, item);
   }
 };
+
 
 module.exports = Actions;

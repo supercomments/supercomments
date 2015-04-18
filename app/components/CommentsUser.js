@@ -47,7 +47,7 @@ var CommentsUser = React.createClass({
                   <a href="https://www.reddit.com/wiki/faq" target="_blank">Help</a>
               </li>
               <li>
-                  <a href="#" onClick={this.onLogout}>Logout</a>
+                  <a onClick={this.onLogout}>Logout</a>
               </li>
           </ul>
       </li>
@@ -67,8 +67,7 @@ var CommentsUser = React.createClass({
     this.getFlux().actions.login();
   },
 
-  onLogout: function(e) {
-    e.preventDefault();
+  onLogout: function() {
     this.getFlux().actions.logout();
   }
 });

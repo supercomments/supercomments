@@ -1,7 +1,7 @@
 'use strict';
 
 var Fluxxor = require('fluxxor');
-var Constants = require('../constants/constants');
+var Constants = require('../constants/Constants');
 var Snoocore = require('snoocore');
 
 const USER_AGENT = 'SuperComments';

@@ -6,13 +6,18 @@ var Fluxxor = require('fluxxor');
 var CommentForm = require('./CommentForm.js');
 var CommentEditForm = require('./CommentEditForm.js');
 
-var FluxMixin = Fluxxor.FluxMixin(React);
+var FluxMixin = Fluxxor.FluxMixin(React),
+    StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
 var CommentItem = React.createClass({
-  mixins: [FluxMixin],
+  mixins: [FluxMixin, StoreWatchMixin('ItemStateStore')],
 
-  getInitialState: function() {
-    return { collapsed: false, editExpanded: false, replyExpanded: false };
+  componentWillUnmount: function() {
+    this.getFlux().actions.itemRemoved(this);
+  },
+
+  getStateFromFlux: function() {
+    return this.getFlux().store('ItemStateStore').getItemState(this);
   },
 
   render: function() {
@@ -20,13 +25,10 @@ var CommentItem = React.createClass({
     var timestamp = moment.unix(this.props.comment.created_utc);
     var timestampTitle = timestamp.format("dddd, MMMM Do, YYYY h:mm:ss a");
     var timestampFromNow = timestamp.fromNow();
-    var permalink = this.props.postUrl + this.props.comment.id;
     var classes = classNames({
       post: true,
       collapsed: this.state.collapsed
     });
-    var replyForm = this.state.replyExpanded ? <CommentForm parent={this.props.comment} expanded="true" onSubmit={this.onReplySubmit}/> : null;
-    var editForm = this.state.editExpanded ? <CommentEditForm comment={this.props.comment} onSubmit={this.onEditSubmit}/> : null;
     var upvoteClasses = classNames({
       'vote-up': true,
       upvoted: this.props.comment.likes
@@ -37,33 +39,24 @@ var CommentItem = React.createClass({
     });
     var replyClasses = classNames({
       reply: true,
-      active: this.state.replyExpanded
+      active: this.state.replyFormVisible
     });
     var editClasses = classNames({
       edit: true,
-      active: this.state.editExpanded
+      active: this.state.editFormVisible
     });
-    var messageStyle = this.state.editExpanded ? { display: 'none' } : {};
-    var userName = this.getFlux().store('RedditStore').getState().userName;
-    var readonlyStyle = this.props.comment.author === userName ? {} : { display: 'none' };
-    var deleted = this.props.comment.author === '[deleted]';
-    var footerStyle = deleted ? { display: 'none' } : {};
-    var author = deleted ?
-      this.props.comment.author :
-      <a href={'https://www.reddit.com/user/' + this.props.comment.author}>{this.props.comment.author}</a>;
-    var parentLink = this.props.parentAuthor ?
-      <span><span className="parent-link"> <i className="icon-forward" title="in reply to"></i> {this.props.parentAuthor}</span></span> :
-      null;
+    var isAuthor = this.getFlux().store('RedditStore').getState().userName === this.props.comment.author;
+    var isDeleted = this.props.comment.author === '[deleted]';
     return (
       <li className={classes}>
           <div role="alert"/>
           <div className="post-content">
               <ul className="post-menu dropdown">
                   <li className="collapse">
-                      <a href="#" title="Collapse" onClick={this.onCollapseItem}><span>−</span></a>
+                      <a title="Collapse" onClick={this.onCollapseItem}><span>−</span></a>
                   </li>
                   <li className="expand">
-                      <a href="#" title="Expand" onClick={this.onExpandItem}><span>+</span></a>
+                      <a title="Expand" onClick={this.onExpandItem}><span>+</span></a>
                   </li>
 
                   <li className="" role="menu" style={{display: 'none'}}>
@@ -82,12 +75,20 @@ var CommentItem = React.createClass({
               <div className="post-body">
                   <header>
                       <span className="post-byline">
-                        <span className="author publisher-anchor-color">{author}</span>
+                        <span className="author publisher-anchor-color">
+                          {isDeleted ?
+                            this.props.comment.author :
+                            <a href={'https://www.reddit.com/user/' + this.props.comment.author}>{this.props.comment.author}</a>
+                          }
+                        </span>
                       </span>
-                      {parentLink}
+                      {this.props.parentAuthor ?
+                        <span><span className="parent-link"> <i className="icon-forward" title="in reply to"></i> {this.props.parentAuthor}</span></span> :
+                        null
+                      }
                       <span className="post-meta">
                         <span className="bullet time-ago-bullet" >•</span>
-                        <a href={permalink} className="time-ago" title={timestampTitle}>{timestampFromNow}</a>
+                        <a href={this.props.postUrl + this.props.comment.id} className="time-ago" title={timestampTitle}>{timestampFromNow}</a>
                       </span>
 
                   </header>
@@ -95,8 +96,12 @@ var CommentItem = React.createClass({
                   <div className="post-body-inner">
                       <div className="post-message-container">
                           <div className="publisher-anchor-color">
-                              {editForm}
-                              <div className="post-message " dir="auto" dangerouslySetInnerHTML={{__html: converter.makeHtml(this.props.comment.body)}} style={messageStyle}></div>
+                              {this.state.editFormVisible ?
+                                <CommentEditForm visible="false" item={this}/> :
+                                <div
+                                  className="post-message "
+                                  dangerouslySetInnerHTML={{__html: converter.makeHtml(this.props.comment.body)}}/>
+                              }
 
                               <span className="post-media"><ul></ul></span>
                           </div>
@@ -104,53 +109,54 @@ var CommentItem = React.createClass({
                       <a className="see-more hidden" title="see more" >see more</a>
                   </div>
 
-                  <footer style={footerStyle}>
-                      <menu>
+                  {!isDeleted ?
+                    <footer>
+                        <menu>
 
-                          <li className="voting">
-                              <a href="#" className={upvoteClasses} onClick={this.onUpvote} title="">
+                            <li className="voting">
+                                <a className={upvoteClasses} onClick={this.onUpvote} title="">
 
-                                  <span className="updatable count">{this.props.comment.score}</span>
-                                  <span className="control"><i className="icon icon-arrow-2"></i></span>
-                              </a>
-                              <span role="button" className={downvoteClasses} onClick={this.onDownvote} title="Vote down">
-                                <span className="control"><i className="icon icon-arrow"></i></span>
-                              </span>
-                          </li>
+                                    <span className="updatable count">{this.props.comment.score}</span>
+                                    <span className="control"><i className="icon icon-arrow-2"></i></span>
+                                </a>
+                                <span role="button" className={downvoteClasses} onClick={this.onDownvote} title="Vote down">
+                                  <span className="control"><i className="icon icon-arrow"></i></span>
+                                </span>
+                            </li>
 
-                          <li className="bullet" >•</li>
-                          <li className={replyClasses}>
-                              <a href="#" onClick={this.onReply}>
-                                  <i className="icon icon-mobile icon-reply"></i><span className="text">Reply</span>
-                              </a>
-                          </li>
+                            <li className="bullet" >•</li>
+                            <li className={replyClasses}>
+                                <a onClick={this.onReply}>
+                                    <i className="icon icon-mobile icon-reply"></i><span className="text">Reply</span>
+                                </a>
+                            </li>
+                           {isAuthor ?
+                              <div>
+                                <li className="bullet">•</li>
+                                <li className={editClasses}>
+                                    <a onClick={this.onEdit}>
+                                        <i className="icon icon-mobile icon-reply"></i><span className="text">Edit</span>
+                                    </a>
+                                </li>
 
-                          <li className="bullet"  style={readonlyStyle}>•</li>
-                          <li className={editClasses} style={readonlyStyle}>
-                              <a href="#" onClick={this.onEdit}>
-                                  <i className="icon icon-mobile icon-reply"></i><span className="text">Edit</span>
-                              </a>
-                          </li>
-
-                          <li className="bullet"  style={readonlyStyle}>•</li>
-                          <li className="reply" style={readonlyStyle}>
-                              <a href="#" onClick={this.onDelete}>
-                                  <i className="icon icon-mobile icon-reply"></i><span className="text">Delete</span>
-                              </a>
-                          </li>
-
-                          <li className="realtime">
-                              <span style={{display:'none'}} className="realtime-replies"></span>
-                              <a style={{display:'none'}} href="#" className="btn btn-small"></a>
-                          </li>
-
-                      </menu>
-                  </footer>
+                                <li className="bullet">•</li>
+                                <li className="reply">
+                                    <a onClick={this.onDelete}>
+                                        <i className="icon icon-mobile icon-reply"></i><span className="text">Delete</span>
+                                    </a>
+                                </li>
+                              </div> :
+                              null
+                            }
+                        </menu>
+                    </footer> :
+                    null
+                  }
               </div>
 
               <div></div>
               <div className="reply-form-container">
-                {replyForm}
+                {this.state.replyFormVisible ? <CommentForm item={this} expanded="true"/> : null}
               </div>
           </div>
 
@@ -161,45 +167,27 @@ var CommentItem = React.createClass({
     );    
   },
 
-  onCollapseItem: function(e) {
-    e.preventDefault();
-    this.setState({ collapsed: true });
+  onCollapseItem: function() {
+    this.getFlux().actions.itemChanged({ item: this, newState: { collapsed: true }});
   },
 
-  onExpandItem: function(e) {
-    e.preventDefault();
-    this.setState({ collapsed: false });
+  onExpandItem: function() {
+    this.getFlux().actions.itemChanged({ item: this, newState: { collapsed: false }});
   },
 
-  onReply: function(e) {
-    e.preventDefault();
-    this.setState({ replyExpanded: !this.state.replyExpanded });
+  onReply: function() {
+    this.getFlux().actions.itemChanged({ item: this, newState: { replyFormVisible: !this.state.replyFormVisible }});
   },
 
-  onReplySubmit: function() {
-    this.setState({ replyExpanded: false });
+  onEdit: function() {
+    this.getFlux().actions.itemChanged({ item: this, newState: { editFormVisible: !this.state.editFormVisible }});
   },
 
-  onEdit: function(e) {
-    e.preventDefault();
-    this.setState({ editExpanded: !this.state.editExpanded });
-  },
-
-  onEditSubmit: function(body) {
-    this.setState({ editExpanded: false });
-    this.getFlux().actions.editComment({
-      comment: this.props.comment,
-      body: body
-    });
-  },
-
-  onDelete: function(e) {
-    e.preventDefault(e);
+  onDelete: function() {
     this.getFlux().actions.deleteComment(this.props.comment);
   },
 
-  onUpvote: function(e) {
-    e.preventDefault();
+  onUpvote: function() {
     var payload = {
       thing: this.props.comment,
       dir: this.props.comment.likes ? 0 : 1 // Back to neutral if we already like it
@@ -207,8 +195,7 @@ var CommentItem = React.createClass({
     this.getFlux().actions.vote(payload);
   },
 
-  onDownvote: function(e) {
-    e.preventDefault();
+  onDownvote: function() {
     var payload = {
       thing: this.props.comment,
       dir: this.props.comment.likes === false ? 0 : -1 // Back to neutral if we dislike it
@@ -216,8 +203,7 @@ var CommentItem = React.createClass({
     this.getFlux().actions.vote(payload);
   },
 
-  onFlagItem: function(e) {
-    e.preventDefault(e);
+  onFlagItem: function() {
     this.getFlux().actions.reportComment(this.props.comment);
   }
 });

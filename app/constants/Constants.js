@@ -9,7 +9,9 @@ var Constants = [
   'VOTE',
   'EDIT_COMMENT',
   'DELETE_COMMENT',
-  'REPORT_COMMENT'
+  'REPORT_COMMENT',
+  'ITEM_CHANGED',
+  'ITEM_REMOVED'
 ].reduce(function(current, next) {
   current[next] = next;
   return current;

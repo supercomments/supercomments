@@ -1,12 +1,15 @@
-var React = require('react');
-var Bootstrap = require('bootstrap');
-var Fluxxor = require('fluxxor');
-var Comments = require('./components/comments');
-var Actions = require('./actions/actions');
-var RedditStore = require('./stores/redditStore');
+require("babelify/polyfill");
+require('bootstrap');
 
+var React = require('react');
+var Fluxxor = require('fluxxor');
+var Comments = require('./components/Comments');
+var Actions = require('./actions/Actions');
+var RedditStore = require('./stores/RedditStore');
+var ItemStateStore = require('./stores/ItemStateStore');
 var stores = {
-  RedditStore: new RedditStore()
+  RedditStore: new RedditStore(),
+  ItemStateStore: new ItemStateStore()
 };
 
 var flux = new Fluxxor.Flux(stores, Actions);

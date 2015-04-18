@@ -1,5 +1,5 @@
 jest.dontMock('util');
-jest.dontMock('../app/stores/RedditStore');
+jest.dontMock('../../app/stores/RedditStore');
 
 var url = 'http://www.test.com/';
 
@@ -9,7 +9,7 @@ beforeEach(function() {
 
   // Create an empty global `localStorage` variable.
   localStorage = {};
-  var RedditStore = require('../app/stores/RedditStore');
+  var RedditStore = require('../../app/stores/RedditStore');
   fakeFlux = FluxxorTestUtils.fakeFlux({ RedditStore: new RedditStore() });
   myStore = fakeFlux.store('RedditStore');
   myStoreSpy = fakeFlux.makeStoreEmitSpy('RedditStore');
