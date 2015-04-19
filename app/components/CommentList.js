@@ -22,8 +22,7 @@ var CommentList = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
   getStateFromFlux: function() {
-    var flux = this.getFlux();
-    return flux.store("RedditStore").getState();
+    return this.getFlux().store('RedditStore').getState();
   },
 
   render: function() {

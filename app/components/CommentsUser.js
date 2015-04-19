@@ -21,8 +21,6 @@ var CommentsUser = React.createClass({
   },
 
   renderLoggedIn: function() {
-    var profileUrl = "http://www.reddit.com/user/" + this.state.userName;
-
     return (
       <li className="dropdown user-menu"  >
           <a href="#" className="dropdown-toggle" data-toggle="dropdown">
@@ -36,7 +34,7 @@ var CommentsUser = React.createClass({
           </a>
           <ul className="dropdown-menu">
               <li>
-                  <a href={profileUrl} target="_blank">
+                  <a href={this.state.profileUrl} target="_blank">
                       Your Profile
                   </a>
               </li>

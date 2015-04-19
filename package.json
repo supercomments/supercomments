@@ -5,6 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "bootstrap": "^3.3.4",
+    "capitalize": "^0.5.0",
     "classnames": "^1.2.0",
     "fluxxor": "^1.5.2",
     "jquery": "^2.1.3",

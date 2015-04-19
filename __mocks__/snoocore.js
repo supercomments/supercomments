@@ -26,7 +26,12 @@ function MockAPI(payload) {
   };
 }
 
+var singleton;
+
 function Snoocore() {
+  if (singleton) {
+    return singleton;
+  }
   var self = this;
 
   self.path = function(path) {
@@ -48,6 +53,7 @@ function Snoocore() {
     self.path[method] = jest.genMockFunction();
   });
 
+  singleton = self.path;
   return self.path;
 }
 

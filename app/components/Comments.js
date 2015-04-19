@@ -16,12 +16,11 @@ var Comments = React.createClass({
   },
 
   render: function() {
-    var navigation = this.state.post ? <CommentsNavigation/> : null;
     return (
         <div>
             <CommentsHeader/>
             <section id="conversation"  data-tracking-area="main">
-                {navigation}
+                {this.state.post ? <CommentsNavigation/> : null}
                 
                 <div id="posts">
                     <div id="form">

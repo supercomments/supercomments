@@ -3,9 +3,12 @@
 var Fluxxor = require('fluxxor');
 var Constants = require('../constants/Constants');
 var Snoocore = require('snoocore');
+var capitalize = require('capitalize');
 
 const USER_AGENT = 'SuperComments';
 const AUTH_TIMEOUT_MS = 3600*1000;
+const AUTH_WINDOW_WIDTH = 1024;
+const AUTH_WINDOW_HEIGHT = 800;
 
 function createAPI() {
   return new Snoocore({
@@ -44,9 +47,28 @@ function getCommentsFromListing(listing) {
   });
 }
 
+function countComments(comments) {
+  if (!comments) {
+    return;
+  }
+  return comments.reduce((current, comment) => {
+    var children = comment.replies;
+    return current + 1 + (children ? countComments(children) : 0);
+  }, 0);
+}
+
 var RedditStore = Fluxxor.createStore({
   initialize: function() {
-    this.state = { sortBy: 'best' };
+    this.state = {
+      sortBy: 'best',
+      get userName() {
+        return this._userName;
+      },
+      set userName(value) {
+        this._userName = value;
+        this.profileUrl = `http://www.reddit.com/user/${this._userName}`;
+      }
+    };
     this.restoreSession();
     this.bindActions(
       Constants.UPDATE_URL, this.onUpdateUrl,
@@ -62,24 +84,8 @@ var RedditStore = Fluxxor.createStore({
       Constants.SORT_BY_OLDEST, this.onSortByOldest
     );
     reddit.on('access_token_expired', this.onLogout.bind(this));
-  },
 
-  onUpdateUrl: function(url) {
-    this.state.url = url;
-    getBestPost(this.state.url).then((post) => {
-      if (post) {
-        this.state.permalink = 'http://www.reddit.com' + post.permalink;
-        this.state.subreddit = post.subreddit;
-      }
-      this.state.post = post;
-      this.reloadComments();
-    });
-  },
-
-  onLogin: function() {
-    var state = 'TODO'; // CSRF
-    var url = reddit.getImplicitAuthUrl(state);
-
+    // Used so the OAuth popup can tell us when the user has authenticated
     window.addEventListener('message', (event) => {
       reddit.auth(event.data).then(() => {
         return reddit('/api/v1/me').get();
@@ -92,7 +98,26 @@ var RedditStore = Fluxxor.createStore({
         this.reloadComments();
       });
     }, false);
-    window.open(url, 'RedditAuth', 'height=800,width=1024');
+  },
+
+  onUpdateUrl: function(url) {
+    this.state.url = url;
+    getBestPost(this.state.url).then((post) => {
+      if (post) {
+        this.state.permalink = 'http://www.reddit.com' + post.permalink;
+        this.state.subreddit = `/r/${capitalize(post.subreddit)}`;
+        this.state.subredditUrl = `http://www.reddit.com${this.state.subreddit}`;
+      }
+      this.state.post = post;
+      this.reloadComments();
+    });
+  },
+
+  onLogin: function() {
+    var state = 'TODO'; // CSRF
+    var url = reddit.getImplicitAuthUrl(state);
+
+    window.open(url, 'RedditAuth', `height=${AUTH_WINDOW_HEIGHT},width=${AUTH_WINDOW_WIDTH}`);
   },
 
   onLogout: function() {
@@ -116,12 +141,7 @@ var RedditStore = Fluxxor.createStore({
         var comment = result.json.data.things[0].data;
         if (parent.parent_id) {
           // Parent has a parent, so it's a comment
-          if (parent.replies) {
-            parent.replies.push(comment);
-          }
-          else {
-            parent.replies = [ comment ];
-          }
+          parent.replies = (parent.replies || []).concat(comment);
         }
         else {
           this.state.comments.push(comment);
@@ -197,6 +217,7 @@ var RedditStore = Fluxxor.createStore({
       reddit('comments/' + this.state.post.id + '.json').get({ sort: this.state.sortBy }).then((listings) => {
         this.state.post = listings[0].data.children[0].data;
         this.state.comments = getCommentsFromListing(listings[1]);
+        this.state.commentCount = countComments(this.state.comments);
         this.emit('change');
       });
     }
@@ -227,12 +248,6 @@ var RedditStore = Fluxxor.createStore({
 
   getState: function() {
     return this.state;
-  },
-
-  getRedditAPI: function() {
-    // For testing purposes
-    // Would love to find a better way to do this
-    return reddit;
   }
 });
 

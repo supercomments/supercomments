@@ -1,5 +1,6 @@
 var React = require('react/addons');
 var classNames = require('classnames');
+var keyMirror = require('react/lib/keyMirror');
 var Fluxxor = require('fluxxor');
 var Textarea = require('react-textarea-autosize');
 
@@ -8,8 +9,25 @@ var FluxMixin = Fluxxor.FluxMixin(React),
 
 const AVATAR_URL = "//a.disquscdn.com/next/embed/assets/img/noavatar92.b677f9ddbee6f4bb22f473ae3bd61b85.png";
 
+// Form error handling
+
 var CommentForm = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
+
+  FormErrors: keyMirror({
+    PAGE_NOT_SUBMITTED: null,
+    COMMENT_EMPTY: null
+  }),
+
+  getErrorText: function(error) {
+    switch(error) {
+      case this.FormErrors.PAGE_NOT_SUBMITTED:
+        return <span>You must <a href={`http://www.reddit.com/submit?url=${encodeURIComponent(this.state.url)}`}
+          target="_blank">submit this post to Reddit</a> before commenting.</span>;
+      case this.FormErrors.COMMENT_EMPTY:
+        return 'Comments can\'t be blank.';
+    }
+  },
 
   componentDidMount: function() {
     if (this.props.expanded) {
@@ -64,12 +82,12 @@ var CommentForm = React.createClass({
                             </ul>
                         </div>
                     </div>
-                    {this.state.postErrorText ?
+                    {this.state.postError ?
                       <div className="edit-alert">
                           <div className="alert error">
                               <a className="close" title="Dismiss" onClick={this.onDismissError}>×</a>
                               <span>
-                                  <span className="icon icon-warning"></span>{this.state.postErrorText}
+                                  <span className="icon icon-warning"></span>{this.getErrorText(this.state.postError)}
                               </span>
                           </div>
                       </div> :
@@ -152,23 +170,20 @@ var CommentForm = React.createClass({
   },
 
   onDismissError: function() {
-    this.setState({ postErrorText: null });
+    this.setState({ postError: null });
   },
 
   validateForm: function(body) {
     if (!this.state.post) {
-      var submitUrl = 'http://www.reddit.com/submit?url=' + encodeURI(this.state.url);
-      this.setState({ postErrorText: 
-        <span>You must <a href={submitUrl} target="_blank">submit this post to Reddit</a> before commenting.</span>
-      });
+      this.setState({ postError: this.FormErrors.PAGE_NOT_SUBMITTED });
       return false;
     }
     else if (!body) {
-      this.setState({ postErrorText: 'Comments can\'t be blank.' });
+      this.setState({ postError: this.FormErrors.COMMENT_EMPTY });
       return false;
     }
     else {
-      this.setState({ postErrorText: null });
+      this.setState({ postError: null });
       return true;
     }
   }

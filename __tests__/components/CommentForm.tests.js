@@ -54,6 +54,7 @@ describe('When logged in on a page that has a post', function() {
     it('does not submit the reply when the comment is empty', function() {
       var button = TestUtils.findRenderedDOMComponentWithTag(component, 'button');
       TestUtils.Simulate.click(button);
+      expect(component.state.postError).toBe(component.FormErrors.COMMENT_EMPTY);
       expect(fakeFlux.actions.submitComment).not.toBeCalled();
       expect(fakeFlux.actions.itemChanged).not.toBeCalled();
 
@@ -100,6 +101,7 @@ describe('When logged in on a page that does not have a post', function() {
       TestUtils.Simulate.change(textarea, { target: { value: 'new value' }});
       var button = TestUtils.findRenderedDOMComponentWithTag(component, 'button');
       TestUtils.Simulate.click(button);
+      expect(component.state.postError).toBe(component.FormErrors.PAGE_NOT_SUBMITTED);
       expect(fakeFlux.actions.submitComment).not.toBeCalled();
       expect(fakeFlux.actions.itemChanged).not.toBeCalled();
     });

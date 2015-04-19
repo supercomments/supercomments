@@ -1,10 +1,13 @@
 jest.dontMock('util');
+jest.dontMock('capitalize');
 jest.dontMock('../../app/stores/RedditStore');
 
 var url = 'http://www.test.com/';
 
-var FluxxorTestUtils, fakeFlux, myStore, myStoreSpy;
+var FluxxorTestUtils, fakeFlux, myStore, myStoreSpy, redditAPI;
 beforeEach(function() {
+  var Snoocore = require('snoocore');
+  redditAPI = new Snoocore();
   FluxxorTestUtils = require('fluxxor-test-utils').extendJasmineMatchers(this);
 
   // Create an empty global `localStorage` variable.
@@ -20,7 +23,8 @@ describe('onUpdateUrl', function() {
     myStore.reloadComments = jest.genMockFunction();
     fakeFlux.dispatcher.dispatch({ type: 'UPDATE_URL', payload: url });
     expect(myStore.getState().url).toBe(url);
-    expect(myStore.getState().post.subreddit).toBe('programming');
+    expect(myStore.getState().subreddit).toBe('/r/Programming');
+    expect(myStore.getState().subredditUrl).toBe('http://www.reddit.com/r/Programming');
     expect(myStore.reloadComments).toBeCalled();
   });
 });
@@ -35,10 +39,15 @@ describe('onLogin', function() {
     window.open = jest.genMockFunction().mockImplementation(function() {
       savedCallback({ data: 'the_token' });
     });
+    redditAPI.getImplicitAuthUrl = jest.genMockFunction().mockImplementation(function() {
+      return 'http://www.reddit.com/some_auth_url';
+    });
     fakeFlux.dispatcher.dispatch({ type: 'LOGIN' });
-    expect(myStore.getRedditAPI().auth).toBeCalledWith('the_token');
+    expect(redditAPI.auth).toBeCalledWith('the_token');
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     expect(myStore.getState().userName).toBe('username');
+    expect(myStore.getState().profileUrl).toBe('http://www.reddit.com/user/username');
+    expect(window.open).toBeCalledWith('http://www.reddit.com/some_auth_url', 'RedditAuth', 'height=800','width=1024');
   });
 });
 
@@ -46,7 +55,7 @@ describe('onLogout', function() {
   it('clears the user name and revokes the token', function() {
     myStore.reloadComments = jest.genMockFunction();
     fakeFlux.dispatcher.dispatch({ type: 'LOGOUT' });
-    // expect(myStore.getRedditAPI().deauth).toBeCalled(); // uncomment when `deauth` is supported properly
+    // expect(redditAPI.deauth).toBeCalled(); // uncomment when `deauth` is supported properly
     expect(myStore.getState().userName).toBeNull();
     expect(myStore.reloadComments).toBeCalled();
   });
@@ -67,7 +76,7 @@ describe('onSubmitComment', function() {
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
 
-  it('add a new reply when the parent is a comment', function() {
+  it('adds a new reply when the parent is a comment', function() {
     var payload  = {
       parent: { parent_id: '456', replies: [] },
       text: 'the_text',
@@ -77,6 +86,19 @@ describe('onSubmitComment', function() {
     fakeFlux.dispatcher.dispatch({ type: 'SUBMIT_COMMENT', payload: payload });
     expect(payload.parent.replies.length).toBe(1);
     expect(payload.parent.replies[0].id).toBe('cqbvxd1'); // From fixture file
+    expect(myStore.getState().comments.length).toBe(0);
+    expect(myStoreSpy.getLastCall()).toEqual(['change']);
+  });
+  it('adds a second reply when the parent is a comment with an existing reply', function() {
+    var payload  = {
+      parent: { parent_id: '456', replies: [{ id: 'foo' }] },
+      text: 'the_text',
+      thing_id: '123'
+    };
+    myStore.getState().comments = [];
+    fakeFlux.dispatcher.dispatch({ type: 'SUBMIT_COMMENT', payload: payload });
+    expect(payload.parent.replies.length).toBe(2);
+    expect(payload.parent.replies[1].id).toBe('cqbvxd1'); // From fixture file
     expect(myStore.getState().comments.length).toBe(0);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
@@ -179,6 +201,7 @@ describe('reloadComments', function() {
     expect(myStore.getState().post.id).toBe('2tpycj');
     expect(myStore.getState().comments.length).toBe(7);
     expect(myStore.getState().comments[0].id).toBe('co1f55g');
+    expect(myStore.getState().commentCount).toBe(25);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
 });

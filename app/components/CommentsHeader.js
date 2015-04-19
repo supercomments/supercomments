@@ -5,34 +5,14 @@ var CommentsUser = require('./CommentsUser');
 var FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
-function countComments(comments) {
-  if (!comments) {
-    return;
-  }
-  return comments.reduce((current, comment) => {
-    var children = comment.replies;
-    return current + 1 + (children ? countComments(children) : 0);
-  }, 0);
-}
-
-
 var CommentsHeader = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
   getStateFromFlux: function() {
-    var flux = this.getFlux();
-    var state = flux.store("RedditStore").getState();
-    state.commentCount = state.comments ? countComments(state.comments) : null;
-    return state;
+    return this.getFlux().store("RedditStore").getState();
   },
 
   render: function() {
-    var subreddit = this.state.subreddit;
-    var subredditURL = '';
-    if (subreddit) {
-      subreddit = 'r/' + subreddit.charAt(0).toUpperCase() + subreddit.slice(1);
-      subredditURL = 'http://www.reddit.com/' + subreddit;
-    }
     return (
       <header id="main-nav">
           <nav className="nav nav-primary">
@@ -46,9 +26,9 @@ var CommentsHeader = React.createClass({
                       </a>
                   </li>
                   <li className="tab-community">
-                      <a href={subredditURL} className="publisher-nav-color" id="community-tab">
+                      <a href={this.state.subredditUrl} className="publisher-nav-color" id="community-tab">
                           <span className="community-name">
-                            <strong>{subreddit}</strong>
+                            <strong>{this.state.subreddit}</strong>
 
                           </span>
                           <strong className="community-name-placeholder">Community</strong>

@@ -62,15 +62,15 @@ var CommentsNavigation = React.createClass({
                     </a>
                     <ul className="dropdown-menu pull-right">
                         <li className={this.state.sortBy === 'best' ? 'selected' : ''}>
-                            <a href="#" onClick={this.onBest}>Best<i aria-hidden="true" className="icon-checkmark"></i></a>
+                            <a href="#" onClick={this.onBest}>Best<i className="icon-checkmark"></i></a>
                         </li>
 
                         <li className={this.state.sortBy === 'new' ? 'selected' : ''}>
-                            <a href="#" onClick={this.onNewest}>Newest<i aria-hidden="true" className="icon-checkmark"></i></a>
+                            <a href="#" onClick={this.onNewest}>Newest<i className="icon-checkmark"></i></a>
                         </li>
 
                         <li className={this.state.sortBy === 'old' ? 'selected' : ''}>
-                            <a href="#" onClick={this.onOldest}>Oldest<i aria-hidden="true" className="icon-checkmark"></i></a>
+                            <a href="#" onClick={this.onOldest}>Oldest<i className="icon-checkmark"></i></a>
                         </li>
                     </ul>
                 </li>

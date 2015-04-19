@@ -14,9 +14,6 @@ var stores = {
 
 var flux = new Fluxxor.Flux(stores, Actions);
 
-window.React = React; // For React Developer Tools
-window.flux = flux;
-
 var url = window.location.search.substr(1);
 
 flux.actions.updateUrl(url);

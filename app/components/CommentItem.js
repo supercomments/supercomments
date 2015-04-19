@@ -9,6 +9,8 @@ var CommentEditForm = require('./CommentEditForm.js');
 var FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
+var converter = new Showdown.Converter();
+
 var CommentItem = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('ItemStateStore')],
 
@@ -21,7 +23,6 @@ var CommentItem = React.createClass({
   },
 
   render: function() {
-    var converter = new Showdown.Converter();
     var timestamp = moment.unix(this.props.comment.created_utc);
     var timestampTitle = timestamp.format("dddd, MMMM Do, YYYY h:mm:ss a");
     var timestampFromNow = timestamp.fromNow();
@@ -198,6 +199,8 @@ var CommentItem = React.createClass({
   onDownvote: function() {
     var payload = {
       thing: this.props.comment,
+      // We need to check for `false` explicitly since the Reddit API makes a distinction
+      // between `false` (disliked) and `null` (neither liked nor disliked).
       dir: this.props.comment.likes === false ? 0 : -1 // Back to neutral if we dislike it
     };
     this.getFlux().actions.vote(payload);
