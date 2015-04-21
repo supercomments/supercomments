@@ -21,6 +21,6 @@ flux.actions.updateUrl(url);
 if (process.env.NODE_ENV !== 'test') {
   React.render(
     <Comments flux={flux}/>,
-    document.getElementById('layout')
+    document.getElementById('supercomments')
   );
 }

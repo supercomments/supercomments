@@ -14,10 +14,6 @@ var converter = new Showdown.Converter();
 var CommentItem = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('ItemStateStore')],
 
-  componentWillUnmount: function() {
-    this.getFlux().actions.itemRemoved(this);
-  },
-
   getStateFromFlux: function() {
     return this.getFlux().store('ItemStateStore').getItemState(this);
   },
@@ -29,6 +25,10 @@ var CommentItem = React.createClass({
     var classes = classNames({
       post: true,
       collapsed: this.state.collapsed
+    });
+    var contentClasses = classNames({
+      'post-content': true,
+      disabled: this.props.comment.disabled
     });
     var upvoteClasses = classNames({
       'vote-up': true,
@@ -51,7 +51,7 @@ var CommentItem = React.createClass({
     return (
       <li className={classes}>
           <div role="alert"/>
-          <div className="post-content">
+          <div className={contentClasses}>
               <ul className="post-menu dropdown">
                   <li className="collapse">
                       <a title="Collapse" onClick={this.onCollapseItem}><span>−</span></a>
@@ -114,7 +114,7 @@ var CommentItem = React.createClass({
                     <footer>
                         <menu>
 
-                            <li className="voting">
+                            <li className="voting" style={this.props.comment.votePending ? { opacity: 0.5 } : {}}>
                                 <a className={upvoteClasses} onClick={this.onUpvote} title="">
 
                                     <span className="updatable count">{this.props.comment.score}</span>
@@ -188,22 +188,32 @@ var CommentItem = React.createClass({
     this.getFlux().actions.deleteComment(this.props.comment);
   },
 
-  onUpvote: function() {
-    var payload = {
-      thing: this.props.comment,
-      dir: this.props.comment.likes ? 0 : 1 // Back to neutral if we already like it
-    };
-    this.getFlux().actions.vote(payload);
+  onUpvote: function(e) {
+    if (!this.getFlux().store('RedditStore').getState().userName) {
+      this.getFlux().actions.setTooltip({ text: 'You must be logged in to upvote', node: e.target });
+    }
+    else {
+      var payload = {
+        thing: this.props.comment,
+        dir: this.props.comment.likes ? 0 : 1 // Back to neutral if we already like it
+      };
+      this.getFlux().actions.vote(payload);
+    }
   },
 
-  onDownvote: function() {
-    var payload = {
-      thing: this.props.comment,
-      // We need to check for `false` explicitly since the Reddit API makes a distinction
-      // between `false` (disliked) and `null` (neither liked nor disliked).
-      dir: this.props.comment.likes === false ? 0 : -1 // Back to neutral if we dislike it
-    };
-    this.getFlux().actions.vote(payload);
+  onDownvote: function(e) {
+    if (!this.getFlux().store('RedditStore').getState().userName) {
+      this.getFlux().actions.setTooltip({ text: 'You must be logged in to downvote', node: e.target });
+    }
+    else {
+      var payload = {
+        thing: this.props.comment,
+        // We need to check for `false` explicitly since the Reddit API makes a distinction
+        // between `false` (disliked) and `null` (neither liked nor disliked).
+        dir: this.props.comment.likes === false ? 0 : -1 // Back to neutral if we dislike it
+      };
+      this.getFlux().actions.vote(payload);
+    }
   },
 
   onFlagItem: function() {

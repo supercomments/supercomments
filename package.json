@@ -10,7 +10,9 @@
     "fluxxor": "^1.5.2",
     "jquery": "^2.1.3",
     "react": "^0.13.1",
+    "react-loader": "^1.2.0",
     "react-textarea-autosize": "^1.1.0",
+    "shortid": "^2.2.2",
     "showdown": "showdownjs/showdown#showdown2",
     "snoocore": "^2.7.3"
   },

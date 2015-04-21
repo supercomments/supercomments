@@ -19,9 +19,11 @@ var CommentsHeader = React.createClass({
               <ul>
                   <li className="tab-conversation active">
                       <a href={this.state.permalink}  className="publisher-nav-color">
-                        <span className="comment-count">{this.state.commentCount} comments</span>
+                        <span className="comment-count">
+                          {this.state.commentCount} comments
+                        </span>
                         <span className="comment-count-placeholder">
-                          Comments
+                          {this.state.commentCount} comments
                         </span>
                       </a>
                   </li>
@@ -29,9 +31,8 @@ var CommentsHeader = React.createClass({
                       <a href={this.state.subredditUrl} className="publisher-nav-color" id="community-tab">
                           <span className="community-name">
                             <strong>{this.state.subreddit}</strong>
-
                           </span>
-                          <strong className="community-name-placeholder">Community</strong>
+                          <strong className="community-name-placeholder">{this.state.subreddit}</strong>
                       </a>
                   </li>
                   <CommentsUser/>

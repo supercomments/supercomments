@@ -55,7 +55,10 @@ var CommentsUser = React.createClass({
   renderLoggedOut: function() {
     return (
       <li className="dropdown user-menu" >
-          <a href="#" className="dropdown-toggle" onClick={this.onLogin}>Login</a>
+        {this.state.loggingIn ?
+          <a className="dropdown-toggle" style={{opacity: '20%'}}>Logging in</a> :
+          <a className="dropdown-toggle" onClick={this.onLogin}>Login</a>
+        }
       </li>
     );
   },

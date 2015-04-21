@@ -17,13 +17,15 @@ function MockPromise(payload) {
 }
 
 function MockAPI(payload) {
-  this.get = function() {
-    return new MockPromise(payload);
-  };
+  this.payload = payload; // Make it convenient to get the payload
 
-  this.post = function() {
+  this.get = jest.genMockFunction().mockImplementation(function() {
     return new MockPromise(payload);
-  };
+  });
+
+  this.post = jest.genMockFunction().mockImplementation(function() {
+    return new MockPromise(payload);
+  });
 }
 
 var singleton;
@@ -34,15 +36,19 @@ function Snoocore() {
   }
   var self = this;
 
+  var responses = {
+    'search.json': new MockAPI(posts.get),
+    '/api/v1/me': new MockAPI({ name: 'username' }),
+    '/api/comment': new MockAPI(comment),
+    'comments/123.json': new MockAPI(comments)
+  };
+
   self.path = function(path) {
-    var payload;
-    switch(path) {
-      case 'search.json': payload = posts.get; break;
-      case '/api/v1/me': payload = { name: 'username' }; break;
-      case '/api/comment': payload = comment; break;
-      case 'comments/123.json': payload = comments; break;
+    if (!responses[path]) {
+      // Create a mock API that returns nothing if we haven't defined one explicitly
+      responses[path] = new MockAPI();
     }
-    return new MockAPI(payload);
+    return responses[path];
   };
 
   self.path.auth = jest.genMockFunction().mockImplementation(function() {

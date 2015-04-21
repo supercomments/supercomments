@@ -30,7 +30,7 @@ var CommentsNavigation = React.createClass({
             <ul>
                 <li id="recommend-button" className="recommend dropdown">
                     <div className="thread-likes">
-                        <a href="#" onClick={this.onUpvote} title="Recommend this discussion" className={recommendClasses}>
+                        <a onClick={this.onUpvote} title="Recommend this discussion" className={recommendClasses}>
                             <span className="icon-heart"></span>
                             <span className="label label-default">Upvote</span>
                             <span className="label label-recommended">Upvoted</span>
@@ -62,15 +62,15 @@ var CommentsNavigation = React.createClass({
                     </a>
                     <ul className="dropdown-menu pull-right">
                         <li className={this.state.sortBy === 'best' ? 'selected' : ''}>
-                            <a href="#" onClick={this.onBest}>Best<i className="icon-checkmark"></i></a>
+                            <a onClick={this.onBest}>Best<i className="icon-checkmark"></i></a>
                         </li>
 
                         <li className={this.state.sortBy === 'new' ? 'selected' : ''}>
-                            <a href="#" onClick={this.onNewest}>Newest<i className="icon-checkmark"></i></a>
+                            <a onClick={this.onNewest}>Newest<i className="icon-checkmark"></i></a>
                         </li>
 
                         <li className={this.state.sortBy === 'old' ? 'selected' : ''}>
-                            <a href="#" onClick={this.onOldest}>Oldest<i className="icon-checkmark"></i></a>
+                            <a onClick={this.onOldest}>Oldest<i className="icon-checkmark"></i></a>
                         </li>
                     </ul>
                 </li>
@@ -79,23 +79,19 @@ var CommentsNavigation = React.createClass({
     );
   },
 
-  onBest(e) {
-    e.preventDefault();
+  onBest() {
     this.getFlux().actions.sortByBest();
   },
 
-  onNewest(e) {
-    e.preventDefault();
+  onNewest() {
     this.getFlux().actions.sortByNewest();
   },
 
-  onOldest(e) {
-    e.preventDefault();
+  onOldest() {
     this.getFlux().actions.sortByOldest();
   },
 
-  onUpvote(e) {
-    e.preventDefault(e);
+  onUpvote() {
     this.getFlux().actions.vote({
       thing: this.state.post,
       dir: this.state.post.likes ? 0 : 1

@@ -6,9 +6,6 @@ var Snoocore = require('snoocore');
 var capitalize = require('capitalize');
 
 const USER_AGENT = 'SuperComments';
-const AUTH_TIMEOUT_MS = 3600*1000;
-const AUTH_WINDOW_WIDTH = 1024;
-const AUTH_WINDOW_HEIGHT = 800;
 
 function createAPI() {
   return new Snoocore({
@@ -25,21 +22,11 @@ function createAPI() {
 
 var reddit = createAPI();
 
-function getBestPost(url) {
-  return reddit('search.json').get({ q: 'url:' + url }).then((listing) => {
-    var sortedPosts = listing.data.children.sort((a, b) => {
-      // Descending order
-      return b.data.score - a.data.score;
-    });
-    return sortedPosts.length > 0 ? sortedPosts[0].data : null;
-  });
-}
-
 function getCommentsFromListing(listing) {
   if (!listing) {
     return null;
   }
-    return listing.data.children.filter((comment) => {
+  return listing.data.children.filter((comment) => {
     return comment.kind === 't1'; 
   }).map((comment) => {
     comment.data.replies = getCommentsFromListing(comment.data.replies);
@@ -69,130 +56,163 @@ var RedditStore = Fluxxor.createStore({
         this.profileUrl = `http://www.reddit.com/user/${this._userName}`;
       }
     };
-    this.restoreSession();
     this.bindActions(
-      Constants.UPDATE_URL, this.onUpdateUrl,
-      Constants.LOGIN, this.onLogin,
+      Constants.UPDATING_URL, this.onUpdatingUrl,
+      Constants.UPDATED_URL, this.onUpdatedUrl,
+      Constants.LOGGING_IN, this.onLoggingIn,
+      Constants.LOGGED_IN, this.onLoggedIn,
       Constants.LOGOUT, this.onLogout,
-      Constants.SUBMIT_COMMENT, this.onSubmitComment,
-      Constants.VOTE, this.onVote,
-      Constants.EDIT_COMMENT, this.onEditComment,
-      Constants.DELETE_COMMENT, this.onDeleteComment,
-      Constants.REPORT_COMMENT, this.onReportComment,
+      Constants.SUBMITTING_COMMENT, this.onSubmittingComment,
+      Constants.SUBMITTED_COMMENT, this.onSubmittedComment,
+      Constants.RELOADING_COMMENTS, this.onReloadingComments,
+      Constants.RELOADED_COMMENTS, this.onReloadedComments,
+      Constants.VOTING, this.onVoting,
+      Constants.VOTED, this.onVoted,
+      Constants.EDITING_COMMENT, this.onEditingComment,
+      Constants.EDITED_COMMENT, this.onEditedComment,
+      Constants.DELETING_COMMENT, this.onDeletingComment,
+      Constants.DELETED_COMMENT, this.onDeletedComment,
+      Constants.REPORTING_COMMENT, this.onReportingComment,
+      Constants.REPORTED_COMMENT, this.onReportedComment,
       Constants.SORT_BY_BEST, this.onSortByBest,
       Constants.SORT_BY_NEWEST, this.onSortByNewest,
-      Constants.SORT_BY_OLDEST, this.onSortByOldest
+      Constants.SORT_BY_OLDEST, this.onSortByOldest,
+      Constants.SET_TOOLTIP, this.onSetTooltip
     );
-    reddit.on('access_token_expired', this.onLogout.bind(this));
-
-    // Used so the OAuth popup can tell us when the user has authenticated
-    window.addEventListener('message', (event) => {
-      reddit.auth(event.data).then(() => {
-        return reddit('/api/v1/me').get();
-      })
-      .then((data) =>{
-        this.saveSession(event.data, data.name);
-        this.state.userName = data.name;
-        this.emit('change');
-        // Reload comments so we can show liked/disliked status
-        this.reloadComments();
-      });
-    }, false);
   },
 
-  onUpdateUrl: function(url) {
+  onUpdatingUrl: function(url) {
     this.state.url = url;
-    getBestPost(this.state.url).then((post) => {
-      if (post) {
-        this.state.permalink = 'http://www.reddit.com' + post.permalink;
-        this.state.subreddit = `/r/${capitalize(post.subreddit)}`;
-        this.state.subredditUrl = `http://www.reddit.com${this.state.subreddit}`;
-      }
-      this.state.post = post;
-      this.reloadComments();
-    });
+    this.state.postLoaded = false;
+    this.state.commentsLoaded = false;
+
+    this.emit('change');
   },
 
-  onLogin: function() {
-    var state = 'TODO'; // CSRF
-    var url = reddit.getImplicitAuthUrl(state);
+  onUpdatedUrl: function(post) {
+    if (post) {
+      this.state.permalink = 'http://www.reddit.com' + post.permalink;
+      this.state.subreddit = `/r/${capitalize(post.subreddit)}`;
+      this.state.subredditUrl = `http://www.reddit.com${this.state.subreddit}`;
+      this.state.post = post;
+    }
+    this.state.postLoaded = true;
+    this.emit('change');
+  },
 
-    window.open(url, 'RedditAuth', `height=${AUTH_WINDOW_HEIGHT},width=${AUTH_WINDOW_WIDTH}`);
+  onLoggingIn: function() {
+    this.state.loggingIn = true;
+    this.emit('change');
+  },
+
+  onLoggedIn: function(userName) {
+    this.state.loggingIn = false;
+    this.state.userName = userName;
+    this.emit('change');
   },
 
   onLogout: function() {
-    // Note: can't revoke access token due to CORS
-    // see https://github.com/trevorsenior/snoocore/issues/119
-    // So for now let's null out the auth data manually
-    reddit._authData = {};
     this.state.userName = null;
-    delete localStorage.superComments;
-    // Reload comments so we show liked/disliked status
-    this.reloadComments();
+    this.emit('change');
   },
 
-  onSubmitComment: function(payload) {
+  onSubmittingComment: function(payload) {
     var parent = payload.parent;
-    reddit('/api/comment').post({
-      text: payload.body,
-      thing_id: parent.name
-    }).then((result) => {
-      if (result.json.data.things && result.json.data.things.length > 0) {
-        var comment = result.json.data.things[0].data;
-        if (parent.parent_id) {
-          // Parent has a parent, so it's a comment
-          parent.replies = (parent.replies || []).concat(comment);
-        }
-        else {
-          this.state.comments.push(comment);
-        }
-      }
-      this.emit('change');
-    });
+    var comment ={
+      id: payload.id,
+      author: this.state.userName,
+      body: payload.body,
+      likes: true,
+      score: 1,
+      disabled: true
+    };
+    if (parent.parent_id) {
+      // Parent has a parent, so it's a comment
+      // Add it to the top of the replies
+      parent.replies = [ comment ].concat(parent.replies || []);
+    }
+    else {
+      this.state.comments.unshift(comment);
+    }
+    this.emit('change');
   },
 
-  onVote: function(payload) {
-    var thing = payload.thing;
-    var previousLikes = thing.likes ? 1 : (thing.likes === false ? -1 : 0);
-    reddit('/api/vote').post({
-      id: thing.name,
-      dir: payload.dir
-    }).then(() => {
-      thing.likes = payload.dir === 1 ? true : (payload.dir === 0 ? null : false);
-      // Would be nice if `api/vote` returned the new score. Oh well.
-      thing.score = thing.score - previousLikes + payload.dir;
-      this.emit('change');
-    });
-  },
-
-  onEditComment: function(payload) {
+  onSubmittedComment: function(payload) {
     var comment = payload.comment;
-    reddit('/api/editusertext').post({
-      thing_id: comment.name,
-      text: payload.body
-    }).then(() => {
-      comment.body = payload.body;
-      this.emit('change');
+    var parent = payload.parent;
+    var comments = parent.parent_id ? parent.replies : this.state.comments;
+    var index = comments.findIndex((current) => {
+      return current.id === payload.id;
     });
+    if (index !== -1) {
+      comments.splice(index, 1, comment);
+      this.emit('change');
+    }
   },
 
-  onDeleteComment: function(comment) {
-    reddit('/api/del').post({
-      id: comment.name
-    }).then(() => {
-      comment.author = '[deleted]';
-      comment.body = '[deleted]';
-      this.emit('change');
-    });
+  onReloadingComments: function() {
+    this.state.commentsLoaded = false;
+    this.emit('change');
   },
 
-  onReportComment: function(comment) {
-    // TODO: currently getting a 403 for this, need to investigate
-    reddit('/api/report').post({
-      thing_id: comment.name,
-      reason: 'other',
-      other_reason: 'inappropriate (reported via SuperComments)'
-    });
+  onReloadedComments: function(payload) {
+    if (payload) {
+      this.state.post = payload.post;
+      this.state.comments = getCommentsFromListing(payload.comments);
+      this.state.commentCount = countComments(this.state.comments);
+    }
+    this.state.commentsLoaded = true;
+    this.emit('change');
+  },
+
+  onVoting: function(payload) {
+    var thing = payload.thing;
+    payload.thing.votePending = true;
+    this.updateVote(thing, payload.dir);
+    this.emit('change');
+  },
+
+  onVoted: function(thing) {
+    thing.votePending = false;
+    this.emit('change');
+  },
+
+  updateVote: function(thing, dir) {
+    // `false` means dislike, `null` means neither like nor dislikes
+    var previousLikes = thing.likes ? 1 : (thing.likes === false ? -1 : 0);
+    thing.likes = dir === 1 ? true : (dir === 0 ? null : false);
+    // Would be nice if `api/vote` returned the new score. Oh well.
+    thing.score = thing.score - previousLikes + dir;
+  },
+
+  onEditingComment: function(payload) {
+    var comment = payload.comment;
+    comment.body = payload.body;
+    comment.disabled = true;
+    this.emit('change');
+  },
+
+  onEditedComment: function(comment) {
+    comment.disabled = false;
+    this.emit('change');
+  },
+
+  onDeletingComment: function(comment) {
+    comment.author = '[deleted]';
+    comment.body = '[deleted]';
+    comment.disabled = true;
+    this.emit('change');
+  },
+
+  onDeletedComment: function(comment) {
+    comment.disabled = false;
+    this.emit('change');
+  },
+
+  onReportingComment: function(/* comment */) {
+  },
+
+  onReportedComment: function(/* comment */) {
   },
 
   onSortByBest: function() {
@@ -208,42 +228,16 @@ var RedditStore = Fluxxor.createStore({
   },
 
   changeSortBy: function(order) {
-    this.state.sortBy = order;
-    this.reloadComments();
-  },
-
-  reloadComments: function() {
-    if (this.state.post) {
-      reddit('comments/' + this.state.post.id + '.json').get({ sort: this.state.sortBy }).then((listings) => {
-        this.state.post = listings[0].data.children[0].data;
-        this.state.comments = getCommentsFromListing(listings[1]);
-        this.state.commentCount = countComments(this.state.comments);
-        this.emit('change');
-      });
+    if (this.state.sortBy !== order) {
+      this.state.sortBy = order;
+      this.state.commentsLoaded = false;
+      this.emit('change');
     }
   },
 
-  saveSession: function(token, userName) {
-    var superComments = localStorage.superComments ? JSON.parse(localStorage.superComments) : {};
-    if (!superComments.reddit) {
-      superComments.reddit = {};
-    }
-    superComments.reddit.token = token;
-    superComments.reddit.userName = userName;
-    superComments.reddit.timestamp = Date.now();
-    localStorage.superComments = JSON.stringify(superComments);
-  },
-
-  restoreSession: function() {
-    if (localStorage.superComments) {
-      var superComments = JSON.parse(localStorage.superComments);
-      if (superComments.reddit && superComments.reddit.token) {
-        if (Date.now() - superComments.reddit.timestamp < AUTH_TIMEOUT_MS) {
-          reddit.auth(superComments.reddit.token);
-          this.state.userName = superComments.reddit.userName;
-        }
-      }
-    }
+  onSetTooltip: function(tooltip) {
+    this.state.tooltip = tooltip;
+    this.emit('change');
   },
 
   getState: function() {
