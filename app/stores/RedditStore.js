@@ -2,25 +2,7 @@
 
 var Fluxxor = require('fluxxor');
 var Constants = require('../constants/Constants');
-var Snoocore = require('snoocore');
 var capitalize = require('capitalize');
-
-const USER_AGENT = 'SuperComments';
-
-function createAPI() {
-  return new Snoocore({
-    userAgent: USER_AGENT,
-    oauth: { 
-      type: 'implicit',
-      duration: 'permanent',
-      consumerKey: 'dtW9TLAGpuiLsw',
-      redirectUri: 'http://127.0.0.1:3000/html/redditAuth.html',
-      scope: [ 'identity', 'read', 'submit', 'vote', 'edit', 'report' ]
-    }
-  });
-}
-
-var reddit = createAPI();
 
 function getCommentsFromListing(listing) {
   if (!listing) {
