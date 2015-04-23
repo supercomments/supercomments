@@ -15,7 +15,22 @@ var CommentItem = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('ItemStateStore')],
 
   getStateFromFlux: function() {
-    return this.getFlux().store('ItemStateStore').getItemState(this);
+    return this.getFlux().store('ItemStateStore').getItemState(this.props.comment);
+  },
+
+  shouldComponentUpdate: function(nextProps, nextState) {
+    var oldKeys = Object.keys(this.state);
+    var newKeys = Object.keys(nextState);
+    if (oldKeys.length !== newKeys.length) {
+      return true;
+    }
+    return oldKeys.some((key) => {
+      return (!(key in nextState) || this.state[key] !== nextState[key]);
+    });
+  },
+
+  componentWillUnmount: function() {
+    //this.getFlux().actions.itemRemoved(this.props.comment);
   },
 
   render: function() {
@@ -28,7 +43,7 @@ var CommentItem = React.createClass({
     });
     var contentClasses = classNames({
       'post-content': true,
-      disabled: this.props.comment.disabled
+      disabled: this.state.disabled
     });
     var upvoteClasses = classNames({
       'vote-up': true,
@@ -98,7 +113,7 @@ var CommentItem = React.createClass({
                       <div className="post-message-container">
                           <div className="publisher-anchor-color">
                               {this.state.editFormVisible ?
-                                <CommentEditForm visible="false" item={this}/> :
+                                <CommentEditForm visible="false" comment={this.props.comment}/> :
                                 <div
                                   className="post-message "
                                   dangerouslySetInnerHTML={{__html: converter.makeHtml(this.props.comment.body)}}/>
@@ -114,7 +129,7 @@ var CommentItem = React.createClass({
                     <footer>
                         <menu>
 
-                            <li className="voting" style={this.props.comment.votePending ? { opacity: 0.5 } : {}}>
+                            <li className="voting" style={this.state.votePending ? { opacity: 0.5 } : {}}>
                                 <a className={upvoteClasses} onClick={this.onUpvote} title="">
 
                                     <span className="updatable count">{this.props.comment.score}</span>
@@ -157,7 +172,7 @@ var CommentItem = React.createClass({
 
               <div></div>
               <div className="reply-form-container">
-                {this.state.replyFormVisible ? <CommentForm item={this} expanded="true"/> : null}
+                {this.state.replyFormVisible ? <CommentForm comment={this.props.comment} expanded="true"/> : null}
               </div>
           </div>
 
@@ -169,19 +184,19 @@ var CommentItem = React.createClass({
   },
 
   onCollapseItem: function() {
-    this.getFlux().actions.itemChanged({ item: this, newState: { collapsed: true }});
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { collapsed: true }});
   },
 
   onExpandItem: function() {
-    this.getFlux().actions.itemChanged({ item: this, newState: { collapsed: false }});
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { collapsed: false }});
   },
 
   onReply: function() {
-    this.getFlux().actions.itemChanged({ item: this, newState: { replyFormVisible: !this.state.replyFormVisible }});
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { replyFormVisible: !this.state.replyFormVisible }});
   },
 
   onEdit: function() {
-    this.getFlux().actions.itemChanged({ item: this, newState: { editFormVisible: !this.state.editFormVisible }});
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editFormVisible: !this.state.editFormVisible }});
   },
 
   onDelete: function() {

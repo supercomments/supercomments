@@ -19,12 +19,22 @@ function MockPromise(payload) {
 function MockAPI(payload) {
   this.payload = payload; // Make it convenient to get the payload
 
-  this.get = jest.genMockFunction().mockImplementation(function() {
-    return new MockPromise(payload);
+  this.get = jest.genMockFunction().mockImplementation(function(arg) {
+    if (typeof(payload) === 'function') {
+      return new MockPromise(payload(arg));
+    }
+    else {
+      return new MockPromise(payload);
+    }
   });
 
-  this.post = jest.genMockFunction().mockImplementation(function() {
-    return new MockPromise(payload);
+  this.post = jest.genMockFunction().mockImplementation(function(arg) {
+    if (typeof(payload) === 'function') {
+      return new MockPromise(payload(arg));
+    }
+    else {
+      return new MockPromise(payload);
+    }
   });
 }
 
@@ -37,7 +47,14 @@ function Snoocore() {
   var self = this;
 
   var responses = {
-    'search.json': new MockAPI(posts.get),
+    'search.json': new MockAPI(function(arg) {
+      if (arg.q === 'url:fail') {
+        return { data: { children: [] }};
+      }
+      else {
+        return posts.get;
+      }
+    }),
     '/api/v1/me': new MockAPI({ name: 'username' }),
     '/api/comment': new MockAPI(comment),
     'comments/123.json': new MockAPI(comments)

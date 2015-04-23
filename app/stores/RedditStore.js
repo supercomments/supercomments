@@ -99,24 +99,25 @@ var RedditStore = Fluxxor.createStore({
   },
 
   onSubmittingComment: function(payload) {
-    var parent = payload.parent;
-    var comment ={
-      id: payload.id,
-      author: this.state.userName,
-      body: payload.body,
-      likes: true,
-      score: 1,
-      disabled: true
-    };
-    if (parent.parent_id) {
-      // Parent has a parent, so it's a comment
-      // Add it to the top of the replies
-      parent.replies = [ comment ].concat(parent.replies || []);
-    }
-    else {
-      this.state.comments.unshift(comment);
-    }
-    this.emit('change');
+    this.waitFor([ 'ItemStateStore' ], () => {
+      var parent = payload.parent;
+      var comment ={
+        id: payload.id,
+        author: this.state.userName,
+        body: payload.body,
+        likes: true,
+        score: 1
+      };
+      if (parent.parent_id) {
+        // Parent has a parent, so it's a comment
+        // Add it to the top of the replies
+        parent.replies = [ comment ].concat(parent.replies || []);
+      }
+      else {
+        this.state.comments.unshift(comment);
+      }
+      this.emit('change');
+    });
   },
 
   onSubmittedComment: function(payload) {
@@ -148,47 +149,41 @@ var RedditStore = Fluxxor.createStore({
   },
 
   onVoting: function(payload) {
-    var thing = payload.thing;
-    payload.thing.votePending = true;
-    this.updateVote(thing, payload.dir);
-    this.emit('change');
+    this.waitFor([ 'ItemStateStore' ], () => {
+      var thing = payload.thing;
+      var dir = payload.dir;
+      // `false` means dislike, `null` means neither like nor dislikes
+      var previousLikes = thing.likes ? 1 : (thing.likes === false ? -1 : 0);
+      thing.likes = dir === 1 ? true : (dir === 0 ? null : false);
+      // Would be nice if `api/vote` returned the new score. Oh well.
+      thing.score = thing.score - previousLikes + dir;
+      this.emit('change');
+    });
   },
 
-  onVoted: function(thing) {
-    thing.votePending = false;
-    this.emit('change');
-  },
-
-  updateVote: function(thing, dir) {
-    // `false` means dislike, `null` means neither like nor dislikes
-    var previousLikes = thing.likes ? 1 : (thing.likes === false ? -1 : 0);
-    thing.likes = dir === 1 ? true : (dir === 0 ? null : false);
-    // Would be nice if `api/vote` returned the new score. Oh well.
-    thing.score = thing.score - previousLikes + dir;
+  onVoted: function() {
   },
 
   onEditingComment: function(payload) {
-    var comment = payload.comment;
-    comment.body = payload.body;
-    comment.disabled = true;
-    this.emit('change');
+    this.waitFor([ 'ItemStateStore' ], () => {
+      var comment = payload.comment;
+      comment.body = payload.body;
+      this.emit('change');
+    });
   },
 
-  onEditedComment: function(comment) {
-    comment.disabled = false;
-    this.emit('change');
+  onEditedComment: function() {
   },
 
   onDeletingComment: function(comment) {
-    comment.author = '[deleted]';
-    comment.body = '[deleted]';
-    comment.disabled = true;
-    this.emit('change');
+    this.waitFor([ 'ItemStateStore' ], () => {
+      comment.author = '[deleted]';
+      comment.body = '[deleted]';
+      this.emit('change');
+    });
   },
 
-  onDeletedComment: function(comment) {
-    comment.disabled = false;
-    this.emit('change');
+  onDeletedComment: function() {
   },
 
   onReportingComment: function(/* comment */) {

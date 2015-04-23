@@ -11,7 +11,7 @@ function mapComments(comments, postUrl, parentAuthor) {
   }
   return comments.map((comment, index) => {
     return (
-      <CommentItem key={index} comment={comment} postUrl={postUrl} parentAuthor={parentAuthor}>
+      <CommentItem key={comment.id} comment={comment} postUrl={postUrl} parentAuthor={parentAuthor}>
         {mapComments(comment.replies, postUrl, comment.author)}
       </CommentItem>
     );

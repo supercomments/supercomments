@@ -17,6 +17,9 @@ beforeEach(function() {
   var RedditStore = require('../../app/stores/RedditStore');
   fakeFlux = FluxxorTestUtils.fakeFlux({ RedditStore: new RedditStore() });
   myStore = fakeFlux.store('RedditStore');
+  myStore.waitFor = jest.genMockFunction().mockImplementation(function(stores, callback) {
+    callback.apply(myStore);
+  });
   myStoreSpy = fakeFlux.makeStoreEmitSpy('RedditStore');
 });
 
@@ -124,12 +127,10 @@ describe('onVote', function() {
     fakeFlux.dispatcher.dispatch({ type: 'VOTING', payload: payload });
     expect(payload.thing.likes).toBe(false);
     expect(payload.thing.score).toBe(9);
-    expect(payload.thing.votePending).toBe(true);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'VOTED', payload: payload.thing });
-    expect(payload.thing.votePending).toBe(false);
-    expect(myStoreSpy.getLastCall()).toEqual(['change']);
+    expect(myStoreSpy.getLastCall()).toBeUndefined();
   });
   it('lowers the score of a thing by two when it goes from upvoted to downvoted', function() {
     var payload = {
@@ -139,12 +140,10 @@ describe('onVote', function() {
     fakeFlux.dispatcher.dispatch({ type: 'VOTING', payload: payload });
     expect(payload.thing.likes).toBe(false);
     expect(payload.thing.score).toBe(8);
-    expect(payload.thing.votePending).toBe(true);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'VOTED', payload: payload.thing });
-    expect(payload.thing.votePending).toBe(false);
-    expect(myStoreSpy.getLastCall()).toEqual(['change']);
+    expect(myStoreSpy.getLastCall()).toBeUndefined();
   });
   it('increments the score of a thing when it is upvoted', function() {
     var payload = {
@@ -154,12 +153,10 @@ describe('onVote', function() {
     fakeFlux.dispatcher.dispatch({ type: 'VOTING', payload: payload });
     expect(payload.thing.likes).toBe(true);
     expect(payload.thing.score).toBe(11);
-    expect(payload.thing.votePending).toBe(true);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'VOTED', payload: payload.thing });
-    expect(payload.thing.votePending).toBe(false);
-    expect(myStoreSpy.getLastCall()).toEqual(['change']);
+    expect(myStoreSpy.getLastCall()).toBeUndefined();
   });
   it('raises the score of a thing by two when it goes from downvoted to upvoted', function() {
     var payload = {
@@ -169,12 +166,10 @@ describe('onVote', function() {
     fakeFlux.dispatcher.dispatch({ type: 'VOTING', payload: payload });
     expect(payload.thing.likes).toBe(true);
     expect(payload.thing.score).toBe(12);
-    expect(payload.thing.votePending).toBe(true);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'VOTED', payload: payload.thing });
-    expect(payload.thing.votePending).toBe(false);
-    expect(myStoreSpy.getLastCall()).toEqual(['change']);
+    expect(myStoreSpy.getLastCall()).toBeUndefined();
   });
   it('decrements the score of a thing when it stops being upvoted', function() {
     var payload = {
@@ -184,12 +179,10 @@ describe('onVote', function() {
     fakeFlux.dispatcher.dispatch({ type: 'VOTING', payload: payload });
     expect(payload.thing.likes).toBe(null);
     expect(payload.thing.score).toBe(9);
-    expect(payload.thing.votePending).toBe(true);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'VOTED', payload: payload.thing });
-    expect(payload.thing.votePending).toBe(false);
-    expect(myStoreSpy.getLastCall()).toEqual(['change']);
+    expect(myStoreSpy.getLastCall()).toBeUndefined();
   });
   it('increments the score of a thing when it stops being downvoted', function() {
     var payload = {
@@ -199,12 +192,10 @@ describe('onVote', function() {
     fakeFlux.dispatcher.dispatch({ type: 'VOTING', payload: payload });
     expect(payload.thing.likes).toBe(null);
     expect(payload.thing.score).toBe(11);
-    expect(payload.thing.votePending).toBe(true);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'VOTED', payload: payload.thing });
-    expect(payload.thing.votePending).toBe(false);
-    expect(myStoreSpy.getLastCall()).toEqual(['change']);
+    expect(myStoreSpy.getLastCall()).toBeUndefined();
   });
 });
 
@@ -214,12 +205,10 @@ describe('onEditComment', function() {
     var payload = { comment: comment, body: 'new_body' };
     fakeFlux.dispatcher.dispatch({ type: 'EDITING_COMMENT', payload: payload });
     expect(comment.body).toBe('new_body');
-    expect(comment.disabled).toBe(true);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'EDITED_COMMENT', payload: comment });
-    expect(comment.disabled).toBe(false);
-    expect(myStoreSpy.getLastCall()).toEqual(['change']);
+    expect(myStoreSpy.getLastCall()).toBeUndefined();
   });
 });
 
@@ -229,11 +218,9 @@ describe('onDeleteComment', function() {
     fakeFlux.dispatcher.dispatch({ type: 'DELETING_COMMENT', payload: comment });
     expect(comment.author).toBe('[deleted]');
     expect(comment.body).toBe('[deleted]');
-    expect(comment.disabled).toBe(true);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'DELETED_COMMENT', payload: comment });
-    expect(comment.disabled).toBe(false);
-    expect(myStoreSpy.getLastCall()).toEqual(['change']);
+    expect(myStoreSpy.getLastCall()).toBeUndefined();
   });
 });

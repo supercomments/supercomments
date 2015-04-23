@@ -1,4 +1,5 @@
 var Constants = require('../constants/Constants');
+var FormErrors = require('../constants/FormErrors');
 var Snoocore = require('snoocore');
 var shortid = require('shortid');
 
@@ -61,9 +62,12 @@ function restoreSession() {
 
 var Actions = {
   updateUrl: function(url) {
-    var userName = restoreSession();
-    if (userName) {
-      this.dispatch(Constants.LOGGED_IN, userName);
+    var store = this.flux.store('RedditStore');
+      if (!store.getState().userName) {
+      var userName = restoreSession();
+      if (userName) {
+        this.dispatch(Constants.LOGGED_IN, userName);
+      }
     }
     this.dispatch(Constants.UPDATING_URL, url);
     getBestPost(url).then((post) => {
@@ -108,17 +112,41 @@ var Actions = {
   },
 
   submitComment: function(payload) {
-    var tempId = shortid.generate();
-    this.dispatch(Constants.SUBMITTING_COMMENT, Object.assign({ id: tempId }, payload));
-    reddit('/api/comment').post({
-      text: payload.body,
-      thing_id: payload.parent.name
-    }).then((result) => {
-      if (result.json.data.things && result.json.data.things.length > 0) {
-        var comment = result.json.data.things[0].data;
-        this.dispatch(Constants.SUBMITTED_COMMENT, { id: tempId, parent: payload.parent, comment: comment });
-      }
-    });
+    this.flux.actions.itemChanged({ comment: payload.parent, newState: { postError: null }});
+
+    var store = this.flux.store('RedditStore');
+    if (!payload.body) {
+      this.flux.actions.itemChanged({ comment: payload.parent, newState: { postError: FormErrors.COMMENT_EMPTY }});      
+    }
+    else if (!store.getState().post && !payload.secondChance) {
+      // Post might have been added since we loaded the page, so try to get it
+      return getBestPost(store.getState().url).then((post) => {
+        this.dispatch(Constants.UPDATED_URL, post);
+        payload.secondChance = true;
+        this.flux.actions.submitComment(payload);
+      });
+    }
+    else if (!store.getState().post) {
+      this.flux.actions.itemChanged({ comment: payload.parent, newState: { postError: FormErrors.PAGE_NOT_SUBMITTED }});      
+    }
+    else {
+      this.flux.actions.itemChanged({ comment: payload.parent, newState: { replyFormVisible: false, formExpanded: false, replyBody: '' }});
+
+      var tempId = shortid.generate();
+      this.dispatch(Constants.SUBMITTING_COMMENT, Object.assign({ id: tempId }, payload));
+
+      var parent = payload.parent ? payload.parent : this.flux.store('RedditStore').getState().post;
+
+      reddit('/api/comment').post({
+        text: payload.body,
+        thing_id: parent.name
+      }).then((result) => {
+        if (result.json.data.things && result.json.data.things.length > 0) {
+          var comment = result.json.data.things[0].data;
+          this.dispatch(Constants.SUBMITTED_COMMENT, { id: tempId, parent: parent, comment: comment });
+        }
+      });
+    }
   },
 
   vote: function(payload) {

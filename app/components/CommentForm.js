@@ -1,6 +1,6 @@
 var React = require('react/addons');
 var classNames = require('classnames');
-var keyMirror = require('react/lib/keyMirror');
+var FormErrors = require('../constants/FormErrors');
 var Fluxxor = require('fluxxor');
 var Textarea = require('react-textarea-autosize');
 
@@ -12,38 +12,36 @@ const AVATAR_URL = "//a.disquscdn.com/next/embed/assets/img/noavatar92.b677f9ddb
 // Form error handling
 
 var CommentForm = React.createClass({
-  mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
-
-  FormErrors: keyMirror({
-    PAGE_NOT_SUBMITTED: null,
-    COMMENT_EMPTY: null
-  }),
+  mixins: [FluxMixin, StoreWatchMixin('RedditStore', 'ItemStateStore')],
 
   getErrorText: function(error) {
     switch(error) {
-      case this.FormErrors.PAGE_NOT_SUBMITTED:
+      case FormErrors.PAGE_NOT_SUBMITTED:
         return <span>You must <a href={`http://www.reddit.com/submit?url=${encodeURIComponent(this.state.url)}`}
           target="_blank">submit this post to Reddit</a> before commenting.</span>;
-      case this.FormErrors.COMMENT_EMPTY:
+      case FormErrors.COMMENT_EMPTY:
         return 'Comments can\'t be blank.';
     }
   },
 
   componentDidMount: function() {
-    if (this.props.expanded) {
+    if (this.state.formExpanded) {
       React.findDOMNode(this.refs.textarea).focus();
     }
   },
 
-  getInitialState: function() {
-    return {
-      body: '',
-      formExpanded: this.props.expanded
-    };
+  componentDidUpdate: function(prevProps, prevState) {
+    if (prevState.formExpanded && !this.state.formExpanded) {
+      React.findDOMNode(this.refs.textarea).blur();
+    }
   },
 
   getStateFromFlux: function() {
-    return this.getFlux().store('RedditStore').getState();
+    var state = this.getFlux().store('ItemStateStore').getItemState(this.props.comment);
+    state.userName = this.getFlux().store('RedditStore').getState().userName;
+    state.url = this.getFlux().store('RedditStore').getState().url;
+    state.post = this.getFlux().store('RedditStore').getState().post;
+    return state;
   },
 
   render: function() {
@@ -56,7 +54,7 @@ var CommentForm = React.createClass({
     return (
         <form className={formClasses}>
             <div className="postbox">
-                <div role="alert"></div>
+                <div role="alert" />
                 <div className="avatar">
                     <span className="user">
                         <img src={AVATAR_URL} alt="Avatar"/>
@@ -72,7 +70,7 @@ var CommentForm = React.createClass({
                           tabIndex="0"
                           role="textbox"
                           style={{overflow: 'hidden'}}
-                          value={this.state.body}
+                          value={this.state.replyBody}
                           onChange={this.onChange} />
                         <div style={{display: 'none'}}>
                             <ul className="suggestions">
@@ -105,7 +103,7 @@ var CommentForm = React.createClass({
                         </div>                    
                     </div>
                 </div>
-                {!this.props.item ?
+                {!this.props.comment ?
                   <div>
                     <br/>
                     <section>
@@ -148,44 +146,24 @@ var CommentForm = React.createClass({
   },
 
   onChange: function(e) {
-    this.setState({ body: e.target.value });    
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { replyBody: e.target.value }});
   },
 
   onFormClicked: function() {
-    this.setState({ formExpanded: true });
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { formExpanded: true }});
     React.findDOMNode(this.refs.textarea).focus();
   },
 
-  onSubmit: function() {
-    if (this.validateForm(this.state.body)) {
-      this.getFlux().actions.submitComment({
-        body : this.state.body,
-        parent : (this.props.item ? this.props.item.props.comment : null) || this.state.post
-      });
-      this.setState({ body: '' });
-      if (this.props.item) {
-        this.getFlux().actions.itemChanged({ item: this.props.item, newState: { replyFormVisible: false }});
-      }
-    }
+  onSubmit: function(e) {
+    e.stopPropagation();
+    this.getFlux().actions.submitComment({
+      parent: this.props.comment,
+      body: this.state.replyBody
+    });
   },
 
   onDismissError: function() {
-    this.setState({ postError: null });
-  },
-
-  validateForm: function(body) {
-    if (!this.state.post) {
-      this.setState({ postError: this.FormErrors.PAGE_NOT_SUBMITTED });
-      return false;
-    }
-    else if (!body) {
-      this.setState({ postError: this.FormErrors.COMMENT_EMPTY });
-      return false;
-    }
-    else {
-      this.setState({ postError: null });
-      return true;
-    }
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { postError: null }});
   }
 });
 

@@ -2,17 +2,18 @@ var React = require('react');
 var Fluxxor = require('fluxxor');
 var Textarea = require('react-textarea-autosize');
 
-var FluxMixin = Fluxxor.FluxMixin(React);
+var FluxMixin = Fluxxor.FluxMixin(React),
+    StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
 var CommentEditForm = React.createClass({
-  mixins: [FluxMixin],
+  mixins: [FluxMixin, StoreWatchMixin('ItemStateStore')],
 
-  getInitialState: function() {
-    return { body: this.props.item.props.comment.body};
+  componentWillMount: function() {
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editBody: this.props.comment.body }});
   },
 
   getStateFromFlux: function() {
-    return this.getFlux().store('RedditStore').getState();
+    return this.getFlux().store('ItemStateStore').getItemState(this.props.comment);
   },
 
   render: function() {
@@ -23,7 +24,7 @@ var CommentEditForm = React.createClass({
                     <Textarea
                         className="textarea"
                         style={{resize: 'none', overflow: 'hidden', height: '128px'}}
-                        value={this.state.body}
+                        value={this.state.editBody}
                         onChange={this.onChange}
                     />
                 </div>
@@ -43,19 +44,19 @@ var CommentEditForm = React.createClass({
   },
 
   onChange: function(e) {
-    this.setState({ body: e.target.value });    
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editBody: e.target.value }});    
   },
 
   onSubmit: function() {
     this.getFlux().actions.editComment({
-      comment: this.props.item.props.comment,
-      body: this.state.body
+      comment: this.props.comment,
+      body: this.state.editBody
     });
-    this.getFlux().actions.itemChanged({ item: this.props.item, newState: { editFormVisible: false }});
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editFormVisible: false }});
   },
 
   onCancel: function() {
-    this.getFlux().actions.itemChanged({ item: this.props.item, newState: { editFormVisible: false }});
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editFormVisible: false }});
   }
 });
 

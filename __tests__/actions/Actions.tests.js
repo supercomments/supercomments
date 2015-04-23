@@ -83,20 +83,58 @@ describe('submitComment', function() {
   it('submits the comment and informs the store', function() {
     var payload  = {
       parent: { replies: [] },
-      text: 'the_text',
+      body: 'the_text',
       thing_id: '123'
     };
     fakeFlux.actions.submitComment(payload);
     var calls = myActionsSpy.getCalls();
     var tempId = calls[0][1].id;
     payload.id = tempId;
-    expect(calls.length).toBe(2);
-    expect(calls[0]).toEqual([ 'SUBMITTING_COMMENT', payload ]);
-    expect(calls[1]).toEqual([
+    expect(calls.length).toBe(4);
+    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
+    expect(calls[1]).toEqual([ 'ITEM_CHANGED', {
+      comment: payload.parent,
+      newState: { replyFormVisible: false, formExpanded: false, replyBody: '' }
+    }]);
+    expect(calls[2]).toEqual([ 'SUBMITTING_COMMENT', payload ]);
+    expect(calls[3]).toEqual([
       'SUBMITTED_COMMENT',
       { id: tempId, parent: payload.parent, comment: redditAPI('/api/comment').payload.json.data.things[0].data }
     ]);
     expect(redditAPI('/api/comment').post).toBeCalledWith({ text: payload.body, thing_id: payload.parent.name });
+  });
+  it('raises an error if the comment body is empty', function() {
+    var payload  = {
+      parent: { replies: [] },
+      thing_id: '123'
+    };
+    fakeFlux.actions.submitComment(payload);
+    var calls = myActionsSpy.getCalls();
+    expect(calls.length).toBe(2);
+    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
+    expect(calls[1]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: 'COMMENT_EMPTY' }} ]);
+  });
+  it('tries again to load the post if it is not there and raises an error if that fails', function() {
+    state = {
+      url: 'fail', // Tell the API mock to fail to find anything
+      sortBy: 'best'
+    };
+    myStore = fakeFlux.store('RedditStore');
+    myStore.getState = jest.genMockFunction().mockImplementation(function() {
+      return state;
+    });
+    var payload  = {
+      parent: { replies: [] },
+      body: 'the_text',
+      thing_id: '123'
+    };
+    fakeFlux.actions.submitComment(payload);
+    var calls = myActionsSpy.getCalls();
+    expect(calls.length).toBe(4);
+    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
+    expect(calls[1]).toEqual([ 'UPDATED_URL', null ]);
+    expect(calls[2]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
+    expect(calls[3]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: 'PAGE_NOT_SUBMITTED' }} ]);    
   });
 });
 
