@@ -12,29 +12,33 @@ var FluxMixin = Fluxxor.FluxMixin(React),
 var converter = new Showdown.Converter();
 
 var CommentItem = React.createClass({
-  mixins: [FluxMixin, StoreWatchMixin('ItemStateStore')],
+  mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
   getStateFromFlux: function() {
-    return this.getFlux().store('ItemStateStore').getItemState(this.props.comment);
+    return this.getFlux().store('RedditStore').getItemState(this.props.comment);
   },
 
   shouldComponentUpdate: function(nextProps, nextState) {
+    if (this.props.comment.deref() !== nextProps.comment.deref()) {
+      return true;
+    }
     var oldKeys = Object.keys(this.state);
     var newKeys = Object.keys(nextState);
     if (oldKeys.length !== newKeys.length) {
+      console.log(oldKeys + ' ' + newKeys + 'NEW KEY');
       return true;
     }
     return oldKeys.some((key) => {
-      return (!(key in nextState) || this.state[key] !== nextState[key]);
+      var result = (!(key in nextState) || (this.state[key] !== nextState[key]));
+      if (result) {
+        console.log('NEW VALUE');
+      }
+      return result;
     });
   },
 
-  componentWillUnmount: function() {
-    //this.getFlux().actions.itemRemoved(this.props.comment);
-  },
-
   render: function() {
-    var timestamp = moment.unix(this.props.comment.created_utc);
+    var timestamp = moment.unix(this.props.comment.get('created_utc'));
     var timestampTitle = timestamp.format("dddd, MMMM Do, YYYY h:mm:ss a");
     var timestampFromNow = timestamp.fromNow();
     var classes = classNames({
@@ -47,11 +51,11 @@ var CommentItem = React.createClass({
     });
     var upvoteClasses = classNames({
       'vote-up': true,
-      upvoted: this.props.comment.likes
+      upvoted: this.props.comment.get('likes')
     });
     var downvoteClasses = classNames({
       'vote-down': true,
-      downvoted: this.props.comment.likes === false
+      downvoted: this.props.comment.get('likes') === false
     });
     var replyClasses = classNames({
       reply: true,
@@ -61,8 +65,8 @@ var CommentItem = React.createClass({
       edit: true,
       active: this.state.editFormVisible
     });
-    var isAuthor = this.getFlux().store('RedditStore').getState().userName === this.props.comment.author;
-    var isDeleted = this.props.comment.author === '[deleted]';
+    var isAuthor = this.getFlux().store('RedditStore').getState().userName === this.props.comment.get('author');
+    var isDeleted = this.props.comment.get('author') === '[deleted]';
     return (
       <li className={classes}>
           <div role="alert"/>
@@ -93,8 +97,8 @@ var CommentItem = React.createClass({
                       <span className="post-byline">
                         <span className="author publisher-anchor-color">
                           {isDeleted ?
-                            this.props.comment.author :
-                            <a href={'https://www.reddit.com/user/' + this.props.comment.author}>{this.props.comment.author}</a>
+                            this.props.comment.get('author') :
+                            <a href={'https://www.reddit.com/user/' + this.props.comment.get('author')}>{this.props.comment.get('author')}</a>
                           }
                         </span>
                       </span>
@@ -104,7 +108,7 @@ var CommentItem = React.createClass({
                       }
                       <span className="post-meta">
                         <span className="bullet time-ago-bullet" >•</span>
-                        <a href={this.props.postUrl + this.props.comment.id} className="time-ago" title={timestampTitle}>{timestampFromNow}</a>
+                        <a href={this.props.postUrl + this.props.comment.get('id')} className="time-ago" title={timestampTitle}>{timestampFromNow}</a>
                       </span>
 
                   </header>
@@ -116,7 +120,7 @@ var CommentItem = React.createClass({
                                 <CommentEditForm visible="false" comment={this.props.comment}/> :
                                 <div
                                   className="post-message "
-                                  dangerouslySetInnerHTML={{__html: converter.makeHtml(this.props.comment.body)}}/>
+                                  dangerouslySetInnerHTML={{__html: converter.makeHtml(this.props.comment.get('body'))}}/>
                               }
 
                               <span className="post-media"><ul></ul></span>
@@ -132,7 +136,7 @@ var CommentItem = React.createClass({
                             <li className="voting" style={this.state.votePending ? { opacity: 0.5 } : {}}>
                                 <a className={upvoteClasses} onClick={this.onUpvote} title="">
 
-                                    <span className="updatable count">{this.props.comment.score}</span>
+                                    <span className="updatable count">{this.props.comment.get('score')}</span>
                                     <span className="control"><i className="icon icon-arrow-2"></i></span>
                                 </a>
                                 <span role="button" className={downvoteClasses} onClick={this.onDownvote} title="Vote down">
@@ -210,7 +214,7 @@ var CommentItem = React.createClass({
     else {
       var payload = {
         thing: this.props.comment,
-        dir: this.props.comment.likes ? 0 : 1 // Back to neutral if we already like it
+        dir: this.props.comment.get('likes') ? 0 : 1 // Back to neutral if we already like it
       };
       this.getFlux().actions.vote(payload);
     }
@@ -225,7 +229,7 @@ var CommentItem = React.createClass({
         thing: this.props.comment,
         // We need to check for `false` explicitly since the Reddit API makes a distinction
         // between `false` (disliked) and `null` (neither liked nor disliked).
-        dir: this.props.comment.likes === false ? 0 : -1 // Back to neutral if we dislike it
+        dir: this.props.comment.get('likes') === false ? 0 : -1 // Back to neutral if we dislike it
       };
       this.getFlux().actions.vote(payload);
     }

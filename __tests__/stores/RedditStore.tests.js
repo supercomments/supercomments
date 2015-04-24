@@ -2,15 +2,19 @@ require('babelify/polyfill');
 
 jest.dontMock('util');
 jest.dontMock('capitalize');
+jest.dontMock('immutable');
+jest.dontMock('immutable/contrib/cursor');
 jest.dontMock('../../app/stores/RedditStore');
 
 var url = 'http://www.test.com/';
 
-var FluxxorTestUtils, fakeFlux, myStore, myStoreSpy, redditAPI;
+var FluxxorTestUtils, Immutable, Cursor, fakeFlux, myStore, myStoreSpy, redditAPI;
 beforeEach(function() {
   var Snoocore = require('snoocore');
   redditAPI = new Snoocore();
   FluxxorTestUtils = require('fluxxor-test-utils').extendJasmineMatchers(this);
+  Immutable = require('immutable');
+  Cursor = require('immutable/contrib/cursor');
 
   // Create an empty global `localStorage` variable.
   localStorage = {};
@@ -26,23 +30,23 @@ beforeEach(function() {
 describe('onUpdateUrl', function() {
   it('updates the URL, subreddit and subreddit URL', function() {
     fakeFlux.dispatcher.dispatch({ type: 'UPDATING_URL', payload: url });
-    expect(myStore.getState().url).toBe(url);
+    expect(myStore.state.url).toBe(url);
     fakeFlux.dispatcher.dispatch({ type: 'UPDATED_URL', payload: { subreddit: 'programming' }});
-    expect(myStore.getState().subreddit).toBe('/r/Programming');
-    expect(myStore.getState().subredditUrl).toBe('http://www.reddit.com/r/Programming');
+    expect(myStore.state.subreddit).toBe('/r/Programming');
+    expect(myStore.state.subredditUrl).toBe('http://www.reddit.com/r/Programming');
   });
 });
 
 describe('onLogin', function() {
   it('updates the user name', function() {
     fakeFlux.dispatcher.dispatch({ type: 'LOGGING_IN' });
-    expect(myStore.getState().loggingIn).toBe(true);
+    expect(myStore.state.loggingIn).toBe(true);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'LOGGED_IN', payload: 'username' });
-    expect(myStore.getState().loggingIn).toBe(false);
-    expect(myStore.getState().userName).toBe('username');
-    expect(myStore.getState().profileUrl).toBe('http://www.reddit.com/user/username');
+    expect(myStore.state.loggingIn).toBe(false);
+    expect(myStore.state.userName).toBe('username');
+    expect(myStore.state.profileUrl).toBe('http://www.reddit.com/user/username');
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
 });
@@ -51,176 +55,253 @@ describe('onLogout', function() {
   it('clears the user name', function() {
     fakeFlux.dispatcher.dispatch({ type: 'LOGOUT' });
     // expect(redditAPI.deauth).toBeCalled(); // uncomment when `deauth` is supported properly
-    expect(myStore.getState().userName).toBeNull();
+    expect(myStore.state.userName).toBeNull();
   });
 });
 
 describe('onSubmitComment', function() {
   it('adds a new top-level comment when the parent is a post', function() {
-    var parent = { replies: [] };
-    myStore.getState().comments = [];
+    var parent = Immutable.fromJS({ id: 'parent_id', name: 't3_parent_id', replies: [] });
     fakeFlux.dispatcher.dispatch({
       type: 'SUBMITTING_COMMENT',
       payload: { id: '123', parent: parent, body: 'the text' }
     });
-    expect(parent.replies.length).toBe(0);
-    expect(myStore.getState().comments.length).toBe(1);
-    expect(myStore.getState().comments[0].id).toBe('123');
-    expect(myStore.getState().comments[0].body).toBe('the text');
+    expect(parent.get('replies').count()).toBe(0);
+    expect(myStore.state.comments.count()).toBe(1);
+    expect(myStore.state.comments.getIn([ 0, 'id' ])).toBe('123');
+    expect(myStore.state.comments.getIn([ 0, 'body' ])).toBe('the text');
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({
       type: 'SUBMITTED_COMMENT', 
       payload: { id: '123', parent: parent, comment: { id: '456' }}
     });
-    expect(myStore.getState().comments[0].id).toBe('456'); // From fixture file
+    expect(myStore.state.comments.getIn([ 0, 'id' ])).toBe('456'); // From fixture file
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
   it('adds a new reply when the parent is a comment', function() {
-    var parent = { parent_id: 'parent', replies: [] };
-    myStore.getState().comments = [];
+    myStore.state.comments = Immutable.fromJS([
+      { id: 'parent_id', name: 't1_parent_id', replies: [] }
+    ]);
+    var parent = Cursor.from(myStore.state.comments, [ 0 ], (newData) => {
+      myStore.state.comments = newData;
+    });
     fakeFlux.dispatcher.dispatch({
       type: 'SUBMITTING_COMMENT',
       payload: { id: '123', parent: parent, body: 'the text' }
     });
-    expect(parent.replies.length).toBe(1);
-    expect(myStore.getState().comments.length).toBe(0);
-    expect(parent.replies[0].id).toBe('123');
-    expect(parent.replies[0].body).toBe('the text');
+    parent = Cursor.from(myStore.state.comments, [ 0 ], (newData) => {
+      myStore.state.comments = newData;
+    });
+    expect(parent.get('replies').count()).toBe(1);
+    expect(myStore.state.comments.count()).toBe(1);
+    expect(parent.getIn([ 'replies', 0, 'id' ])).toBe('123');
+    expect(parent.getIn([ 'replies', 0, 'body' ])).toBe('the text');
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({
       type: 'SUBMITTED_COMMENT', 
       payload: { id: '123', parent: parent, comment: { id: '456' }}
     });
-    expect(parent.replies[0].id).toBe('456'); // From fixture file
+    parent = myStore.state.comments.get(0);
+    expect(parent.getIn([ 'replies', 0, 'id' ])).toBe('456'); // From fixture file
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
   it('adds a second reply when the parent is a comment with an existing reply', function() {
-    var parent = { parent_id: 'parent', replies: [{ id: 'first' }] };
-    myStore.getState().comments = [];
+    myStore.state.comments = Immutable.fromJS([
+      { id: 'parent_id', name: 't1_parent_id', replies: [ { id: 'child' } ] }
+    ]);
+    var parent = Cursor.from(myStore.state.comments, [ 0 ], (newData) => {
+      myStore.state.comments = newData;
+    });
     fakeFlux.dispatcher.dispatch({
       type: 'SUBMITTING_COMMENT',
       payload: { id: '123', parent: parent, body: 'the text' }
     });
-    expect(parent.replies.length).toBe(2);
-    expect(myStore.getState().comments.length).toBe(0);
-    expect(parent.replies[0].id).toBe('123');
-    expect(parent.replies[0].body).toBe('the text');
+    parent = Cursor.from(myStore.state.comments, [ 0 ], (newData) => {
+      myStore.state.comments = newData;
+    });
+    expect(parent.get('replies').count()).toBe(2);
+    expect(myStore.state.comments.count()).toBe(1);
+    expect(parent.getIn([ 'replies', 0, 'id' ])).toBe('123');
+    expect(parent.getIn([ 'replies', 0, 'body' ])).toBe('the text');
+    expect(parent.getIn([ 'replies', 1, 'id' ])).toBe('child');
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({
       type: 'SUBMITTED_COMMENT', 
       payload: { id: '123', parent: parent, comment: { id: '456' }}
     });
-    expect(parent.replies[0].id).toBe('456'); // From fixture file
+    parent = myStore.state.comments.get(0);
+    expect(parent.getIn([ 'replies', 0, 'id' ])).toBe('456'); // From fixture file
+    expect(parent.getIn([ 'replies', 1, 'id' ])).toBe('child');
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
-  });
+ });
 });
 
 describe('onVote', function() {
+  beforeEach(function() {
+    myStore.state.comments = Immutable.fromJS([
+      { name: 'thing_name', likes: null, score: 10 },
+      { name: 'thing_name', likes: true, score: 10 },
+      { name: 'thing_name', likes: false, score: 10 }
+    ]);
+  });
   it('decrements the score of a thing when it is downvoted', function() {
+    var thing = Cursor.from(myStore.state.comments, [ 0 ], (newData) => {
+      myStore.state.comments = newData;
+    });
     var payload = {
-      thing: { name: 'thing_name', likes: null, score: 10 },
+      thing: thing,
       dir: -1
     };
     fakeFlux.dispatcher.dispatch({ type: 'VOTING', payload: payload });
-    expect(payload.thing.likes).toBe(false);
-    expect(payload.thing.score).toBe(9);
+    thing = myStore.state.comments.get(0);
+    expect(thing.get('likes')).toBe(false);
+    expect(thing.get('score')).toBe(9);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'VOTED', payload: payload.thing });
-    expect(myStoreSpy.getLastCall()).toBeUndefined();
+    expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
   it('lowers the score of a thing by two when it goes from upvoted to downvoted', function() {
+    var thing = Cursor.from(myStore.state.comments, [ 1 ], (newData) => {
+      myStore.state.comments = newData;
+    });
     var payload = {
-      thing: { name: 'thing_name', likes: true, score: 10 },
+      thing: thing,
       dir: -1
     };
     fakeFlux.dispatcher.dispatch({ type: 'VOTING', payload: payload });
-    expect(payload.thing.likes).toBe(false);
-    expect(payload.thing.score).toBe(8);
+    thing = myStore.state.comments.get(1);
+    expect(thing.get('likes')).toBe(false);
+    expect(thing.get('score')).toBe(8);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'VOTED', payload: payload.thing });
-    expect(myStoreSpy.getLastCall()).toBeUndefined();
+    expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
   it('increments the score of a thing when it is upvoted', function() {
+    var thing = Cursor.from(myStore.state.comments, [ 0 ], (newData) => {
+      myStore.state.comments = newData;
+    });
     var payload = {
-      thing: { name: 'thing_name', likes: null, score: 10 },
+      thing: thing,
       dir: 1
     };
     fakeFlux.dispatcher.dispatch({ type: 'VOTING', payload: payload });
-    expect(payload.thing.likes).toBe(true);
-    expect(payload.thing.score).toBe(11);
+    thing = myStore.state.comments.get(0);
+    expect(thing.get('likes')).toBe(true);
+    expect(thing.get('score')).toBe(11);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'VOTED', payload: payload.thing });
-    expect(myStoreSpy.getLastCall()).toBeUndefined();
+    expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
   it('raises the score of a thing by two when it goes from downvoted to upvoted', function() {
+    var thing = Cursor.from(myStore.state.comments, [ 2 ], (newData) => {
+      myStore.state.comments = newData;
+    });
     var payload = {
-      thing: { name: 'thing_name', likes: false, score: 10 },
+      thing: thing,
       dir: 1
     };
     fakeFlux.dispatcher.dispatch({ type: 'VOTING', payload: payload });
-    expect(payload.thing.likes).toBe(true);
-    expect(payload.thing.score).toBe(12);
+    thing = myStore.state.comments.get(2);
+    expect(thing.get('likes')).toBe(true);
+    expect(thing.get('score')).toBe(12);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'VOTED', payload: payload.thing });
-    expect(myStoreSpy.getLastCall()).toBeUndefined();
+    expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
   it('decrements the score of a thing when it stops being upvoted', function() {
+    var thing = Cursor.from(myStore.state.comments, [ 1 ], (newData) => {
+      myStore.state.comments = newData;
+    });
     var payload = {
-      thing: { name: 'thing_name', likes: true, score: 10 },
+      thing: thing,
       dir: 0
     };
     fakeFlux.dispatcher.dispatch({ type: 'VOTING', payload: payload });
-    expect(payload.thing.likes).toBe(null);
-    expect(payload.thing.score).toBe(9);
+    thing = myStore.state.comments.get(1);
+    expect(thing.get('likes')).toBe(null);
+    expect(thing.get('score')).toBe(9);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'VOTED', payload: payload.thing });
-    expect(myStoreSpy.getLastCall()).toBeUndefined();
+    expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
   it('increments the score of a thing when it stops being downvoted', function() {
+    var thing = Cursor.from(myStore.state.comments, [ 2 ], (newData) => {
+      myStore.state.comments = newData;
+    });
     var payload = {
-      thing: { name: 'thing_name', likes: false, score: 10 },
+      thing: thing,
       dir: 0
     };
     fakeFlux.dispatcher.dispatch({ type: 'VOTING', payload: payload });
-    expect(payload.thing.likes).toBe(null);
-    expect(payload.thing.score).toBe(11);
+    thing = myStore.state.comments.get(2);
+    expect(thing.get('likes')).toBe(null);
+    expect(thing.get('score')).toBe(11);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'VOTED', payload: payload.thing });
-    expect(myStoreSpy.getLastCall()).toBeUndefined();
+    expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
 });
 
 describe('onEditComment', function() {
   it('modifies the comment body when it is edited', function() {
-    var comment = { name: 'the_name', body: 'old_body' };
+    myStore.state.comments = Immutable.fromJS([
+      { name: 'the_name', body: 'old_body' }
+    ]);
+    var comment = Cursor.from(myStore.state.comments, [ 0 ], (newData) => {
+      myStore.state.comments = newData;
+    });
     var payload = { comment: comment, body: 'new_body' };
     fakeFlux.dispatcher.dispatch({ type: 'EDITING_COMMENT', payload: payload });
-    expect(comment.body).toBe('new_body');
+    comment = myStore.state.comments.get(0);
+    expect(comment.get('body')).toBe('new_body');
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'EDITED_COMMENT', payload: comment });
-    expect(myStoreSpy.getLastCall()).toBeUndefined();
+    expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
 });
 
 describe('onDeleteComment', function() {
   it('changes the comment author and body to "[deleted"]', function() {
-    var comment = { name: 'the_name', author: 'the_author', body: 'old_body' };
+    myStore.state.comments = Immutable.fromJS([
+      { name: 'the_name', body: 'old_body' }
+    ]);
+    var comment = Cursor.from(myStore.state.comments, [ 0 ], (newData) => {
+      myStore.state.comments = newData;
+    });
     fakeFlux.dispatcher.dispatch({ type: 'DELETING_COMMENT', payload: comment });
-    expect(comment.author).toBe('[deleted]');
-    expect(comment.body).toBe('[deleted]');
+    comment = myStore.state.comments.get(0);
+    expect(comment.get('author')).toBe('[deleted]');
+    expect(comment.get('body')).toBe('[deleted]');
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
     fakeFlux.dispatcher.dispatch({ type: 'DELETED_COMMENT', payload: comment });
-    expect(myStoreSpy.getLastCall()).toBeUndefined();
+    expect(myStoreSpy.getLastCall()).toEqual(['change']);
+  });
+});
+
+describe('onItemChanged', function() {
+  var comment;
+  beforeEach(function() {
+    comment = Immutable.fromJS({ id: '123' });
+    fakeFlux.dispatcher.dispatch({ type: 'ITEM_CHANGED', payload: { comment: comment, newState: { property: 'value' }}});
+  });
+  it('extends the default state of the comment', function() {
+    expect(myStore.getItemState(comment)).toEqual({ formExpanded: true, property: 'value' });
+    expect(myStoreSpy.getLastCall()).toEqual(['change']);
+  });
+  it('extends the existing state', function() {
+    fakeFlux.dispatcher.dispatch({ type: 'ITEM_CHANGED', payload: { comment: comment, newState: { property2: 'value2' }}});
+    expect(myStore.getItemState(comment)).toEqual({ formExpanded: true, property: 'value', property2: 'value2' });
+    expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
 });

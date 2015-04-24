@@ -63,7 +63,7 @@ function restoreSession() {
 var Actions = {
   updateUrl: function(url) {
     var store = this.flux.store('RedditStore');
-      if (!store.getState().userName) {
+    if (!store.getState().userName) {
       var userName = restoreSession();
       if (userName) {
         this.dispatch(Constants.LOGGED_IN, userName);
@@ -72,7 +72,7 @@ var Actions = {
     this.dispatch(Constants.UPDATING_URL, url);
     getBestPost(url).then((post) => {
       this.dispatch(Constants.UPDATED_URL, post);
-      this.flux.actions.reloadComments({ post: post, sortBy: 'best' });
+      this.flux.actions.reloadComments({ post: store.getState().post, sortBy: 'best' });
     });
   },
 
@@ -139,11 +139,11 @@ var Actions = {
 
       reddit('/api/comment').post({
         text: payload.body,
-        thing_id: parent.name
+        thing_id: parent.get('name')
       }).then((result) => {
         if (result.json.data.things && result.json.data.things.length > 0) {
           var comment = result.json.data.things[0].data;
-          this.dispatch(Constants.SUBMITTED_COMMENT, { id: tempId, parent: parent, comment: comment });
+          this.dispatch(Constants.SUBMITTED_COMMENT, { id: tempId, comment: comment });
         }
       });
     }
@@ -153,7 +153,7 @@ var Actions = {
     var thing = payload.thing;
     this.dispatch(Constants.VOTING, payload);
     reddit('/api/vote').post({
-      id: thing.name,
+      id: thing.get('name'),
       dir: payload.dir
     }).then(() => {
       this.dispatch(Constants.VOTED, thing);
@@ -163,7 +163,7 @@ var Actions = {
   reloadComments: function(payload) {
     this.dispatch(Constants.RELOADING_COMMENTS);
     if (payload.post) {
-      reddit('comments/' + payload.post.id + '.json').get({ sort: payload.sortBy }).then((listings) => {
+      reddit('comments/' + payload.post.get('id') + '.json').get({ sort: payload.sortBy }).then((listings) => {
         this.dispatch(Constants.RELOADED_COMMENTS, { post: listings[0].data.children[0].data, comments: listings[1] });
       });
     }
@@ -194,7 +194,7 @@ var Actions = {
     var comment = payload.comment;
     this.dispatch(Constants.EDITING_COMMENT, payload);
     reddit('/api/editusertext').post({
-      thing_id: comment.name,
+      thing_id: comment.get('name'),
       text: payload.body
     }).then(() => {
       this.dispatch(Constants.EDITED_COMMENT, comment);
@@ -204,7 +204,7 @@ var Actions = {
   deleteComment: function(comment) {
     this.dispatch(Constants.DELETING_COMMENT, comment);
     reddit('/api/del').post({
-      id: comment.name
+      id: comment.get('name'),
     }).then(() => {
       this.dispatch(Constants.DELETED_COMMENT, comment);
     });
@@ -214,7 +214,7 @@ var Actions = {
     this.dispatch(Constants.REPORTING_COMMENT, comment);
     // TODO: currently getting a 403 for this, need to investigate
     reddit('/api/report').post({
-      thing_id: comment.name,
+      thing_id: comment.get('name'),
       reason: 'other',
       other_reason: 'inappropriate (reported via SuperComments)'
     }).then(() => {
@@ -224,10 +224,6 @@ var Actions = {
 
   itemChanged: function(payload) {
     this.dispatch(Constants.ITEM_CHANGED, payload);
-  },
-
-  itemRemoved: function(item) {
-    this.dispatch(Constants.ITEM_REMOVED, item);
   },
 
   setTooltip: function(tooltip) {

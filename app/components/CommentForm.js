@@ -12,7 +12,7 @@ const AVATAR_URL = "//a.disquscdn.com/next/embed/assets/img/noavatar92.b677f9ddb
 // Form error handling
 
 var CommentForm = React.createClass({
-  mixins: [FluxMixin, StoreWatchMixin('RedditStore', 'ItemStateStore')],
+  mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
   getErrorText: function(error) {
     switch(error) {
@@ -37,16 +37,15 @@ var CommentForm = React.createClass({
   },
 
   getStateFromFlux: function() {
-    var state = this.getFlux().store('ItemStateStore').getItemState(this.props.comment);
+    var state = this.getFlux().store('RedditStore').getItemState(this.props.comment);
     state.userName = this.getFlux().store('RedditStore').getState().userName;
     state.url = this.getFlux().store('RedditStore').getState().url;
-    state.post = this.getFlux().store('RedditStore').getState().post;
     return state;
   },
 
   render: function() {
     var formClasses = classNames({
-      reply: !!this.props.item,
+      reply: !!this.props.comment,
       expanded: this.state.formExpanded,
       authenticated: this.state.userName
     });
@@ -103,10 +102,10 @@ var CommentForm = React.createClass({
                         </div>                    
                     </div>
                 </div>
-                {!this.props.comment ?
-                  <div>
-                    <br/>
-                    <section>
+                <div>
+                  <br/>
+                  <section>
+                    {!this.props.comment ?
                       <div className="guest">
                           <h6 className="guest-form-title">
                               Comments hosted on <a href="http://www.reddit.com">Reddit&reg;</a> and managed by SuperComments&trade;&nbsp;
@@ -135,11 +134,11 @@ var CommentForm = React.createClass({
                                   </p>
                               </div>
                           </div>
-                        </div>                  
-                      </section>
-                  </div> :
-                  null
-                }
+                        </div> :
+                        null
+                      }     
+                    </section>
+                </div>
             </div>
         </form>
     );

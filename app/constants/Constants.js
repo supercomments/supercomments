@@ -20,7 +20,6 @@ var Constants = [
   'REPORTING_COMMENT',
   'REPORTED_COMMENT',
   'ITEM_CHANGED',
-  'ITEM_REMOVED',
   'SET_TOOLTIP'
 ].reduce(function(current, next) {
   current[next] = next;

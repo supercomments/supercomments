@@ -21,9 +21,9 @@ var CommentsNavigation = React.createClass({
   render: function() {
     var recommendClasses= classNames({
       'dropdown-toggle' : true,
-      upvoted: this.state.post.likes
+      upvoted: this.state.post.get('likes')
     });    
-    var postScore = this.state.post ? this.state.post.score : null;
+    var postScore = this.state.post ? this.state.post.get('score') : null;
     var postScoreStyle = postScore ? {} : { display: 'none' };
     return (
         <div className="nav nav-secondary" data-tracking-area="secondary-nav">
@@ -94,7 +94,7 @@ var CommentsNavigation = React.createClass({
   onUpvote() {
     this.getFlux().actions.vote({
       thing: this.state.post,
-      dir: this.state.post.likes ? 0 : 1
+      dir: this.state.post.get('likes') ? 0 : 1
     });
   }
 });

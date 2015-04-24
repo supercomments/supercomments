@@ -20,7 +20,7 @@ var CommentsHeader = React.createClass({
                   <li className="tab-conversation active">
                       <a href={this.state.permalink}  className="publisher-nav-color">
                         <span className="comment-count">
-                          {this.state.commentCount} comments
+                          {this.state.commentCount} comments!
                         </span>
                         <span className="comment-count-placeholder">
                           {this.state.commentCount} comments

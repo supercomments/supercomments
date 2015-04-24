@@ -6,14 +6,14 @@ var FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
 var CommentEditForm = React.createClass({
-  mixins: [FluxMixin, StoreWatchMixin('ItemStateStore')],
+  mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
   componentWillMount: function() {
-    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editBody: this.props.comment.body }});
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editBody: this.props.comment.get('body') }});
   },
 
   getStateFromFlux: function() {
-    return this.getFlux().store('ItemStateStore').getItemState(this.props.comment);
+    return this.getFlux().store('RedditStore').getItemState(this.props.comment);
   },
 
   render: function() {

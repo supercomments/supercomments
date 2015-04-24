@@ -2,12 +2,15 @@ require('babelify/polyfill');
 
 jest.dontMock('util');
 jest.dontMock('capitalize');
+jest.dontMock('immutable');
 jest.dontMock('../../app/actions/Actions');
 
 var url = 'http://www.test.com/';
 
-var FluxxorTestUtils, fakeFlux, myActionsSpy, redditAPI, myStore, state;
+var FluxxorTestUtils, Immutable, fakeFlux, myActionsSpy, redditAPI, myStore, state;
 beforeEach(function() {
+  Immutable = require('immutable');
+
   var Snoocore = require('snoocore');
   redditAPI = new Snoocore();
   FluxxorTestUtils = require('fluxxor-test-utils').extendJasmineMatchers(this);
@@ -20,7 +23,7 @@ beforeEach(function() {
   myActionsSpy = fakeFlux.makeActionsDispatchSpy();
 
   state = {
-    post: { id: '123' },
+    post: Immutable.fromJS({ id: '123' }),
     sortBy: 'best'
   };
   myStore = fakeFlux.store('RedditStore');
@@ -82,7 +85,7 @@ describe('logout', function() {
 describe('submitComment', function() {
   it('submits the comment and informs the store', function() {
     var payload  = {
-      parent: { replies: [] },
+      parent: Immutable.fromJS({ replies: [] }),
       body: 'the_text',
       thing_id: '123'
     };
@@ -99,7 +102,7 @@ describe('submitComment', function() {
     expect(calls[2]).toEqual([ 'SUBMITTING_COMMENT', payload ]);
     expect(calls[3]).toEqual([
       'SUBMITTED_COMMENT',
-      { id: tempId, parent: payload.parent, comment: redditAPI('/api/comment').payload.json.data.things[0].data }
+      { id: tempId, comment: redditAPI('/api/comment').payload.json.data.things[0].data }
     ]);
     expect(redditAPI('/api/comment').post).toBeCalledWith({ text: payload.body, thing_id: payload.parent.name });
   });
@@ -141,7 +144,7 @@ describe('submitComment', function() {
 describe('vote', function() {
   it('submits the vote and informs the store', function() {
     var payload = {
-      thing: { name: 'thing_name', likes: null, score: 10 },
+      thing: Immutable.fromJS({ name: 'thing_name', likes: null, score: 10 }),
       dir: -1
     };
     fakeFlux.actions.vote(payload);
@@ -155,7 +158,7 @@ describe('vote', function() {
 
 describe('editComment', function() {
   it('submits the new body and informs the store', function() {
-    var comment = { name: 'the_name', body: 'old_body' };
+    var comment = Immutable.fromJS({ name: 'the_name', body: 'old_body' });
     var payload = { comment: comment, body: 'new_body' };
     fakeFlux.actions.editComment(payload);
     var calls = myActionsSpy.getCalls();
@@ -168,7 +171,7 @@ describe('editComment', function() {
 
 describe('deleteComment', function() {
   it('deletes the comment and informs the store', function() {
-    var comment = { name: 'the_name', author: 'the_author', body: 'old_body' };
+    var comment = Immutable.fromJS({ name: 'the_name', author: 'the_author', body: 'old_body' });
     fakeFlux.actions.deleteComment(comment);
     var calls = myActionsSpy.getCalls();
     expect(calls.length).toBe(2);

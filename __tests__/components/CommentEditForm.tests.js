@@ -1,21 +1,22 @@
 jest.dontMock('util');
 jest.dontMock('../../app/components/CommentEditForm');
+jest.dontMock('immutable');
 
-var React, TestUtils, FluxxorTestUtils, fakeFlux, MyComponent, itemState, myStore, component, onSubmit, comment;
+var React, TestUtils, FluxxorTestUtils, Immutable, fakeFlux, MyComponent, itemState, myStore, component, onSubmit, comment;
 beforeEach(function() {
   React = require('react/addons');
   TestUtils = React.addons.TestUtils;
-
   FluxxorTestUtils = require('fluxxor-test-utils').extendJasmineMatchers(this);
+  Immutable = require('immutable');
 
-  var ItemStateStore = require('../../app/stores/ItemStateStore');
-  fakeFlux = FluxxorTestUtils.fakeFlux({ ItemStateStore: new ItemStateStore() }, require('../../app/actions/Actions'));
+  var RedditStore = require('../../app/stores/RedditStore');
+  fakeFlux = FluxxorTestUtils.fakeFlux({ RedditStore: new RedditStore() }, require('../../app/actions/Actions'));
   fakeFlux.genMocksForStoresAndActions();
 
   MyComponent = require('../../app/components/CommentEditForm');
-  comment = { body: 'old value' };
+  comment = Immutable.fromJS({ body: 'old value' });
 
-  myStore = fakeFlux.stores.ItemStateStore;
+  myStore = fakeFlux.stores.RedditStore;
   itemState = {
     editBody: 'new value'
   };

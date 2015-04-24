@@ -1,26 +1,23 @@
 jest.dontMock('util');
 jest.dontMock('../../app/components/CommentForm');
+jest.dontMock('immutable');
 
-var React, TestUtils, FluxxorTestUtils, fakeFlux, MyComponent, component, onSubmit, state, comment, itemState;
+var React, TestUtils, FluxxorTestUtils, Immutable, fakeFlux, MyComponent, component, onSubmit, state, comment, itemState;
 beforeEach(function() {
   React = require('react/addons');
   TestUtils = React.addons.TestUtils;
-
   FluxxorTestUtils = require('fluxxor-test-utils').extendJasmineMatchers(this);
+  Immutable = require('immutable');
 
   var RedditStore = require('../../app/stores/RedditStore');
-  var ItemStateStore = require('../../app/stores/ItemStateStore');
-  fakeFlux = FluxxorTestUtils.fakeFlux(
-    { RedditStore: new RedditStore(), ItemStateStore: new ItemStateStore() },
-    require('../../app/actions/Actions')
-  );
+  fakeFlux = FluxxorTestUtils.fakeFlux({ RedditStore: new RedditStore(), }, require('../../app/actions/Actions'));
   fakeFlux.genMocksForStoresAndActions();
 });
 
 describe('When logged in on a page that has a post', function() {
   beforeEach(function() {
     state = {
-      post: { id: 'some_id', body: 'old post' },
+      post: Immutable.fromJS({ id: 'some_id', body: 'old post' }),
       userName: 'the user'
     };
     fakeFlux.stores.RedditStore.getState = jest.genMockFunction().mockImplementation(function() {
@@ -30,16 +27,16 @@ describe('When logged in on a page that has a post', function() {
       formExpanded: true,
       replyBody: 'new value'
     };
-    fakeFlux.stores.ItemStateStore.getItemState = jest.genMockFunction().mockImplementation(function() {
+    fakeFlux.stores.RedditStore.getItemState = jest.genMockFunction().mockImplementation(function() {
       return itemState;
     });
   });
   describe('Replying to a comment', function() {
     beforeEach(function() {
       MyComponent = require('../../app/components/CommentForm');
-      comment = {
+      comment = Immutable.fromJS({
         body: 'old value'
-      };
+      });
       var jsx = <MyComponent flux={fakeFlux} comment={comment} onSubmit={onSubmit}/>;
       component = TestUtils.renderIntoDocument(jsx);
     });
