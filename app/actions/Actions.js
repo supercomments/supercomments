@@ -228,6 +228,10 @@ var Actions = {
 
   setTooltip: function(tooltip) {
     this.dispatch(Constants.SET_TOOLTIP, tooltip);
+  },
+
+  hideTooltip: function() {
+    this.dispatch(Constants.SET_TOOLTIP, null);
   }
 };
 

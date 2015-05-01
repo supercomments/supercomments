@@ -8,13 +8,11 @@ var CommentTooltip = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
   getStateFromFlux: function() {
-    return this.getFlux().store("RedditStore").getState();
-  },
-
-  componentWillUpdate: function(nextProps, nextState) {
-    if (nextState.tooltip) {
-      nextState.bottom = nextState.tooltip.node.getBoundingClientRect().top;
+    var state = this.getFlux().store("RedditStore").getState();
+    if (state.tooltip) {
+      state.bottom = state.tooltip.node.getBoundingClientRect().top;
     }
+    return state;
   },
 
   componentDidUpdate: function(/* prevProps, prevState */) {
@@ -40,7 +38,7 @@ var CommentTooltip = React.createClass({
   },
 
   onHideTooltip: function() {
-    this.getFlux().actions.setTooltip(null);
+    this.getFlux().actions.hideTooltip();
   }
 });
 

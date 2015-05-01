@@ -15,7 +15,9 @@ var CommentItem = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
   getStateFromFlux: function() {
-    return this.getFlux().store('RedditStore').getItemState(this.props.comment);
+    var state = this.getFlux().store('RedditStore').getItemState(this.props.comment);
+    state.isAuthor = state.userName === this.props.comment.get('author');
+    return state;
   },
 
   shouldComponentUpdate: function(nextProps, nextState) {
@@ -65,7 +67,6 @@ var CommentItem = React.createClass({
       edit: true,
       active: this.state.editFormVisible
     });
-    var isAuthor = this.getFlux().store('RedditStore').getState().userName === this.props.comment.get('author');
     var isDeleted = this.props.comment.get('author') === '[deleted]';
     return (
       <li className={classes}>
@@ -150,7 +151,7 @@ var CommentItem = React.createClass({
                                     <i className="icon icon-mobile icon-reply"></i><span className="text">Reply</span>
                                 </a>
                             </li>
-                           {isAuthor ?
+                           {this.state.isAuthor ?
                               <div>
                                 <li className="bullet">•</li>
                                 <li className={editClasses}>

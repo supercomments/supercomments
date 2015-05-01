@@ -26,7 +26,7 @@ var CommentForm = React.createClass({
 
   componentDidMount: function() {
     if (this.state.formExpanded) {
-      React.findDOMNode(this.refs.textarea).focus();
+      this.refs.textarea.getDOMNode().focus();
     }
   },
 
