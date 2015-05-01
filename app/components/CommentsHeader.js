@@ -1,5 +1,6 @@
 var React = require('react');
 var Fluxxor = require('fluxxor');
+var classNames = require('classnames');
 var CommentsUser = require('./CommentsUser');
 
 var FluxMixin = Fluxxor.FluxMixin(React),
@@ -13,6 +14,10 @@ var CommentsHeader = React.createClass({
   },
 
   render: function() {
+    var notificationClasses = classNames({
+      'notification-menu': true,
+      unread: this.state.unreadCount > 0
+    });
     return (
       <header id="main-nav">
           <nav className="nav nav-primary">
@@ -20,7 +25,7 @@ var CommentsHeader = React.createClass({
                   <li className="tab-conversation active">
                       <a href={this.state.permalink}  className="publisher-nav-color">
                         <span className="comment-count">
-                          {this.state.commentCount} comments!
+                          {this.state.commentCount} comments
                         </span>
                         <span className="comment-count-placeholder">
                           {this.state.commentCount} comments
@@ -36,17 +41,21 @@ var CommentsHeader = React.createClass({
                       </a>
                   </li>
                   <CommentsUser/>
-                  <li className="notification-menu" >
-                      <a href="https://disqus.com/home/inbox/" className="notification-container">
+                  <li className={notificationClasses} >
+                      <a href="http://www.reddit.com/message/inbox/" target="_blank" className="notification-container" onClick={this.onInbox}>
                           <span className="notification-icon icon-comment"></span>
-                          <span className="notification-count"></span>
+                          <span className="notification-count">{this.state.unreadCount ? this.state.unreadCount : null}</span>
                       </a>
                   </li>
               </ul>
           </nav>
       </header>
     );
-  }
+  },
+
+  onInbox: function() {
+    this.getFlux().actions.clearUnreadCount();
+  }  
 });
 
 module.exports = CommentsHeader;

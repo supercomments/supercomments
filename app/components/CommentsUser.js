@@ -29,7 +29,7 @@ var CommentsUser = React.createClass({
               <span className="avatar">
                   <img   alt="Avatar"/>
               </span>
-              <span className="username"  >{this.state.userName}</span>
+              <span className="username">{this.state.userName}</span>
               </span> <span className="caret"></span>
           </a>
           <ul className="dropdown-menu">
@@ -56,7 +56,7 @@ var CommentsUser = React.createClass({
     return (
       <li className="dropdown user-menu" >
         {this.state.loggingIn ?
-          <a className="dropdown-toggle" style={{opacity: '20%'}}>Logging in</a> :
+          <a className="dropdown-toggle" style={{opacity: '20%'}}>Logging In</a> :
           <a className="dropdown-toggle" onClick={this.onLogin}>Login</a>
         }
       </li>

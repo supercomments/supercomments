@@ -1,8 +1,5 @@
-require('babelify/polyfill');
+require('babel/polyfill');
 
-jest.dontMock('util');
-jest.dontMock('capitalize');
-jest.dontMock('immutable');
 jest.dontMock('../../app/actions/Actions');
 
 var url = 'http://www.test.com/';
@@ -34,14 +31,33 @@ beforeEach(function() {
 
 describe('updateUrl', function() {
   it('gets the best post (most upvotes) when the URL is changed', function() {
+    var request = require('request-promise');
     fakeFlux.actions.reloadComments = jest.genMockFunction();
-    fakeFlux.actions.updateUrl(url);
+    var payload = {
+      url: url,
+      config: {
+        disqus: {
+          forum: 'my_shortname'
+        }
+      }
+    };
+    fakeFlux.actions.updateUrl(payload);
     var calls = myActionsSpy.getCalls();
     expect(calls.length).toBe(2);
-    expect(calls[0]).toEqual([ 'UPDATING_URL', url ]);
+    expect(calls[0]).toEqual([ 'UPDATING_URL', {
+      config: {
+        disqus: {
+          forum: 'my_shortname'
+        }
+      },
+      url: 'http://www.test.com/'
+    }
+ ]);
     expect(calls[1][0]).toBe('UPDATED_URL');
-    expect(calls[1][1].subreddit).toBe('programming');
+    expect(calls[1][1].reddit.subreddit).toBe('programming');
+    expect(calls[1][1].disqus.posts).toBe('10');
     expect(fakeFlux.actions.reloadComments).toBeCalled();
+    expect(request).toBeCalled(); // TODO check parameters
   });
 });
 
@@ -75,7 +91,7 @@ describe('logout', function() {
     fakeFlux.actions.reloadComments = jest.genMockFunction();
     localStorage.superComments = { token: 'foo' };
     fakeFlux.actions.logout();
-    // expect(redditAPI.deauth).toBeCalled(); // uncomment when `deauth` is supported properly
+    expect(redditAPI.deauth).toBeCalled();
     expect(localStorage.superComments).toBeUndefined();
     expect(myActionsSpy.getLastCall()).toEqual(['LOGOUT']);
     expect(fakeFlux.actions.reloadComments).toBeCalledWith({ post: state.post, sortBy: state.sortBy });

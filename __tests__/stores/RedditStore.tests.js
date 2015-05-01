@@ -1,4 +1,4 @@
-require('babelify/polyfill');
+require('babel/polyfill');
 
 jest.dontMock('util');
 jest.dontMock('capitalize');
@@ -29,9 +29,9 @@ beforeEach(function() {
 
 describe('onUpdateUrl', function() {
   it('updates the URL, subreddit and subreddit URL', function() {
-    fakeFlux.dispatcher.dispatch({ type: 'UPDATING_URL', payload: url });
+    fakeFlux.dispatcher.dispatch({ type: 'UPDATING_URL', payload: { url: url }});
     expect(myStore.state.url).toBe(url);
-    fakeFlux.dispatcher.dispatch({ type: 'UPDATED_URL', payload: { subreddit: 'programming' }});
+    fakeFlux.dispatcher.dispatch({ type: 'UPDATED_URL', payload: { reddit: { subreddit: 'programming' }}});
     expect(myStore.state.subreddit).toBe('/r/Programming');
     expect(myStore.state.subredditUrl).toBe('http://www.reddit.com/r/Programming');
   });
