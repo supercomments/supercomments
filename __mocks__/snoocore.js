@@ -5,6 +5,7 @@ var comment = JSON.parse(fs.readFileSync('fixtures/comment.json', 'utf8'));
 var comments = JSON.parse(fs.readFileSync('fixtures/comments.json', 'utf8'));
 
 function MockPromise(payload) {
+  this.payload = payload;
   this.then = function(callback) {
     var result = callback(payload);
     if (result instanceof MockPromise) {
@@ -69,6 +70,10 @@ function Snoocore() {
   };
 
   self.path.auth = jest.genMockFunction().mockImplementation(function() {
+    return new MockPromise();
+  });
+
+  self.path.deauth = jest.genMockFunction().mockImplementation(function() {
     return new MockPromise();
   });
 

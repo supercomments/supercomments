@@ -1,7 +1,4 @@
-jest.dontMock('util');
 jest.dontMock('../../app/components/CommentList');
-jest.dontMock('immutable');
-jest.dontMock('immutable/contrib/cursor');
 
 var React, Immutable, TestUtils, FluxxorTestUtils, fakeFlux, MyComponent;
 beforeEach(function() {

@@ -1,7 +1,12 @@
 var Constants = require('../constants/Constants');
 var FormErrors = require('../constants/FormErrors');
 var Snoocore = require('snoocore');
+var request = require('request-promise');
 var shortid = require('shortid');
+
+const DISQUS_API_URL = 'https://disqus.com/api/3.0/threads/';
+const DISQUS_DETAILS_ENDPOINT = 'details.json';
+const DISQUS_API_KEY = 'o2FOkUk8qdMbHO0IaSgOcF0IFf2FhFWRcGuDPUHtsi89ymcvMZT5p6S5PAkf3h80';
 
 const USER_AGENT = 'SuperComments';
 const AUTH_WINDOW_WIDTH = 1024;
@@ -23,9 +28,22 @@ function createAPI() {
 
 var reddit = createAPI();
 
-var messageListenerAdded = false;
+function getDisqusThreadDetails(url, forum) {
+  var options = {
+    url: `${DISQUS_API_URL}${DISQUS_DETAILS_ENDPOINT}`,
+    qs: {
+      api_key: DISQUS_API_KEY,
+      forum: forum,
+      thread: `link:${url}`
+    }
+  };
 
-function getBestPost(url) {
+  return request(options).then((body) => {
+    return JSON.parse(body).response;
+  });
+}
+
+function getBestRedditPost(url) {
   return reddit('search.json').get({ q: 'url:' + url }).then((listing) => {
     var sortedPosts = listing.data.children.sort((a, b) => {
       // Descending order
@@ -61,54 +79,74 @@ function restoreSession() {
 }
 
 var Actions = {
-  updateUrl: function(url) {
+  updateUrl: function(payload) {
+    var url = payload.url;
+    var config = payload.config;
     var store = this.flux.store('RedditStore');
     if (!store.getState().userName) {
       var userName = restoreSession();
       if (userName) {
-        this.dispatch(Constants.LOGGED_IN, userName);
+        this.dispatch(Constants.LOGGED_IN, { userName: userName, unreadCount: 0 });
       }
     }
-    this.dispatch(Constants.UPDATING_URL, url);
-    getBestPost(url).then((post) => {
-      this.dispatch(Constants.UPDATED_URL, post);
+    this.dispatch(Constants.UPDATING_URL, payload);
+    Promise.all([
+      getBestRedditPost(url).then((post) => {
+        return { reddit: post };
+      }),
+      getDisqusThreadDetails(url, config.disqus.forum).then((details) => {
+        return { disqus: details };
+      })
+    ]).then((values) => {
+      this.dispatch(Constants.UPDATED_URL, values.reduce((all, current) => {
+        return Object.assign(all, current);
+      }, {}));
       this.flux.actions.reloadComments({ post: store.getState().post, sortBy: 'best' });
     });
-  },
+ },
 
   login: function() {
-    var state = 'TODO'; // CSRF
+    var createLoginMessageListener = function(csrf, dispatch, flux) {
+      // Used so the OAuth popup can tell us when the user has authenticated
+      return function messageListener() {
+        var data = event.data;
+        if (('token' in data) && ('state' in data) && (data.state === csrf)) {
+          var token = data.token;
+          dispatch(Constants.LOGGING_IN);
+          reddit.auth(token).then(() => {
+            return reddit('/api/v1/me').get();
+          })
+          .then((data) => {
+            var userName = data.name;
+            dispatch(Constants.LOGGED_IN, { userName: userName, unreadCount: data.inbox_count });
+            saveSession(token, userName);
+
+            var store = flux.store('RedditStore');
+            flux.actions.reloadComments({ post: store.getState().post, sortBy: store.getState().sortBy });
+          });
+        }
+        window.removeEventListener('message', messageListener, false);
+      };
+    };
+
+    var state = shortid.generate(); // CSRF
     var url = reddit.getImplicitAuthUrl(state);
 
-    if (!messageListenerAdded) {
-      // Used so the OAuth popup can tell us when the user has authenticated
-      window.addEventListener('message', (event) => {
-        this.dispatch(Constants.LOGGING_IN);
-        reddit.auth(event.data).then(() => {
-          return reddit('/api/v1/me').get();
-        })
-        .then((data) => {
-          var token = event.data;
-          var userName = data.name;
-          this.dispatch(Constants.LOGGED_IN, userName);
-          saveSession(token, userName);
-
-          var store = this.flux.store('RedditStore');
-          this.flux.actions.reloadComments({ post: store.getState().post, sortBy: store.getState().sortBy });
-        });
-      }, false);
-      messageListenerAdded = true;
-    }
-
+    window.addEventListener('message', createLoginMessageListener(state, this.dispatch, this.flux), false);
     window.open(url, 'RedditAuth', `height=${AUTH_WINDOW_HEIGHT},width=${AUTH_WINDOW_WIDTH}`);
   },
 
   logout: function() {
-    reddit._authData = {};
-    delete localStorage.superComments;
-    this.dispatch(Constants.LOGOUT);
-    var store = this.flux.store('RedditStore');
-    this.flux.actions.reloadComments({ post: store.getState().post, sortBy: store.getState().sortBy });
+    reddit.deauth().then(() => {
+      delete localStorage.superComments;
+      this.dispatch(Constants.LOGOUT);
+      var store = this.flux.store('RedditStore');
+      this.flux.actions.reloadComments({ post: store.getState().post, sortBy: store.getState().sortBy });
+    });
+  },
+
+  clearUnreadCount: function() {
+    this.dispatch(Constants.UNREAD_MESSAGES_READ);
   },
 
   submitComment: function(payload) {
@@ -120,7 +158,7 @@ var Actions = {
     }
     else if (!store.getState().post && !payload.secondChance) {
       // Post might have been added since we loaded the page, so try to get it
-      return getBestPost(store.getState().url).then((post) => {
+      return getBestRedditPost(store.getState().url).then((post) => {
         this.dispatch(Constants.UPDATED_URL, post);
         payload.secondChance = true;
         this.flux.actions.submitComment(payload);

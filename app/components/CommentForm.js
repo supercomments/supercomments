@@ -108,7 +108,7 @@ var CommentForm = React.createClass({
                     {!this.props.comment ?
                       <div className="guest">
                           <h6 className="guest-form-title">
-                              Comments hosted on <a href="http://www.reddit.com">Reddit&reg;</a> and managed by SuperComments&trade;&nbsp;
+                              Comments hosted on <a href="http://www.reddit.com" target="_blank">Reddit&reg;</a> and managed by SuperComments&trade;&nbsp;
                           </h6>
 
                           <div className="what-is-disqus help-icon">

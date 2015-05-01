@@ -25,15 +25,10 @@ var CommentItem = React.createClass({
     var oldKeys = Object.keys(this.state);
     var newKeys = Object.keys(nextState);
     if (oldKeys.length !== newKeys.length) {
-      console.log(oldKeys + ' ' + newKeys + 'NEW KEY');
       return true;
     }
     return oldKeys.some((key) => {
-      var result = (!(key in nextState) || (this.state[key] !== nextState[key]));
-      if (result) {
-        console.log('NEW VALUE');
-      }
-      return result;
+      return (!(key in nextState) || (this.state[key] !== nextState[key]));
     });
   },
 
