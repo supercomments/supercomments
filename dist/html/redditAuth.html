@@ -1,0 +1,14 @@
+<html>
+<!--<![endif]-->
+
+<head>
+    <script type="text/javascript">
+        var code = window.location.href.match(/.*#access_token=(.[^&]+)/)[1];
+        window.opener.postMessage(code, '*');
+        window.close();
+    </script>
+</head>
+
+<body>
+</body>
+</html>
