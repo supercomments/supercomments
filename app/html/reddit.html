@@ -8,6 +8,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
+    <script type="text/javascript">
+      function autoResize() {
+          // Adjust frame height when contents are resized
+          var appElement = document.getElementById('supercomments');
+          var observer = new MutationObserver(function(mutations) {
+            if (parseInt(frameElement.style.height, 10) !== appElement.scrollHeight) {
+              frameElement.style.height = appElement.scrollHeight + 'px';
+            }
+          });
+          observer.observe(appElement, {
+            attributes: true,
+            attributeOldValue: false,
+            characterData: true,
+            characterDataOldValue: false,
+            childList: true,
+            subtree: true
+          });
+        }
+    </script>
+
     <style>
     html {
         overflow: hidden;
@@ -20,7 +40,7 @@
     <link rel="stylesheet" href="//a.disquscdn.com/next/embed/styles/lounge.0abb70fd547f185d1364dbb5b6ad39df.css" media="all">
 </head>
 
-<body>
+<body onLoad="autoResize()">
     <div id="supercomments"/>
 </body>
 </html>

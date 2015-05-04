@@ -104,15 +104,17 @@ var RedditStore = Fluxxor.createStore({
   },
 
   onUpdatedUrl: function(payload) {
-    var post = payload.reddit;
-    if (post) {
-      this.state.permalink = 'http://www.reddit.com' + post.permalink;
-      this.state.subreddit = `/r/${capitalize(post.subreddit)}`;
-      this.state.subredditUrl = `http://www.reddit.com${this.state.subreddit}`;
-      this.state.post = Immutable.fromJS(mapRedditPost(post));
+    if ('reddit' in payload) {
+      var post = payload.reddit;
+      if (post) {
+        this.state.permalink = 'http://www.reddit.com' + post.permalink;
+        this.state.subreddit = `/r/${capitalize(post.subreddit)}`;
+        this.state.subredditUrl = `http://www.reddit.com${this.state.subreddit}`;
+        this.state.post = Immutable.fromJS(mapRedditPost(post));
+      }
+      this.state.postLoaded = true;
+      this.emit('change');
     }
-    this.state.postLoaded = true;
-    this.emit('change');
   },
 
   onLoggingIn: function() {
@@ -157,6 +159,7 @@ var RedditStore = Fluxxor.createStore({
     else {
       this.state.comments = this.state.comments.unshift(comment);
     }
+    this.state.commentCount = this.state.commentCount ? this.state.commentCount+1 : 1;
     this.onItemChanged({ comment: comment, newState: { parent: newParent, disabled: true }});
     this.emit('change');
   },

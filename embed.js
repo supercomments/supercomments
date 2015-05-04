@@ -13,8 +13,10 @@
     iframe.setAttribute('tabindex', '0');
     iframe.setAttribute('width', '100%');
     iframe.setAttribute('height', '100%');
+    iframe.setAttribute('scrolling', 'no');
     iframe.setAttribute('horizontalscrolling', 'no');
-    iframe.setAttribute('style', 'width: 100% !important; border: none !important;');
+    iframe.setAttribute('verticalscrolling', 'no');
+    iframe.setAttribute('style', 'width: 100% !important; border: none !important; overflow: hidden !important;');
     div.appendChild(iframe);
 
     // Inject the HTML

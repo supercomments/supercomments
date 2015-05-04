@@ -14,10 +14,9 @@ var stores = {
 
 var flux = new Fluxxor.Flux(stores, Actions);
 
-var url = window.location.search.substr(1);
 var config = JSON.parse(atob(frameElement.getAttribute('data-config')));
 
-flux.actions.updateUrl({ url: url, config: { disqus: config.disqus }});
+flux.actions.updateUrl({ url: config.url, config: { disqus: config.disqus }});
 
 if (process.env.NODE_ENV !== 'test') {
   React.render(

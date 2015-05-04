@@ -19,9 +19,11 @@ var DisqusStore = Fluxxor.createStore({
   },
 
   onUpdatedUrl: function(payload) {
-    var details = payload.disqus;
-    this.state.commentCount = details.posts;
-    this.emit('change');
+    if ('disqus' in payload) {
+      var details = payload.disqus;
+      this.state.commentCount = details.posts;
+      this.emit('change');
+    }
   },
 
   getState: function() {

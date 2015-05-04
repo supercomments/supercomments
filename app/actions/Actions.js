@@ -1,8 +1,9 @@
 var Constants = require('../constants/Constants');
 var FormErrors = require('../constants/FormErrors');
 var Snoocore = require('snoocore');
-var request = require('request-promise');
+var jsonp = require('jsonp');
 var shortid = require('shortid');
+var url = require('url');
 
 const DISQUS_API_URL = 'https://disqus.com/api/3.0/threads/';
 const DISQUS_DETAILS_ENDPOINT = 'details.json';
@@ -28,23 +29,28 @@ function createAPI() {
 
 var reddit = createAPI();
 
-function getDisqusThreadDetails(url, forum) {
-  var options = {
-    url: `${DISQUS_API_URL}${DISQUS_DETAILS_ENDPOINT}`,
-    qs: {
+function getDisqusThreadDetails(postUrl, forum) {
+  var deferred = new Promise((resolve, reject) => {
+    var parsedUrl = url.parse(`${DISQUS_API_URL}${DISQUS_DETAILS_ENDPOINT}`);
+    parsedUrl.query = {
       api_key: DISQUS_API_KEY,
       forum: forum,
-      thread: `link:${url}`
-    }
-  };
-
-  return request(options).then((body) => {
-    return JSON.parse(body).response;
+      thread: `link:${postUrl}`
+    };
+    jsonp(url.format(parsedUrl), (err, data) => {
+      if (err) {
+        reject(err);
+      }
+      else {
+        resolve(data.response);
+      }
+    });
   });
+  return deferred;
 }
 
-function getBestRedditPost(url) {
-  return reddit('search.json').get({ q: 'url:' + url }).then((listing) => {
+function getBestRedditPost(postUrl) {
+  return reddit('search.json').get({ q: 'url:' + postUrl }).then((listing) => {
     var sortedPosts = listing.data.children.sort((a, b) => {
       // Descending order
       return b.data.score - a.data.score;
@@ -80,7 +86,7 @@ function restoreSession() {
 
 var Actions = {
   updateUrl: function(payload) {
-    var url = payload.url;
+    var postUrl = payload.url;
     var config = payload.config;
     var store = this.flux.store('RedditStore');
     if (!store.getState().userName) {
@@ -91,10 +97,10 @@ var Actions = {
     }
     this.dispatch(Constants.UPDATING_URL, payload);
     Promise.all([
-      getBestRedditPost(url).then((post) => {
+      getBestRedditPost(postUrl).then((post) => {
         return { reddit: post };
       }),
-      getDisqusThreadDetails(url, config.disqus.forum).then((details) => {
+      getDisqusThreadDetails(postUrl, config.disqus.forum).then((details) => {
         return { disqus: details };
       })
     ]).then((values) => {
@@ -108,7 +114,7 @@ var Actions = {
   login: function() {
     var createLoginMessageListener = function(csrf, dispatch, flux) {
       // Used so the OAuth popup can tell us when the user has authenticated
-      return function messageListener() {
+      return function messageListener(event) {
         var data = event.data;
         if (('token' in data) && ('state' in data) && (data.state === csrf)) {
           var token = data.token;
@@ -130,10 +136,10 @@ var Actions = {
     };
 
     var state = shortid.generate(); // CSRF
-    var url = reddit.getImplicitAuthUrl(state);
+    var authUrl = reddit.getImplicitAuthUrl(state);
 
     window.addEventListener('message', createLoginMessageListener(state, this.dispatch, this.flux), false);
-    window.open(url, 'RedditAuth', `height=${AUTH_WINDOW_HEIGHT},width=${AUTH_WINDOW_WIDTH}`);
+    window.open(authUrl, 'RedditAuth', `height=${AUTH_WINDOW_HEIGHT},width=${AUTH_WINDOW_WIDTH}`);
   },
 
   logout: function() {
@@ -159,7 +165,7 @@ var Actions = {
     else if (!store.getState().post && !payload.secondChance) {
       // Post might have been added since we loaded the page, so try to get it
       return getBestRedditPost(store.getState().url).then((post) => {
-        this.dispatch(Constants.UPDATED_URL, post);
+        this.dispatch(Constants.UPDATED_URL, { reddit: post });
         payload.secondChance = true;
         this.flux.actions.submitComment(payload);
       });

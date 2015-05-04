@@ -56,7 +56,7 @@ function Snoocore() {
         return posts.get;
       }
     }),
-    '/api/v1/me': new MockAPI({ name: 'username' }),
+    '/api/v1/me': new MockAPI({ name: 'username', inbox_count: 4 }),
     '/api/comment': new MockAPI(comment),
     'comments/123.json': new MockAPI(comments)
   };

@@ -43,9 +43,10 @@ describe('onLogin', function() {
     expect(myStore.state.loggingIn).toBe(true);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
-    fakeFlux.dispatcher.dispatch({ type: 'LOGGED_IN', payload: 'username' });
+    fakeFlux.dispatcher.dispatch({ type: 'LOGGED_IN', payload: { userName: 'username', unreadCount: 7 }});
     expect(myStore.state.loggingIn).toBe(false);
     expect(myStore.state.userName).toBe('username');
+    expect(myStore.state.unreadCount).toBe(7);
     expect(myStore.state.profileUrl).toBe('http://www.reddit.com/user/username');
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });
