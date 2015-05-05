@@ -7,7 +7,8 @@ var DisqusStore = Fluxxor.createStore({
     };
     this.bindActions(
       Constants.UPDATING_URL, this.onUpdatingUrl,
-      Constants.UPDATED_URL, this.onUpdatedUrl
+      Constants.UPDATED_URL, this.onUpdatedUrl,
+      Constants.RELOADED_DISQUS_DETAILS, this.onReloadedDisqusDetails
     );
   },
 
@@ -22,6 +23,13 @@ var DisqusStore = Fluxxor.createStore({
     if ('disqus' in payload) {
       var details = payload.disqus;
       this.state.commentCount = details.posts;
+      this.emit('change');
+    }
+  },
+
+  onReloadedDisqusDetails: function(payload) {
+    if ('posts' in payload && payload.posts !== this.state.commentCount) {
+      this.state.commentCount = payload.posts;
       this.emit('change');
     }
   },

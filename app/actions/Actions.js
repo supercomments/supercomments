@@ -109,7 +109,7 @@ var Actions = {
       }, {}));
       this.flux.actions.reloadComments({ post: store.getState().post, sortBy: 'best' });
     });
- },
+  },
 
   login: function() {
     var createLoginMessageListener = function(csrf, dispatch, flux) {
@@ -276,6 +276,13 @@ var Actions = {
 
   hideTooltip: function() {
     this.dispatch(Constants.SET_TOOLTIP, null);
+  },
+
+  disqusTabChanged: function() {
+    var store = this.flux.store('DisqusStore');
+    getDisqusThreadDetails(store.getState().url, store.getState().forum).then((details) => {
+      this.dispatch(Constants.RELOADED_DISQUS_DETAILS, details);
+    });
   }
 };
 

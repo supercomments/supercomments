@@ -38,8 +38,9 @@
     var script = doc.createElement('script');
     script.appendChild(doc.createTextNode(require('raw!./node_modules/jquery/dist/jquery.min.js')));
     head.appendChild(script);
+
     script = doc.createElement('script');
-    script.appendChild(doc.createTextNode(require('raw!./dist/js/supercomments.js')));
+    script.appendChild(doc.createTextNode(require('raw!./dist/js/supercomments{{suffix}}.js')));
     head.appendChild(script);
   }
 })();

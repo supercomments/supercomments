@@ -108,7 +108,9 @@ var CommentForm = React.createClass({
                     {!this.props.comment ?
                       <div className="guest">
                           <h6 className="guest-form-title">
-                              Comments hosted on <a href="http://www.reddit.com" target="_blank">Reddit&reg;</a> and managed by SuperComments&trade;&nbsp;
+                              Comments managed by 
+                              <a href="https://github.com/salsita/supercomments/" target="_blank"> SuperComments&trade; </a>
+                              and hosted on <a href="http://www.reddit.com" target="_blank">Reddit&reg;&nbsp;</a> 
                           </h6>
 
                           <div className="what-is-disqus help-icon">
@@ -150,7 +152,7 @@ var CommentForm = React.createClass({
 
   onFormClicked: function() {
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { formExpanded: true }});
-    React.findDOMNode(this.refs.textarea).focus();
+    this.refs.textarea.getDOMNode().focus();
   },
 
   onSubmit: function(e) {

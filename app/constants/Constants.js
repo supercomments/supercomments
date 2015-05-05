@@ -21,7 +21,8 @@ var Constants = [
   'REPORTED_COMMENT',
   'ITEM_CHANGED',
   'UNREAD_MESSAGES_READ',
-  'SET_TOOLTIP'
+  'SET_TOOLTIP',
+  'RELOADED_DISQUS_DETAILS'
 ].reduce(function(current, next) {
   current[next] = next;
   return current;
