@@ -82,7 +82,7 @@ var Comments = React.createClass({
   watchTabChanges: function() {
     if (!this.state.observer) {
       this.state.observer = new MutationObserver(() => {
-        this.getFlux().actions.disqusTabChanged();
+        this.getFlux().actions.reloadDisqusCommentCount();
       });
     }
     this.state.observer.observe(this.refs.tabs.getDOMNode(), {

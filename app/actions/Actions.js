@@ -1,5 +1,5 @@
 var Constants = require('../constants/Constants');
-var FormErrors = require('../constants/FormErrors');
+var FormMessages = require('../constants/FormMessages');
 var Snoocore = require('snoocore');
 var jsonp = require('jsonp');
 var shortid = require('shortid');
@@ -156,11 +156,14 @@ var Actions = {
   },
 
   submitComment: function(payload) {
-    this.flux.actions.itemChanged({ comment: payload.parent, newState: { postError: null }});
+    this.flux.actions.itemChanged({ comment: payload.parent, newState: { postMessage: null, submitPending: true }});
 
     var store = this.flux.store('RedditStore');
     if (!payload.body) {
-      this.flux.actions.itemChanged({ comment: payload.parent, newState: { postError: FormErrors.COMMENT_EMPTY }});      
+      this.flux.actions.itemChanged({
+        comment: payload.parent,
+        newState: { postMessage: FormMessages.COMMENT_EMPTY, submitPending: false }
+      });      
     }
     else if (!store.getState().post && !payload.secondChance) {
       // Post might have been added since we loaded the page, so try to get it
@@ -171,10 +174,16 @@ var Actions = {
       });
     }
     else if (!store.getState().post) {
-      this.flux.actions.itemChanged({ comment: payload.parent, newState: { postError: FormErrors.PAGE_NOT_SUBMITTED }});      
+      this.flux.actions.itemChanged({
+        comment: payload.parent,
+        newState: { postMessage: FormMessages.PAGE_NOT_SUBMITTED, submitPending: false }
+      });
     }
     else {
-      this.flux.actions.itemChanged({ comment: payload.parent, newState: { replyFormVisible: false, formExpanded: false, replyBody: '' }});
+      this.flux.actions.itemChanged({
+        comment: payload.parent,
+        newState: { replyFormVisible: false, formExpanded: false, replyBody: '', submitPending: false }
+      });
 
       var tempId = shortid.generate();
       this.dispatch(Constants.SUBMITTING_COMMENT, Object.assign({ id: tempId }, payload));
@@ -278,7 +287,7 @@ var Actions = {
     this.dispatch(Constants.SET_TOOLTIP, null);
   },
 
-  disqusTabChanged: function() {
+  reloadDisqusCommentCount: function() {
     var store = this.flux.store('DisqusStore');
     getDisqusThreadDetails(store.getState().url, store.getState().forum).then((details) => {
       this.dispatch(Constants.RELOADED_DISQUS_DETAILS, details);
