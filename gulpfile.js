@@ -22,15 +22,13 @@ var configApp = {
     fs: 'empty',
     net: 'empty',
     tls: 'empty'
-  },
-  watch: true
+  }
 };
 
 var configEmbed = {
   output: {
     filename: 'supercomments-embed.js'
   },
-  watch: true,
   module: {
     loaders: [
       { test: /\.html$/, loader: "html-loader" }
@@ -44,7 +42,7 @@ gulp.task('webpack-app', function() {
     .pipe(gulp.dest('dist/js'));
 });
 
-gulp.task('compress-app', function() {
+gulp.task('compress-app', [ 'webpack-app' ], function() {
   return gulp.src('dist/js/supercomments.js')
     .pipe(uglify())
     .pipe(rename({
@@ -53,7 +51,7 @@ gulp.task('compress-app', function() {
     .pipe(gulp.dest('dist/js'));
 });
 
-gulp.task('webpack-embed', function() {
+gulp.task('webpack-embed', [ 'webpack-app' ], function() {
   return gulp.src('./embed.js.mustache')
     .pipe(mustache({
       suffix: ''
@@ -64,16 +62,16 @@ gulp.task('webpack-embed', function() {
     .pipe(gulp.dest('dist/js'));
 });
 
-gulp.task('compress-embed', function() {
+gulp.task('compress-embed', [ 'webpack-embed', 'compress-app' ], function() {
   return gulp.src('./embed.js.mustache')
     .pipe(mustache({
       suffix: '.min'
     }))
-    .pipe(rename('embed.js'))
+    .pipe(rename('embed.min.js'))
     .pipe(gulp.dest('.'))
-    .pipe(webpack(configEmbed))
-    .pipe(rename({
-      extname: '.min.js'
+    .pipe(webpack({
+      output: { filename: 'supercomments-embed.min.js '},
+      module: configEmbed.module
     }))
     .pipe(gulp.dest('dist/js'));
 });
@@ -87,8 +85,5 @@ gulp.task('browser-sync', function() {
   });
 });
  
-gulp.task('default', [ 'browser-sync', 'webpack-app', 'webpack-embed' ], function() {
-});
-
-gulp.task('compress', [ 'compress-app', 'compress-embed' ], function() {
+gulp.task('default', [ 'webpack-embed' ], function() {
 });

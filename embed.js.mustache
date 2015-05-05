@@ -1,13 +1,11 @@
 (function() {
-  var config_encoded = btoa(JSON.stringify(config));
+  var configEncoded = btoa(JSON.stringify(supercommentsConfig));
   var div = document.getElementById('supercomments');
   if (div) {
     // Create the iframe
-    var frame = '<iframe id="supercomments-frame" data-config="' + config_encoded  + '></iframe>';
-    frame += '</iframe>';
-    div.innerHTML = frame;
     var iframe = document.createElement('iframe');
-    iframe.setAttribute('data-config', config_encoded);
+    iframe.setAttribute('id', 'supercomments-frame');
+    iframe.setAttribute('data-config', configEncoded);
     iframe.setAttribute('allowtransparency', 'true');
     iframe.setAttribute('frameborder', '0');
     iframe.setAttribute('tabindex', '0');

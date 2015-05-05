@@ -13,6 +13,7 @@ var DisqusStore = Fluxxor.createStore({
   },
 
   onUpdatingUrl: function(payload) {
+    this.state.apiKey = payload.config.disqus.apiKey;
     this.state.url = payload.url;
     this.state.forum = payload.config.disqus.forum;
     this.state.identifier = payload.config.disqus.identifier;

@@ -28,7 +28,7 @@ var Comments = React.createClass({
     var footerLink = Object.assign({ textDecoration: 'underline' }, footerNormal);
     return (
       <div>
-        <Tabs ref="tabs" tabActive={2} onAfterChange={this.onTabChanged}>
+        <Tabs ref="tabs" onAfterChange={this.onTabChanged}>
           <Tabs.Panel title={`Disqus ${this.state.disqus.commentCount ? '(' + this.state.disqus.commentCount + ')': ''}`}>
             <DisqusThread
               shortname={this.state.disqus.forum}

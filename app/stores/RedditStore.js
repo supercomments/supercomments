@@ -96,6 +96,8 @@ var RedditStore = Fluxxor.createStore({
   },
 
   onUpdatingUrl: function(payload) {
+    this.state.consumerKey = payload.config.reddit.consumerKey;
+    this.state.redirectUri = payload.config.reddit.redirectUri;
     this.state.url = payload.url;
     this.state.postLoaded = false;
     this.state.commentsLoaded = false;
