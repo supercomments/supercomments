@@ -42,7 +42,7 @@ gulp.task('webpack-app', function() {
     .pipe(gulp.dest('dist/js'));
 });
 
-gulp.task('compress-app', [ 'webpack-app' ], function() {
+gulp.task('compress-app', function() {
   return gulp.src('dist/js/supercomments.js')
     .pipe(uglify())
     .pipe(rename({
@@ -62,7 +62,7 @@ gulp.task('webpack-embed', [ 'webpack-app' ], function() {
     .pipe(gulp.dest('dist/js'));
 });
 
-gulp.task('compress-embed', [ 'webpack-embed', 'compress-app' ], function() {
+gulp.task('compress-embed', function() {
   return gulp.src('./embed.js.mustache')
     .pipe(mustache({
       suffix: '.min'
@@ -76,14 +76,15 @@ gulp.task('compress-embed', [ 'webpack-embed', 'compress-app' ], function() {
     .pipe(gulp.dest('dist/js'));
 });
 
-gulp.task('browser-sync', function() {
-  browserSync({
-  server: {
-    baseDir: './dist'
-  },
-  startPath: 'html/example.html'
+gulp.task('browser-sync', [ 'webpack-embed' ], function() {
+  return browserSync({
+    open: false,
+    server: {
+      baseDir: './dist'
+    },
+    startPath: 'html/example.html'
   });
 });
  
-gulp.task('default', [ 'webpack-embed' ], function() {
+gulp.task('default', [ 'browser-sync' ], function() {
 });

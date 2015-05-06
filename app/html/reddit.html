@@ -9,21 +9,24 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <script type="text/javascript">
-      function autoResize() {
-          // Adjust frame height when contents are resized
-          var appElement = document.getElementById('supercomments');
-          var observer = new MutationObserver(function(mutations) {
-            if (parseInt(frameElement.style.height, 10) !== appElement.scrollHeight) {
-              frameElement.style.height = appElement.scrollHeight + 'px';
-            }
-          });
-          observer.observe(appElement, {
-            attributes: true,
-            characterData: true,
-            childList: true,
-            subtree: true
-          });
+      function updateSize(mutations) {
+        var appElement = document.getElementById('supercomments');
+        if (parseInt(frameElement.style.height, 10) !== appElement.scrollHeight) {
+          frameElement.style.height = appElement.scrollHeight + 'px';
         }
+      }
+
+      function autoResize() {
+        // Adjust frame height when contents are resized
+        var observer = new MutationObserver(updateSize);
+        observer.observe(document.getElementById('supercomments'), {
+          attributes: true,
+          characterData: true,
+          childList: true,
+          subtree: true
+        });
+        updateSize();
+      }
     </script>
 
     <style>

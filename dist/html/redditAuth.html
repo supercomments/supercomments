@@ -3,8 +3,10 @@
     <script type="text/javascript">
         var code = window.location.href.match(/.*#access_token=(.[^&]+)/)[1];
         var csrf = window.location.href.match(/.*&state=(.[^&]+)/)[1];
-        window.opener.postMessage({ token: code, state: csrf }, '*');
-        window.close();
+        if (code && csrf) {
+          window.opener.postMessage({ token: code, state: csrf }, '*');
+          window.close();
+        }
     </script>
 </head>
 

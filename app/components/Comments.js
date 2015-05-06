@@ -23,17 +23,22 @@ var Comments = React.createClass({
     return state;
   },
 
+  componentDidMount: function() {
+    window.addEventListener('message', this.onWindowMessage, false);
+  },
+
+  componentWillUnmount: function() {
+    window.removeEventListener('message', this.onWindowMessage, false);
+  },
+
   render: function() {
     var footerNormal = { paddingLeft: '0px' };
     var footerLink = Object.assign({ textDecoration: 'underline' }, footerNormal);
     return (
       <div>
-        <Tabs ref="tabs" onAfterChange={this.onTabChanged}>
+        <Tabs ref="tabs" onBeforeChange={this.onTabChanged}>
           <Tabs.Panel title={`Disqus ${this.state.disqus.commentCount ? '(' + this.state.disqus.commentCount + ')': ''}`}>
-            <DisqusThread
-              shortname={this.state.disqus.forum}
-              identifier={this.state.disqus.identifier}
-              url={this.state.disqus.url}/>
+            <span></span>
           </Tabs.Panel>
           <Tabs.Panel title={`Reddit ${this.state.reddit.commentCount ? '(' + this.state.reddit.commentCount + ')': ''}`}>
             <div id="layout" style={{overflow: 'visible'}}>
@@ -58,44 +63,22 @@ var Comments = React.createClass({
             </div>
           </Tabs.Panel>
         </Tabs>
-        <div id="footer">
-          <a style={footerNormal}>SuperComments </a>
-          <a style={footerLink} href="https://www.salsitasoft.com/mobile-and-web-apps/solutions/web-apps" target="_blank">web app development</a>
-          <a style={footerNormal}> by the </a>
-          <a style={footerLink} href="https://www.salsitasoft.com/javascript-engineers/full-stack-development/react" target="_blank">React developers</a>
-          <a style={footerNormal}> of </a>
-          <a style={footerLink} href="https://www.salsitasoft.com" target="_blank">Salsita Software</a>
-        </div>
       </div>
     );
   },
 
   onTabChanged: function(selectedIndex) {
     if (selectedIndex === 1) {
-      this.watchTabChanges();
+      window.parent.postMessage('showDisqus', '*');
     }
     else {
-      this.unwatchTabChanges();
+      window.parent.postMessage('hideDisqus', '*');
     }
   },
 
-  watchTabChanges: function() {
-    if (!this.state.observer) {
-      this.state.observer = new MutationObserver(() => {
-        this.getFlux().actions.reloadDisqusCommentCount();
-      });
-    }
-    this.state.observer.observe(this.refs.tabs.getDOMNode(), {
-      attributes: true,
-      characterData: true,
-      childList: true,
-      subtree: true
-    });
-  },
-
-  unwatchTabChanges: function() {
-    if (this.state.observer) {
-      this.state.observer.disconnect();
+  onWindowMessage: function(message) {
+    if (typeof(message.data) === 'string' && message.data === 'onDisqusChanged') {
+      this.getFlux().actions.reloadDisqusCommentCount();
     }
   }
 });

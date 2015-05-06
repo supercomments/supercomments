@@ -43,7 +43,7 @@ function getDisqusThreadDetails(flux, postId, forum) {
     parsedUrl.query = {
       api_key: store.getState().apiKey,
       forum: forum,
-      thread: postId
+      thread: `ident:${postId}`
     };
     jsonp(url.format(parsedUrl), (err, data) => {
       if (err) {
@@ -127,8 +127,8 @@ var Actions = {
         if ((typeof(data) === 'object') && ('token' in data) && ('state' in data) && (data.state === csrf)) {
           var token = data.token;
           dispatch(Constants.LOGGING_IN);
-          getRedditAPI(this.flux).auth(token).then(() => {
-            return getRedditAPI(this.flux)('/api/v1/me').get();
+          getRedditAPI(flux).auth(token).then(() => {
+            return getRedditAPI(flux)('/api/v1/me').get();
           })
           .then((data) => {
             var userName = data.name;
@@ -213,7 +213,7 @@ var Actions = {
   vote: function(payload) {
     var thing = payload.thing;
     this.dispatch(Constants.VOTING, payload);
-    reddit('/api/vote').post({
+    getRedditAPI(this.flux)('/api/vote').post({
       id: thing.get('name'),
       dir: payload.dir
     }).then(() => {

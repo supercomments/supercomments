@@ -1,22 +1,28 @@
 require('babel/polyfill');
 
 jest.dontMock('../../app/actions/Actions');
+//jest.dontMock('../../app/constants/FormMessages');
 
 var url = 'http://www.test.com/';
 
-var FluxxorTestUtils, Immutable, fakeFlux, myActionsSpy, redditAPI, myStore, state;
+var FluxxorTestUtils, Immutable, FormMessages, fakeFlux, myActionsSpy, redditAPI, myStore, state;
 beforeEach(function() {
   Immutable = require('immutable');
 
   var Snoocore = require('snoocore');
   redditAPI = new Snoocore();
   FluxxorTestUtils = require('fluxxor-test-utils').extendJasmineMatchers(this);
+  FormMessages = require('../../app/constants/FormMessages');
 
   // Create an empty global `localStorage` variable.
   localStorage = {};
   var RedditStore = require('../../app/stores/RedditStore');
+  var DisqusStore = require('../../app/stores/DisqusStore');
   var Actions = require('../../app/actions/Actions');
-  fakeFlux = FluxxorTestUtils.fakeFlux({ RedditStore: new RedditStore() }, Actions);
+  fakeFlux = FluxxorTestUtils.fakeFlux({
+    RedditStore: new RedditStore(),
+    DisqusStore: new DisqusStore()
+  }, Actions);
   myActionsSpy = fakeFlux.makeActionsDispatchSpy();
 
   state = {
@@ -26,6 +32,9 @@ beforeEach(function() {
   myStore = fakeFlux.store('RedditStore');
   myStore.getState = jest.genMockFunction().mockImplementation(function() {
     return state;
+  });
+  fakeFlux.store('DisqusStore').getState = jest.genMockFunction().mockImplementation(function() {
+    return {};
   });
 });
 
@@ -136,10 +145,10 @@ describe('submitComment', function() {
     var tempId = calls[0][1].id;
     payload.id = tempId;
     expect(calls.length).toBe(4);
-    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
+    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postMessage: null, submitPending: true }} ]);
     expect(calls[1]).toEqual([ 'ITEM_CHANGED', {
       comment: payload.parent,
-      newState: { replyFormVisible: false, formExpanded: false, replyBody: '' }
+      newState: { replyFormVisible: false, formExpanded: false, replyBody: '', submitPending: false }
     }]);
     expect(calls[2]).toEqual([ 'SUBMITTING_COMMENT', payload ]);
     expect(calls[3]).toEqual([
@@ -156,8 +165,11 @@ describe('submitComment', function() {
     fakeFlux.actions.submitComment(payload);
     var calls = myActionsSpy.getCalls();
     expect(calls.length).toBe(2);
-    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
-    expect(calls[1]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: 'COMMENT_EMPTY' }} ]);
+    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postMessage: null, submitPending: true }} ]);
+    expect(calls[1]).toEqual([ 'ITEM_CHANGED', {
+      comment: payload.parent,
+      newState: { postMessage: FormMessages.COMMENT_EMPTY, submitPending: false }
+    }]);
   });
   it('tries again to load the post if it is not there and succeeds if it loads it', function() {
     state = {
@@ -180,13 +192,13 @@ describe('submitComment', function() {
     fakeFlux.actions.submitComment(payload);
     var calls = myActionsSpy.getCalls();
     expect(calls.length).toBe(6);
-    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
+    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postMessage: null, submitPending: true }} ]);
     expect(calls[1][0]).toBe('UPDATED_URL');
     expect(calls[1][1].reddit).not.toBeNull();
-    expect(calls[2]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
+    expect(calls[2]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postMessage: null, submitPending: true }} ]);
     expect(calls[3]).toEqual([ 'ITEM_CHANGED', {
       comment: undefined,
-      newState: { replyFormVisible: false, formExpanded: false, replyBody: '' }
+      newState: { replyFormVisible: false, formExpanded: false, replyBody: '', submitPending: false }
     }]);
     expect(calls[4]).toEqual([ 'SUBMITTING_COMMENT', payload ]);
     expect(calls[5][0]).toBe('SUBMITTED_COMMENT');
@@ -209,10 +221,13 @@ describe('submitComment', function() {
     fakeFlux.actions.submitComment(payload);
     var calls = myActionsSpy.getCalls();
     expect(calls.length).toBe(4);
-    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
+    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postMessage: null, submitPending: true }} ]);
     expect(calls[1]).toEqual([ 'UPDATED_URL', { reddit: null }]);
-    expect(calls[2]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
-    expect(calls[3]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: 'PAGE_NOT_SUBMITTED' }} ]);    
+    expect(calls[2]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postMessage: null, submitPending: true }} ]);
+    expect(calls[3]).toEqual([ 'ITEM_CHANGED', {
+      comment: payload.parent,
+      newState: { postMessage: FormMessages.PAGE_NOT_SUBMITTED, submitPending: false }
+    }]);    
   });
 });
 
