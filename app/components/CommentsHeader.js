@@ -41,7 +41,7 @@ var CommentsHeader = React.createClass({
                       </a>
                   </li>
                   <CommentsUser/>
-                  <li className={notificationClasses} >
+                  <li className={notificationClasses} style={{ 'margin-right': '4px' }}>
                       <a href="http://www.reddit.com/message/inbox/" target="_blank" className="notification-container" onClick={this.onInbox}>
                           <span className="notification-icon icon-comment"></span>
                           <span className="notification-count">{this.state.unreadCount ? this.state.unreadCount : null}</span>

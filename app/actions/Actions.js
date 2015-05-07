@@ -18,8 +18,7 @@ function createAPI(consumerKey, redirectUri) {
     userAgent: USER_AGENT,
     oauth: { 
       type: 'implicit',
-      duration: 'permanent',
-      consumerKey: consumerKey,
+      key: consumerKey,
       redirectUri: redirectUri,
       scope: [ 'identity', 'read', 'submit', 'vote', 'edit', 'report' ]
     }
@@ -96,6 +95,7 @@ var Actions = {
   updateUrl: function(payload) {
     var postUrl = payload.url;
     var config = payload.config;
+    this.dispatch(Constants.UPDATING_URL, payload);
     var store = this.flux.store('RedditStore');
     if (!store.getState().userName) {
       var userName = restoreSession(this.flux);
@@ -103,7 +103,6 @@ var Actions = {
         this.dispatch(Constants.LOGGED_IN, { userName: userName, unreadCount: 0 });
       }
     }
-    this.dispatch(Constants.UPDATING_URL, payload);
     Promise.all([
       getBestRedditPost(this.flux, postUrl).then((post) => {
         return { reddit: post };

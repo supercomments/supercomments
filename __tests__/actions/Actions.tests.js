@@ -1,7 +1,6 @@
 require('babel/polyfill');
 
 jest.dontMock('../../app/actions/Actions');
-//jest.dontMock('../../app/constants/FormMessages');
 
 var url = 'http://www.test.com/';
 

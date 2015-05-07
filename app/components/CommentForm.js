@@ -102,6 +102,16 @@ var CommentForm = React.createClass({
                       null
                     }
                     <div className="post-actions">
+                        {this.state.userName ? null :
+                          <div className="not-logged-in" style={{
+                            color: 'rgb(63, 69, 73)',
+                            padding: '11px 0 0 10px',
+                            'font-family': "'Helvetica Neue', arial, sans-serif",
+                            'font-size': '12px'
+                          }}>
+                            <a onClick={this.onLogin}>Login to Reddit</a> to post a comment
+                          </div>
+                        }
                         <div className="logged-in">
                             <section>
                                 <div className="temp-post" style={{textAlign: 'right'}}>
@@ -155,6 +165,10 @@ var CommentForm = React.createClass({
             </div>
         </form>
     );
+  },
+
+  onLogin: function() {
+    this.getFlux().actions.login();
   },
 
   onChange: function(e) {

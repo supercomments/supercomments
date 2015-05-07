@@ -23,11 +23,11 @@ var CommentsUser = React.createClass({
   renderLoggedIn: function() {
     return (
       <li className="dropdown user-menu"  >
-          <a href="#" className="dropdown-toggle" data-toggle="dropdown">
+          <a className="dropdown-toggle" data-toggle="dropdown">
               <span className="dropdown-toggle-wrapper">
 
               <span className="avatar">
-                  <img   alt="Avatar"/>
+                  <img alt="Avatar"/>
               </span>
               <span className="username">{this.state.userName}</span>
               </span> <span className="caret"></span>

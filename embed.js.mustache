@@ -23,7 +23,7 @@ window.disqus_identifier = supercommentsConfig.disqus.identifier;
           },          
           style: { width: '100% !important', border: 'none !important', overflow: 'hidden !important' }
         }),
-        h('#disqus_thread'),
+        h('#disqus_thread', { style: { 'border-top': '0px', 'padding-top': '0px', 'margin-top': '0px' }}),
         h('noscript', [
           'Please enable JavaScript to view the ',
           h('a', 'comments powered by Disqus.', { href: 'http://disqus.com/?ref_noscript' }) ]),
@@ -99,6 +99,7 @@ window.disqus_identifier = supercommentsConfig.disqus.identifier;
       if (typeof(message.data) === 'string') {
         if (message.data === 'showDisqus') {
           disqus.style.display = 'initial';
+          message.source.postMessage('onDisqusShown', '*');
         }
         else if (message.data === 'hideDisqus') {
           disqus.style.display = 'none';

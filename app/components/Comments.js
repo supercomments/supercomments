@@ -1,7 +1,6 @@
 var React = require('react');
 var Fluxxor = require('fluxxor');
 var Loader = require('react-loader');
-var DisqusThread = require('react-disqus-thread');
 var Tabs = require('react-simpletabs');
 var CommentsHeader = require('./CommentsHeader');
 var CommentsNavigation = require('./CommentsNavigation');
@@ -32,8 +31,6 @@ var Comments = React.createClass({
   },
 
   render: function() {
-    var footerNormal = { paddingLeft: '0px' };
-    var footerLink = Object.assign({ textDecoration: 'underline' }, footerNormal);
     return (
       <div>
         <Tabs ref="tabs" onBeforeChange={this.onTabChanged}>
@@ -41,7 +38,7 @@ var Comments = React.createClass({
             <span></span>
           </Tabs.Panel>
           <Tabs.Panel title={`Reddit ${this.state.reddit.commentCount ? '(' + this.state.reddit.commentCount + ')': ''}`}>
-            <div id="layout" style={{overflow: 'visible'}}>
+            <div id="layout" style={{ overflow: 'visible', 'padding-top': '10px' }}>
               <div>
                 <CommentsHeader/>
                 <Loader className="react-loader" loaded={this.state.reddit.postLoaded && !this.state.reddit.loggingIn} top="20%">
@@ -70,6 +67,8 @@ var Comments = React.createClass({
   onTabChanged: function(selectedIndex) {
     if (selectedIndex === 1) {
       window.parent.postMessage('showDisqus', '*');
+      // Cancel change, it will be triggered asynchronously by the Disqus frame once it is visible
+      return false;
     }
     else {
       window.parent.postMessage('hideDisqus', '*');
@@ -77,8 +76,13 @@ var Comments = React.createClass({
   },
 
   onWindowMessage: function(message) {
-    if (typeof(message.data) === 'string' && message.data === 'onDisqusChanged') {
-      this.getFlux().actions.reloadDisqusCommentCount();
+    if (typeof(message.data) === 'string') {
+      if (message.data === 'onDisqusChanged') {
+        this.getFlux().actions.reloadDisqusCommentCount();
+      }
+      else if (message.data === 'onDisqusShown') {
+        this.refs.tabs.setState({ tabActive: 1 });
+      }
     }
   }
 });
