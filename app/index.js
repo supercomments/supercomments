@@ -7,10 +7,8 @@ var Comments = require('./components/Comments');
 var Actions = require('./actions/Actions');
 
 var RedditStore = require('./stores/RedditStore');
-var DisqusStore = require('./stores/DisqusStore');
 var stores = {
-  RedditStore: new RedditStore(),
-  DisqusStore: new DisqusStore()
+  RedditStore: new RedditStore()
 };
 
 var flux = new Fluxxor.Flux(stores, Actions);

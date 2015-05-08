@@ -1,12 +1,8 @@
 var Constants = require('../constants/Constants');
 var FormMessages = require('../constants/FormMessages');
 var Snoocore = require('snoocore');
-var jsonp = require('jsonp');
 var shortid = require('shortid');
 var url = require('url');
-
-const DISQUS_API_URL = 'https://disqus.com/api/3.0/threads/';
-const DISQUS_DETAILS_ENDPOINT = 'details.json';
 
 const USER_AGENT = 'SuperComments';
 const AUTH_WINDOW_WIDTH = 1024;
@@ -33,27 +29,6 @@ function getRedditAPI(flux) {
     reddit.on('access_token_expired', flux.actions.logout);
   }
   return reddit;
-}
-
-function getDisqusThreadDetails(flux, postId, forum) {
-  var deferred = new Promise((resolve, reject) => {
-    var store = flux.store('DisqusStore');
-    var parsedUrl = url.parse(`${DISQUS_API_URL}${DISQUS_DETAILS_ENDPOINT}`);
-    parsedUrl.query = {
-      api_key: store.getState().apiKey,
-      forum: forum,
-      thread: `ident:${postId}`
-    };
-    jsonp(url.format(parsedUrl), (err, data) => {
-      if (err) {
-        reject(err);
-      }
-      else {
-        resolve(data.response);
-      }
-    });
-  });
-  return deferred;
 }
 
 function getBestRedditPost(flux, postUrl) {
@@ -94,7 +69,6 @@ function restoreSession(flux) {
 var Actions = {
   updateUrl: function(payload) {
     var postUrl = payload.url;
-    var config = payload.config;
     this.dispatch(Constants.UPDATING_URL, payload);
     var store = this.flux.store('RedditStore');
     if (!store.getState().userName) {
@@ -103,17 +77,11 @@ var Actions = {
         this.dispatch(Constants.LOGGED_IN, { userName: userName, unreadCount: 0 });
       }
     }
-    Promise.all([
-      getBestRedditPost(this.flux, postUrl).then((post) => {
-        return { reddit: post };
-      }),
-      getDisqusThreadDetails(this.flux, config.disqus.identifier, config.disqus.forum).then((details) => {
-        return { disqus: details };
-      })
-    ]).then((values) => {
-      this.dispatch(Constants.UPDATED_URL, values.reduce((all, current) => {
-        return Object.assign(all, current);
-      }, {}));
+    getBestRedditPost(this.flux, postUrl).then((post) => {
+      return { reddit: post };
+    })
+    .then((value) => {
+      this.dispatch(Constants.UPDATED_URL, value);
       this.flux.actions.reloadComments({ post: store.getState().post, sortBy: 'best' });
     });
   },
@@ -292,13 +260,6 @@ var Actions = {
 
   hideTooltip: function() {
     this.dispatch(Constants.SET_TOOLTIP, null);
-  },
-
-  reloadDisqusCommentCount: function() {
-    var store = this.flux.store('DisqusStore');
-    getDisqusThreadDetails(this.flux, store.getState().identifier, store.getState().forum).then((details) => {
-      this.dispatch(Constants.RELOADED_DISQUS_DETAILS, details);
-    });
   }
 };
 

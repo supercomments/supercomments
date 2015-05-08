@@ -20,10 +20,14 @@ window.disqus_identifier = supercommentsConfig.disqus.identifier;
             scrolling: 'no',
             horizontalscrolling: 'no',
             verticalscrolling: 'no',
-          },          
+          },
           style: { width: '100% !important', border: 'none !important', overflow: 'hidden !important' }
         }),
         h('#disqus_thread', { style: { 'border-top': '0px', 'padding-top': '0px', 'margin-top': '0px' }}),
+        h('#disqusCount.disqus-comment-count', {
+          'data-disqus-identifier': supercommentsConfig.disqus.identifier,
+          style: { display: 'none' }
+        }),
         h('noscript', [
           'Please enable JavaScript to view the ',
           h('a', 'comments powered by Disqus.', { href: 'http://disqus.com/?ref_noscript' }) ]),
@@ -86,6 +90,42 @@ window.disqus_identifier = supercommentsConfig.disqus.identifier;
     script.appendChild(doc.createTextNode(require('raw!./dist/js/supercomments{{suffix}}.js')));
     head.appendChild(script);
 
+    var disqusCount = document.getElementById('disqusCount');
+    function getDisqusCount() {
+      var countMatch = disqusCount.textContent.match(/[0-9]+/);
+      if (countMatch) {
+        return parseInt(countMatch[0], 10);
+      }
+      else {
+        return 0;
+      }
+    }
+    var disqusCountObserver = new MutationObserver(function() {
+      // Let the frame know when the Disqus count changed
+      var count = getDisqusCount();
+      if (count) {
+        iframe.contentWindow.postMessage({ msg: 'onDisqusCount', count: count }, '*');
+      }
+    });
+    disqusCountObserver.observe(disqusCount, { childList: true });
+
+    // Set up callback for new Disqus comments
+    function onNewDisqusComment() {
+      var count = getDisqusCount() + 1;
+      disqusCount.textContent = count;
+      iframe.contentWindow.postMessage({ msg: 'onDisqusCount', count: count }, '*');
+    }
+    window.disqus_config = function() {
+      this.callbacks.onNewComment = [ onNewDisqusComment ];
+    }
+
+    // Inject the Disqus count script
+    var disqusScript = document.createElement('script');
+    disqusScript.async = true;
+    disqusScript.type = 'text/javascript';
+    disqusScript.src = '//' + supercommentsConfig.disqus.forum + '.disqus.com/count.js';
+    (document.getElementsByTagName('head')[0] || document.body).appendChild(disqusScript);
+
     // Inject the Disqus script
     var disqusScript = document.createElement('script');
     disqusScript.async = true;
@@ -96,28 +136,15 @@ window.disqus_identifier = supercommentsConfig.disqus.identifier;
     // Watch for Disqus visibility messages from the frame
     var disqus = document.getElementById('disqus_thread');
     window.addEventListener('message', function(message) {
-      if (typeof(message.data) === 'string') {
-        if (message.data === 'showDisqus') {
+      if (typeof(message.data) === 'object' && ('msg' in message.data)) {
+        if (message.data.msg === 'showDisqus') {
           disqus.style.display = 'initial';
-          message.source.postMessage('onDisqusShown', '*');
+          message.source.postMessage({ msg: 'onDisqusShown' }, '*');
         }
-        else if (message.data === 'hideDisqus') {
+        else if (message.data.msg === 'hideDisqus') {
           disqus.style.display = 'none';
         }
       }
     });
-
-    var disqusFrameObserver = new MutationObserver(function() {
-      // Let the frame know when Disqus contents changed
-      var disqusFrame = document.getElementById('dsq-2');
-      if (disqusFrame) {
-        var observer = new MutationObserver(function() {
-          iframe.contentWindow.postMessage('onDisqusChanged', '*');
-        });
-        observer.observe(disqusFrame, { attributes: true });
-        disqusFrameObserver.disconnect();
-      }
-    });
-    disqusFrameObserver.observe(document.body, { childList: true });
- }
+  }
 })();

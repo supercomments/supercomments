@@ -12,12 +12,15 @@ var FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
 var Comments = React.createClass({
-  mixins: [FluxMixin, StoreWatchMixin('RedditStore', 'DisqusStore')],
+  mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
+
+  getInitialState: function() {
+    return { disqus: { commentCount: null }};
+  },
 
   getStateFromFlux: function() {
     var state = {
-      reddit: this.getFlux().store('RedditStore').getState(),
-      disqus: this.getFlux().store('DisqusStore').getState()
+      reddit: this.getFlux().store('RedditStore').getState()
     };
     return state;
   },
@@ -66,21 +69,21 @@ var Comments = React.createClass({
 
   onTabChanged: function(selectedIndex) {
     if (selectedIndex === 1) {
-      window.parent.postMessage('showDisqus', '*');
+      window.parent.postMessage({ msg: 'showDisqus' }, '*');
       // Cancel change, it will be triggered asynchronously by the Disqus frame once it is visible
       return false;
     }
     else {
-      window.parent.postMessage('hideDisqus', '*');
+      window.parent.postMessage({ msg: 'hideDisqus' }, '*');
     }
   },
 
   onWindowMessage: function(message) {
-    if (typeof(message.data) === 'string') {
-      if (message.data === 'onDisqusChanged') {
-        this.getFlux().actions.reloadDisqusCommentCount();
+    if (typeof(message.data) === 'object' && ('msg' in message.data)) {
+      if (message.data.msg === 'onDisqusCount') {
+        this.setState({ disqus: { commentCount: message.data.count }});
       }
-      else if (message.data === 'onDisqusShown') {
+      else if (message.data.msg === 'onDisqusShown') {
         this.refs.tabs.setState({ tabActive: 1 });
       }
     }

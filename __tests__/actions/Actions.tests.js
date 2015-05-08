@@ -16,11 +16,9 @@ beforeEach(function() {
   // Create an empty global `localStorage` variable.
   localStorage = {};
   var RedditStore = require('../../app/stores/RedditStore');
-  var DisqusStore = require('../../app/stores/DisqusStore');
   var Actions = require('../../app/actions/Actions');
   fakeFlux = FluxxorTestUtils.fakeFlux({
     RedditStore: new RedditStore(),
-    DisqusStore: new DisqusStore()
   }, Actions);
   myActionsSpy = fakeFlux.makeActionsDispatchSpy();
 
@@ -32,14 +30,10 @@ beforeEach(function() {
   myStore.getState = jest.genMockFunction().mockImplementation(function() {
     return state;
   });
-  fakeFlux.store('DisqusStore').getState = jest.genMockFunction().mockImplementation(function() {
-    return {};
-  });
 });
 
 describe('updateUrl', function() {
   it('gets the best post (most upvotes) when the URL is changed', function() {
-    var jsonp = require('jsonp');
     fakeFlux.actions.reloadComments = jest.genMockFunction();
     var payload = {
       url: url,
@@ -59,13 +53,10 @@ describe('updateUrl', function() {
         }
       },
       url: 'http://www.test.com/'
-    }
- ]);
+    }]);
     expect(calls[1][0]).toBe('UPDATED_URL');
     expect(calls[1][1].reddit.subreddit).toBe('programming');
-    expect(calls[1][1].disqus.posts).toBe('10');
     expect(fakeFlux.actions.reloadComments).toBeCalled();
-    expect(jsonp).toBeCalled(); // TODO check parameters
   });
 });
 
