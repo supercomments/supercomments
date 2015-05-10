@@ -1,4 +1,4 @@
-require('babelify/polyfill');
+require('babel/polyfill');
 
 jest.dontMock('util');
 jest.dontMock('capitalize');
@@ -29,9 +29,9 @@ beforeEach(function() {
 
 describe('onUpdateUrl', function() {
   it('updates the URL, subreddit and subreddit URL', function() {
-    fakeFlux.dispatcher.dispatch({ type: 'UPDATING_URL', payload: url });
+    fakeFlux.dispatcher.dispatch({ type: 'UPDATING_URL', payload: { url: url, config: {}}});
     expect(myStore.state.url).toBe(url);
-    fakeFlux.dispatcher.dispatch({ type: 'UPDATED_URL', payload: { subreddit: 'programming' }});
+    fakeFlux.dispatcher.dispatch({ type: 'UPDATED_URL', payload: { reddit: { subreddit: 'programming' }}});
     expect(myStore.state.subreddit).toBe('/r/Programming');
     expect(myStore.state.subredditUrl).toBe('http://www.reddit.com/r/Programming');
   });
@@ -43,9 +43,10 @@ describe('onLogin', function() {
     expect(myStore.state.loggingIn).toBe(true);
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
     myStoreSpy.resetCalls();
-    fakeFlux.dispatcher.dispatch({ type: 'LOGGED_IN', payload: 'username' });
+    fakeFlux.dispatcher.dispatch({ type: 'LOGGED_IN', payload: { userName: 'username', unreadCount: 7 }});
     expect(myStore.state.loggingIn).toBe(false);
     expect(myStore.state.userName).toBe('username');
+    expect(myStore.state.unreadCount).toBe(7);
     expect(myStore.state.profileUrl).toBe('http://www.reddit.com/user/username');
     expect(myStoreSpy.getLastCall()).toEqual(['change']);
   });

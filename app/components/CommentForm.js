@@ -1,6 +1,6 @@
 var React = require('react/addons');
 var classNames = require('classnames');
-var FormErrors = require('../constants/FormErrors');
+var FormMessages = require('../constants/FormMessages');
 var Fluxxor = require('fluxxor');
 var Textarea = require('react-textarea-autosize');
 
@@ -14,13 +14,15 @@ const AVATAR_URL = "//a.disquscdn.com/next/embed/assets/img/noavatar92.b677f9ddb
 var CommentForm = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
-  getErrorText: function(error) {
-    switch(error) {
-      case FormErrors.PAGE_NOT_SUBMITTED:
+  getMessageText: function(message) {
+    switch(message) {
+      case FormMessages.PAGE_NOT_SUBMITTED:
         return <span>You must <a href={`http://www.reddit.com/submit?url=${encodeURIComponent(this.state.url)}`}
-          target="_blank">submit this post to Reddit</a> before commenting.</span>;
-      case FormErrors.COMMENT_EMPTY:
+          onClick={this.onRedditSubmissionPageOpened} target="_blank">submit this post to Reddit</a> before commenting.</span>;
+      case FormMessages.COMMENT_EMPTY:
         return 'Comments can\'t be blank.';
+      case FormMessages.REDDIT_SUBMISSION_PENDING:
+        return 'It can take up to 30 seconds for your submission to be available.';
     }
   },
 
@@ -48,6 +50,15 @@ var CommentForm = React.createClass({
       reply: !!this.props.comment,
       expanded: this.state.formExpanded,
       authenticated: this.state.userName
+    });
+    var alertClasses = classNames({
+      alert: true,
+      error: this.state.postMessage && this.state.postMessage.error,
+      success: this.state.postMessage && !this.state.postMessage.error
+    });
+    var buttonClasses = classNames({
+      btn: true,
+      disabled: this.state.submitPending
     });
 
     return (
@@ -79,23 +90,33 @@ var CommentForm = React.createClass({
                             </ul>
                         </div>
                     </div>
-                    {this.state.postError ?
+                    {this.state.postMessage ?
                       <div className="edit-alert">
-                          <div className="alert error">
+                          <div className={alertClasses}>
                               <a className="close" title="Dismiss" onClick={this.onDismissError}>×</a>
                               <span>
-                                  <span className="icon icon-warning"></span>{this.getErrorText(this.state.postError)}
+                                  <span className="icon icon-warning"></span>{this.getMessageText(this.state.postMessage)}
                               </span>
                           </div>
                       </div> :
                       null
                     }
                     <div className="post-actions">
+                        {this.state.userName ? null :
+                          <div className="not-logged-in" style={{
+                            color: 'rgb(63, 69, 73)',
+                            padding: '11px 0 0 10px',
+                            'font-family': "'Helvetica Neue', arial, sans-serif",
+                            'font-size': '12px'
+                          }}>
+                            <a onClick={this.onLogin}>Login to Reddit</a> to post a comment
+                          </div>
+                        }
                         <div className="logged-in">
                             <section>
                                 <div className="temp-post" style={{textAlign: 'right'}}>
-                                    <button className="btn" type="button" onClick={this.onSubmit}>
-                                        Post as <span >{this.state.userName}</span>
+                                    <button className={buttonClasses} type="button" onClick={this.onSubmit}>
+                                        {this.state.submitPending ? 'Submitting...' : <span>Post as {this.state.userName}</span>}
                                     </button>
                                 </div>
                             </section>
@@ -108,7 +129,9 @@ var CommentForm = React.createClass({
                     {!this.props.comment ?
                       <div className="guest">
                           <h6 className="guest-form-title">
-                              Comments hosted on <a href="http://www.reddit.com">Reddit&reg;</a> and managed by SuperComments&trade;&nbsp;
+                              Comments managed by 
+                              <a href="https://github.com/salsita/supercomments/" target="_blank"> SuperComments&trade; </a>
+                              and hosted on <a href="http://www.reddit.com" target="_blank">Reddit&reg;&nbsp;</a> 
                           </h6>
 
                           <div className="what-is-disqus help-icon">
@@ -144,25 +167,39 @@ var CommentForm = React.createClass({
     );
   },
 
+  onLogin: function() {
+    this.getFlux().actions.login();
+  },
+
   onChange: function(e) {
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { replyBody: e.target.value }});
   },
 
   onFormClicked: function() {
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { formExpanded: true }});
-    React.findDOMNode(this.refs.textarea).focus();
+    this.refs.textarea.getDOMNode().focus();
   },
 
   onSubmit: function(e) {
+    e.target.blur();
     e.stopPropagation();
-    this.getFlux().actions.submitComment({
-      parent: this.props.comment,
-      body: this.state.replyBody
-    });
+    if (!this.state.submitPending) {
+      this.getFlux().actions.submitComment({
+        parent: this.props.comment,
+        body: this.state.replyBody
+      });
+    }
   },
 
   onDismissError: function() {
-    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { postError: null }});
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { postMessage: null }});
+  },
+
+  onRedditSubmissionPageOpened: function() {
+    this.getFlux().actions.itemChanged({
+      comment: this.props.comment,
+      newState: { postMessage: FormMessages.REDDIT_SUBMISSION_PENDING }
+    });
   }
 });
 

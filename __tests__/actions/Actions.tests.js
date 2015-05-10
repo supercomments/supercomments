@@ -1,25 +1,25 @@
-require('babelify/polyfill');
+require('babel/polyfill');
 
-jest.dontMock('util');
-jest.dontMock('capitalize');
-jest.dontMock('immutable');
 jest.dontMock('../../app/actions/Actions');
 
 var url = 'http://www.test.com/';
 
-var FluxxorTestUtils, Immutable, fakeFlux, myActionsSpy, redditAPI, myStore, state;
+var FluxxorTestUtils, Immutable, FormMessages, fakeFlux, myActionsSpy, redditAPI, myStore, state;
 beforeEach(function() {
   Immutable = require('immutable');
 
   var Snoocore = require('snoocore');
   redditAPI = new Snoocore();
   FluxxorTestUtils = require('fluxxor-test-utils').extendJasmineMatchers(this);
+  FormMessages = require('../../app/constants/FormMessages');
 
   // Create an empty global `localStorage` variable.
   localStorage = {};
   var RedditStore = require('../../app/stores/RedditStore');
   var Actions = require('../../app/actions/Actions');
-  fakeFlux = FluxxorTestUtils.fakeFlux({ RedditStore: new RedditStore() }, Actions);
+  fakeFlux = FluxxorTestUtils.fakeFlux({
+    RedditStore: new RedditStore(),
+  }, Actions);
   myActionsSpy = fakeFlux.makeActionsDispatchSpy();
 
   state = {
@@ -35,12 +35,27 @@ beforeEach(function() {
 describe('updateUrl', function() {
   it('gets the best post (most upvotes) when the URL is changed', function() {
     fakeFlux.actions.reloadComments = jest.genMockFunction();
-    fakeFlux.actions.updateUrl(url);
+    var payload = {
+      url: url,
+      config: {
+        disqus: {
+          forum: 'my_shortname'
+        }
+      }
+    };
+    fakeFlux.actions.updateUrl(payload);
     var calls = myActionsSpy.getCalls();
     expect(calls.length).toBe(2);
-    expect(calls[0]).toEqual([ 'UPDATING_URL', url ]);
+    expect(calls[0]).toEqual([ 'UPDATING_URL', {
+      config: {
+        disqus: {
+          forum: 'my_shortname'
+        }
+      },
+      url: 'http://www.test.com/'
+    }]);
     expect(calls[1][0]).toBe('UPDATED_URL');
-    expect(calls[1][1].subreddit).toBe('programming');
+    expect(calls[1][1].reddit.subreddit).toBe('programming');
     expect(fakeFlux.actions.reloadComments).toBeCalled();
   });
 });
@@ -49,11 +64,15 @@ describe('login', function() {
   it('opens an auth window on login and posts a message to the main window with auth credentials', function() {
     fakeFlux.actions.saveSession = jest.genMockFunction();
     var savedCallback;
+    var shortid = require('shortid');
+    shortid.generate = jest.genMockFunction().mockImplementation(function() {
+      return 'the_state';
+    });
     window.addEventListener = jest.genMockFunction().mockImplementation(function(type, callback) {
       savedCallback = callback;
     });
     window.open = jest.genMockFunction().mockImplementation(function() {
-      savedCallback({ data: 'the_token' });
+      savedCallback({ data: { token: 'the_token', state: 'the_state' }});
     });
     redditAPI.getImplicitAuthUrl = jest.genMockFunction().mockImplementation(function() {
       return 'http://www.reddit.com/some_auth_url';
@@ -65,8 +84,30 @@ describe('login', function() {
     var calls = myActionsSpy.getCalls();
     expect(calls.length).toBe(2);
     expect(calls[0]).toEqual([ 'LOGGING_IN' ]);
-    expect(calls[1]).toEqual([ 'LOGGED_IN', 'username' ]);
+    expect(calls[1]).toEqual([ 'LOGGED_IN', { userName: 'username', unreadCount: 4 }]);
     expect(fakeFlux.actions.reloadComments).toBeCalledWith({ post: state.post, sortBy: state.sortBy });
+  });
+  it('does not authorize the user if the CSRF state does not match', function() {
+    fakeFlux.actions.saveSession = jest.genMockFunction();
+    var savedCallback;
+    var shortid = require('shortid');
+    shortid.generate = jest.genMockFunction().mockImplementation(function() {
+      return 'the_state';
+    });
+    window.addEventListener = jest.genMockFunction().mockImplementation(function(type, callback) {
+      savedCallback = callback;
+    });
+    window.open = jest.genMockFunction().mockImplementation(function() {
+      savedCallback({ data: { token: 'the_token', state: 'not_the_right_state' }});
+    });
+    redditAPI.getImplicitAuthUrl = jest.genMockFunction().mockImplementation(function() {
+      return 'http://www.reddit.com/some_auth_url';
+    });
+    fakeFlux.actions.login();
+    expect(window.open).toBeCalledWith('http://www.reddit.com/some_auth_url', 'RedditAuth', 'height=800,width=1024');
+    expect(redditAPI.auth).not.toBeCalled();
+    var calls = myActionsSpy.getCalls();
+    expect(calls.length).toBe(0);
   });
 });
 
@@ -75,7 +116,7 @@ describe('logout', function() {
     fakeFlux.actions.reloadComments = jest.genMockFunction();
     localStorage.superComments = { token: 'foo' };
     fakeFlux.actions.logout();
-    // expect(redditAPI.deauth).toBeCalled(); // uncomment when `deauth` is supported properly
+    expect(redditAPI.deauth).toBeCalled();
     expect(localStorage.superComments).toBeUndefined();
     expect(myActionsSpy.getLastCall()).toEqual(['LOGOUT']);
     expect(fakeFlux.actions.reloadComments).toBeCalledWith({ post: state.post, sortBy: state.sortBy });
@@ -94,10 +135,10 @@ describe('submitComment', function() {
     var tempId = calls[0][1].id;
     payload.id = tempId;
     expect(calls.length).toBe(4);
-    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
+    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postMessage: null, submitPending: true }} ]);
     expect(calls[1]).toEqual([ 'ITEM_CHANGED', {
       comment: payload.parent,
-      newState: { replyFormVisible: false, formExpanded: false, replyBody: '' }
+      newState: { replyFormVisible: false, formExpanded: false, replyBody: '', submitPending: false }
     }]);
     expect(calls[2]).toEqual([ 'SUBMITTING_COMMENT', payload ]);
     expect(calls[3]).toEqual([
@@ -114,8 +155,44 @@ describe('submitComment', function() {
     fakeFlux.actions.submitComment(payload);
     var calls = myActionsSpy.getCalls();
     expect(calls.length).toBe(2);
-    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
-    expect(calls[1]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: 'COMMENT_EMPTY' }} ]);
+    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postMessage: null, submitPending: true }} ]);
+    expect(calls[1]).toEqual([ 'ITEM_CHANGED', {
+      comment: payload.parent,
+      newState: { postMessage: FormMessages.COMMENT_EMPTY, submitPending: false }
+    }]);
+  });
+  it('tries again to load the post if it is not there and succeeds if it loads it', function() {
+    state = {
+      url: 'success', // Any URL succeeds (expect "fail")
+      sortBy: 'best'
+    };
+    var payload  = {
+      body: 'the_text',
+      thing_id: '123'
+    };
+    myStore = fakeFlux.store('RedditStore');
+    myStore.getState = jest.genMockFunction().mockImplementation(function() {
+      if (payload.secondChance) {
+        return Object.assign({ post: Immutable.fromJS({ name: '123' })}, state);
+      }
+      else {
+        return state;
+      }
+    });
+    fakeFlux.actions.submitComment(payload);
+    var calls = myActionsSpy.getCalls();
+    expect(calls.length).toBe(6);
+    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postMessage: null, submitPending: true }} ]);
+    expect(calls[1][0]).toBe('UPDATED_URL');
+    expect(calls[1][1].reddit).not.toBeNull();
+    expect(calls[2]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postMessage: null, submitPending: true }} ]);
+    expect(calls[3]).toEqual([ 'ITEM_CHANGED', {
+      comment: undefined,
+      newState: { replyFormVisible: false, formExpanded: false, replyBody: '', submitPending: false }
+    }]);
+    expect(calls[4]).toEqual([ 'SUBMITTING_COMMENT', payload ]);
+    expect(calls[5][0]).toBe('SUBMITTED_COMMENT');
+    expect(redditAPI('/api/comment').post).toBeCalledWith({ text: payload.body, thing_id: '123' });
   });
   it('tries again to load the post if it is not there and raises an error if that fails', function() {
     state = {
@@ -134,10 +211,13 @@ describe('submitComment', function() {
     fakeFlux.actions.submitComment(payload);
     var calls = myActionsSpy.getCalls();
     expect(calls.length).toBe(4);
-    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
-    expect(calls[1]).toEqual([ 'UPDATED_URL', null ]);
-    expect(calls[2]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: null }} ]);
-    expect(calls[3]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postError: 'PAGE_NOT_SUBMITTED' }} ]);    
+    expect(calls[0]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postMessage: null, submitPending: true }} ]);
+    expect(calls[1]).toEqual([ 'UPDATED_URL', { reddit: null }]);
+    expect(calls[2]).toEqual([ 'ITEM_CHANGED', { comment: payload.parent, newState: { postMessage: null, submitPending: true }} ]);
+    expect(calls[3]).toEqual([ 'ITEM_CHANGED', {
+      comment: payload.parent,
+      newState: { postMessage: FormMessages.PAGE_NOT_SUBMITTED, submitPending: false }
+    }]);    
   });
 });
 

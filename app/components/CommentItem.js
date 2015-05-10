@@ -27,15 +27,10 @@ var CommentItem = React.createClass({
     var oldKeys = Object.keys(this.state);
     var newKeys = Object.keys(nextState);
     if (oldKeys.length !== newKeys.length) {
-      console.log(oldKeys + ' ' + newKeys + 'NEW KEY');
       return true;
     }
     return oldKeys.some((key) => {
-      var result = (!(key in nextState) || (this.state[key] !== nextState[key]));
-      if (result) {
-        console.log('NEW VALUE');
-      }
-      return result;
+      return (!(key in nextState) || (this.state[key] !== nextState[key]));
     });
   },
 
@@ -89,7 +84,7 @@ var CommentItem = React.createClass({
               <div className="indicator"/>
               <div className="avatar hovercard">
                   <a href="" className="user"  >
-                      <img src="http://ichef.bbci.co.uk/news/304/media/images/62071000/png/_62071291_reddit-alien.png" alt="Avatar"></img>
+                      <img src={require('raw!../assets/alien-png.data')} alt="Avatar"></img>
                   </a>
               </div>
 
@@ -185,7 +180,7 @@ var CommentItem = React.createClass({
             {this.props.children}
           </ul>
       </li>
-    );    
+    );
   },
 
   onCollapseItem: function() {

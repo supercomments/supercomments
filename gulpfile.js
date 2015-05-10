@@ -1,65 +1,90 @@
-// Lovingly stolen from https://gist.github.com/AndersNS/bc075cb76bbed77cce49
-
 var gulp = require('gulp');
-var browserify = require('browserify');
-var source = require("vinyl-source-stream");
-var babelify = require("babelify");
-var watchify = require('watchify');
-var gutil = require('gulp-util');
 var browserSync = require('browser-sync');
-var historyApiFallback = require('connect-history-api-fallback')
-var notify = require("gulp-notify");
- 
-var opts = {
-  appJs: './app/index.js',
-  appFolder: './dist',
-  jsOutfile: 'superComments.js',
-  jsOutFolder: './dist/js',
-  globalScripts: [
-    './node_modules/jquery/dist/j/jquery.min.js',
-    './node_modules/jquery/dist/j/jquery.min.map',
-  ]
+var webpack = require('gulp-webpack');
+var uglify = require('gulp-uglify');
+var rename = require('gulp-rename');
+var mustache = require('gulp-mustache');
+
+var configApp = {
+  devtool: 'source-map',
+  output: {
+    filename: 'supercomments.js',
+    sourceMapFilename: '../js/supercomments.js.map'
+  },
+  module: {
+    loaders: [
+      { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' },
+      { test: /disqus-thread.js$/, loader: 'babel-loader' },
+      { test: /\.json$/, loader: 'json-loader' }
+    ]
+  },
+  node: {
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty'
+  }
 };
 
-gulp.task('copy-globals', function(){
-  return gulp.src(opts.globalScripts).pipe(gulp.dest(opts.jsOutFolder));
-})
- 
-// Save a reference to the `reload` method
-var reload = browserSync.reload;
-gulp.task('browserify', function(){
-  var bundler = watchify(browserify({ entries: opts.appJs, debug: true }, watchify.args));
-  bundler.transform(babelify);
-  bundler.on('update', rebundle);
- 
-  function rebundle() {
-    return bundler.bundle()
-      // log errors if they happen
-      .on('error', swallowError)
-      .pipe(source(opts.jsOutfile))
-      .pipe(gulp.dest(opts.jsOutFolder))
-      .pipe(reload({stream:true}))
-      .pipe(notify("Browser reloaded after watchify update!"));;
-  }
- 
-  return rebundle();
-});
- 
-function swallowError(error) {
-  //If you want details of the error in the console
-  console.log(error.toString());
-  this.emit('end');
-}
- 
-gulp.task('browser-sync', function() {
-  browserSync({
-  server: {
-    baseDir: opts.appFolder,
-    middleware: [historyApiFallback]
+var configEmbed = {
+  output: {
+    filename: 'supercomments-embed.js'
   },
-  startPath: 'html/reddit.html'
+  module: {
+    loaders: [
+      { test: /\.html$/, loader: "html-loader" }
+    ]
+  }
+};
+
+gulp.task('webpack-app', function() {
+  return gulp.src('./app/index.js')
+    .pipe(webpack(configApp))
+    .pipe(gulp.dest('dist/js'));
+});
+
+gulp.task('compress-app', function() {
+  return gulp.src('dist/js/supercomments.js')
+    .pipe(uglify())
+    .pipe(rename({
+      extname: '.min.js'
+    }))
+    .pipe(gulp.dest('dist/js'));
+});
+
+gulp.task('webpack-embed', [ 'webpack-app' ], function() {
+  return gulp.src('./embed.js.mustache')
+    .pipe(mustache({
+      suffix: ''
+    }))
+    .pipe(rename('embed.js'))
+    .pipe(gulp.dest('.'))
+    .pipe(webpack(configEmbed))
+    .pipe(gulp.dest('dist/js'));
+});
+
+gulp.task('compress-embed', function() {
+  return gulp.src('./embed.js.mustache')
+    .pipe(mustache({
+      suffix: '.min'
+    }))
+    .pipe(rename('embed.min.js'))
+    .pipe(gulp.dest('.'))
+    .pipe(webpack({
+      output: { filename: 'supercomments-embed.min.js '},
+      module: configEmbed.module
+    }))
+    .pipe(gulp.dest('dist/js'));
+});
+
+gulp.task('browser-sync', [ 'webpack-embed' ], function() {
+  return browserSync({
+    open: false,
+    server: {
+      baseDir: './dist'
+    },
+    startPath: 'html/example.html'
   });
 });
  
-gulp.task('default', ['copy-globals', 'browser-sync', 'browserify'], function() {
+gulp.task('default', [ 'browser-sync' ], function() {
 });

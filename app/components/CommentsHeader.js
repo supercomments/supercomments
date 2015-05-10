@@ -1,5 +1,6 @@
 var React = require('react');
 var Fluxxor = require('fluxxor');
+var classNames = require('classnames');
 var CommentsUser = require('./CommentsUser');
 
 var FluxMixin = Fluxxor.FluxMixin(React),
@@ -13,14 +14,18 @@ var CommentsHeader = React.createClass({
   },
 
   render: function() {
+    var notificationClasses = classNames({
+      'notification-menu': true,
+      unread: this.state.unreadCount > 0
+    });
     return (
       <header id="main-nav">
           <nav className="nav nav-primary">
               <ul>
                   <li className="tab-conversation active">
-                      <a href={this.state.permalink}  className="publisher-nav-color">
+                      <a href={this.state.permalink} target="_blank" className="publisher-nav-color">
                         <span className="comment-count">
-                          {this.state.commentCount} comments!
+                          {this.state.commentCount} comments
                         </span>
                         <span className="comment-count-placeholder">
                           {this.state.commentCount} comments
@@ -28,7 +33,7 @@ var CommentsHeader = React.createClass({
                       </a>
                   </li>
                   <li className="tab-community">
-                      <a href={this.state.subredditUrl} className="publisher-nav-color" id="community-tab">
+                      <a href={this.state.subredditUrl} target="_blank" className="publisher-nav-color" id="community-tab">
                           <span className="community-name">
                             <strong>{this.state.subreddit}</strong>
                           </span>
@@ -36,17 +41,21 @@ var CommentsHeader = React.createClass({
                       </a>
                   </li>
                   <CommentsUser/>
-                  <li className="notification-menu" >
-                      <a href="https://disqus.com/home/inbox/" className="notification-container">
+                  <li className={notificationClasses} style={{ 'margin-right': '4px' }}>
+                      <a href="http://www.reddit.com/message/inbox/" target="_blank" className="notification-container" onClick={this.onInbox}>
                           <span className="notification-icon icon-comment"></span>
-                          <span className="notification-count"></span>
+                          <span className="notification-count">{this.state.unreadCount ? this.state.unreadCount : null}</span>
                       </a>
                   </li>
               </ul>
           </nav>
       </header>
     );
-  }
+  },
+
+  onInbox: function() {
+    this.getFlux().actions.clearUnreadCount();
+  }  
 });
 
 module.exports = CommentsHeader;

@@ -1,5 +1,3 @@
-'use strict';
-
 var Fluxxor = require('fluxxor');
 var Constants = require('../constants/Constants');
 var Immutable = require('immutable');
@@ -13,6 +11,46 @@ function countComments(comments) {
     var children = comment.get('replies');
     return current + 1 + (children ? countComments(children) : 0);
   }, 0);
+}
+
+function mapRedditPost(redditPost) {
+  return {
+    id: redditPost.id,
+    name: redditPost.name,
+    likes: redditPost.likes,
+    score: redditPost.score
+  };
+}
+
+function mapRedditComment(redditComment) {
+  return {
+    id: redditComment.id,
+    name: redditComment.name,
+    author: redditComment.author,
+    created_utc: redditComment.created_utc,
+    body: redditComment.body,
+    likes: redditComment.likes,
+    score: redditComment.score,
+    replies: getCommentsFromListing(redditComment.replies)
+  };
+}
+
+function getCommentsFromListing(listing) {
+  if (!listing) {
+    return Immutable.List();
+  }
+  return Immutable.List(
+    listing.data.children.filter((comment) => {
+      return comment.kind === 't1'; 
+    }).map((redditComment) => {
+      var comment = mapRedditComment(redditComment.data);
+      return Immutable.fromJS(comment);
+    })
+  );
+}
+
+function isComment(thing) {
+  return thing && thing.get('name').substr(0, 3) === 't1_';
 }
 
 var RedditStore = Fluxxor.createStore({
@@ -52,32 +90,35 @@ var RedditStore = Fluxxor.createStore({
       Constants.SORT_BY_NEWEST, this.onSortByNewest,
       Constants.SORT_BY_OLDEST, this.onSortByOldest,
       Constants.SET_TOOLTIP, this.onSetTooltip,
-      Constants.ITEM_CHANGED, this.onItemChanged
+      Constants.ITEM_CHANGED, this.onItemChanged,
+      Constants.UNREAD_MESSAGES_READ, this.onUnreadMessagesRead
     );
   },
 
-  onUpdatingUrl: function(url) {
-    this.state.url = url;
+  onUpdatingUrl: function(payload) {
+    if ('reddit' in payload.config) {
+      this.state.consumerKey = payload.config.reddit.consumerKey;
+      this.state.redirectUri = payload.config.reddit.redirectUri;
+    }
+    this.state.url = payload.url;
     this.state.postLoaded = false;
     this.state.commentsLoaded = false;
 
     this.emit('change');
   },
 
-  onUpdatedUrl: function(post) {
-    if (post) {
-      this.state.permalink = 'http://www.reddit.com' + post.permalink;
-      this.state.subreddit = `/r/${capitalize(post.subreddit)}`;
-      this.state.subredditUrl = `http://www.reddit.com${this.state.subreddit}`;
-      this.state.post = Immutable.fromJS({
-        id: post.id,
-        name: post.name,
-        likes: post.likes,
-        score: post.score
-      });
+  onUpdatedUrl: function(payload) {
+    if ('reddit' in payload) {
+      var post = payload.reddit;
+      if (post) {
+        this.state.permalink = 'http://www.reddit.com' + post.permalink;
+        this.state.subreddit = `/r/${capitalize(post.subreddit)}`;
+        this.state.subredditUrl = `http://www.reddit.com${this.state.subreddit}`;
+        this.state.post = Immutable.fromJS(mapRedditPost(post));
+      }
+      this.state.postLoaded = true;
+      this.emit('change');
     }
-    this.state.postLoaded = true;
-    this.emit('change');
   },
 
   onLoggingIn: function() {
@@ -85,14 +126,20 @@ var RedditStore = Fluxxor.createStore({
     this.emit('change');
   },
 
-  onLoggedIn: function(userName) {
+  onLoggedIn: function(payload) {
     this.state.loggingIn = false;
-    this.state.userName = userName;
+    this.state.userName = payload.userName;
+    this.state.unreadCount = payload.unreadCount;
     this.emit('change');
   },
 
   onLogout: function() {
     this.state.userName = null;
+    this.emit('change');
+  },
+
+  onUnreadMessagesRead: function() {
+    this.state.unreadCount = 0;
     this.emit('change');
   },
 
@@ -109,13 +156,14 @@ var RedditStore = Fluxxor.createStore({
       replies: []
     });
     var newParent;
-    if (this.isComment(parent)) {
+    if (isComment(parent)) {
       // Remember the new parent since we'll need to update it when the comment is submitted
       newParent = parent.update('replies', (list) => list.unshift(comment));
     }
     else {
       this.state.comments = this.state.comments.unshift(comment);
     }
+    this.state.commentCount = this.state.commentCount ? this.state.commentCount+1 : 1;
     this.onItemChanged({ comment: comment, newState: { parent: newParent, disabled: true }});
     this.emit('change');
   },
@@ -124,7 +172,7 @@ var RedditStore = Fluxxor.createStore({
     var parent = this.state.commentState[payload.id].parent;
     delete this.state.commentState[payload.id]; // delete the temporary comment state
     var redditComment = payload.comment;
-    var comment = Immutable.fromJS(this.mapRedditComment(redditComment));
+    var comment = Immutable.fromJS(mapRedditComment(redditComment));
     var mapComments = (value) => {
       if (value.get('id') === payload.id) {
         return comment;
@@ -133,7 +181,7 @@ var RedditStore = Fluxxor.createStore({
         return value;
       }
     };
-    if (this.isComment(parent)) {
+    if (isComment(parent)) {
       parent.update('replies', (list) => list.map(mapComments));
     }
     else {
@@ -149,8 +197,8 @@ var RedditStore = Fluxxor.createStore({
 
   onReloadedComments: function(payload) {
     if (payload) {
-      //this.state.post = payload.post;
-      this.state.comments = this.getCommentsFromListing(payload.comments);
+      this.state.post = Immutable.fromJS(mapRedditPost(payload.post));
+      this.state.comments = getCommentsFromListing(payload.comments);
       this.state.commentCount = countComments(this.state.comments);
     }
     this.state.commentsLoaded = true;
@@ -166,7 +214,7 @@ var RedditStore = Fluxxor.createStore({
     thing = thing.update('likes', () => dir === 1 ? true : (dir === 0 ? null : false));
     thing = thing.update('score', score => score - previousLikes + dir);
     // TODO: figure out a better way to handle comments vs. posts without weird hacks
-    if (!this.isComment(thing)) {
+    if (!isComment(thing)) {
       this.state.post = thing;
     }
     this.emit('change');
@@ -266,37 +314,6 @@ var RedditStore = Fluxxor.createStore({
   replaceComments: function(newComments) {
     this.state.comments = newComments;
     this.emit('change');
-  },
-
-  mapRedditComment: function(redditComment) {
-    return {
-      id: redditComment.id,
-      name: redditComment.name,
-      author: redditComment.author,
-      created_utc: redditComment.created_utc,
-      body: redditComment.body,
-      likes: redditComment.likes,
-      score: redditComment.score,
-      replies: this.getCommentsFromListing(redditComment.replies)
-    };
-  },
-
-  getCommentsFromListing: function(listing) {
-    if (!listing) {
-      return Immutable.List();
-    }
-    return Immutable.List(
-      listing.data.children.filter((comment) => {
-        return comment.kind === 't1'; 
-      }).map((redditComment) => {
-        var comment = this.mapRedditComment(redditComment.data);
-        return Immutable.fromJS(comment);
-      })
-    );
-  },
-
-  isComment: function(thing) {
-    return thing && thing.get('name').substr(0, 3) === 't1_';
   }
 });
 

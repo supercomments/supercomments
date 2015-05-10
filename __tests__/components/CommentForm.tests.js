@@ -1,6 +1,5 @@
-jest.dontMock('util');
+jest.dontMock('fluxxor-test-utils');
 jest.dontMock('../../app/components/CommentForm');
-jest.dontMock('immutable');
 
 var React, TestUtils, FluxxorTestUtils, Immutable, fakeFlux, MyComponent, component, onSubmit, state, comment, itemState;
 beforeEach(function() {

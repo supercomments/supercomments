@@ -5,6 +5,7 @@ var comment = JSON.parse(fs.readFileSync('fixtures/comment.json', 'utf8'));
 var comments = JSON.parse(fs.readFileSync('fixtures/comments.json', 'utf8'));
 
 function MockPromise(payload) {
+  this.payload = payload;
   this.then = function(callback) {
     var result = callback(payload);
     if (result instanceof MockPromise) {
@@ -55,7 +56,7 @@ function Snoocore() {
         return posts.get;
       }
     }),
-    '/api/v1/me': new MockAPI({ name: 'username' }),
+    '/api/v1/me': new MockAPI({ name: 'username', inbox_count: 4 }),
     '/api/comment': new MockAPI(comment),
     'comments/123.json': new MockAPI(comments)
   };
@@ -69,6 +70,10 @@ function Snoocore() {
   };
 
   self.path.auth = jest.genMockFunction().mockImplementation(function() {
+    return new MockPromise();
+  });
+
+  self.path.deauth = jest.genMockFunction().mockImplementation(function() {
     return new MockPromise();
   });
 
