@@ -31,6 +31,9 @@ This code lets you use your homepage as the redirect URI for OAuth by detecting 
 
 If, for some reason, you can't use your homepage for this purpose, you can put this script on any webpage, including one you create expressly for this purpose. Just make sure you set the redirect URI of your Reddit app accordingly (see previous section).
 
+### Upload the Supercomments script
+Put the `dist/js/supercomments-embed.min.js` file somewhere on your web server. This is the only file you need to run Supercomments.
+
 ### Add the Supercomments script
 We are assuming that you already have Disqus running on your site. If not, consult [their instructions](https://javascripting.disqus.com/admin/install/) first. Once you have Disqus running, replace their code with the following:
 
@@ -48,8 +51,10 @@ We are assuming that you already have Disqus running on your site. If not, consu
       };
     </script>
     <div id="supercomments"></div>
-    <script src="../js/supercomments-embed.js"></script>
-    ```
+    <script src="../js/supercomments-embed.min.js"></script>
+```
+
+Obviously you should replace the path to `supercomments-embed.min.js` with the path pointing to the file on your server.
 
 If you don't know how to get your Disqus ID, you should be okay omitting it since Disqus will use the URL of the post to identify it in this case.
 
