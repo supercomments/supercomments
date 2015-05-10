@@ -39,7 +39,7 @@ We are assuming that you already have Disqus running on your site. If not, consu
 
 ```
       var supercommentsConfig = {
-        url: 'http://blog.salsitasoft.com/why-we-dont-do-fixed-price-software-projects/',
+        url: window.location.href,
         reddit: {
           consumerKey: [your_reddit_consumer_key]
           redirectUri: [your_website_url]
