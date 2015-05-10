@@ -2,7 +2,6 @@
 *Reddit comment threads without leaving your blog or website!*
 
 ![Screenshot](screenshots/screenshot1.png)
-
 ---
 
 Don't you hate it when your blog post gets dozens of comments on Reddit but none on your own site? Supercomments lets you embed Reddit comment threads directly on your blog or website so the visitors don't have to go elsewhere to participate in the conversation. With Supercomments, you can do pretty much anything you can do on Reddit: post new comments, reply to existing comments, upvote, downvote and sort by date or relevance.
