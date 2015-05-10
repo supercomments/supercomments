@@ -11,10 +11,10 @@ Supercomments is designed as an extension to the excellent [Disqus](http://www.d
 ## Installing
 
 ### Get your Reddit API key
-Log into Reddit and go to the [app preferences page](https://www.reddit.com/prefs/apps/). Create a new app, selecting the "installed app" type. Fill in whatever you want for name, just make sure you use the URL of your website as the redirect URI. Save the app and note down the consumer key (displayed under the app's name and "installed app" in the list of apps on your prefs page).
+Log into Reddit and go to the [app preferences page](https://www.reddit.com/prefs/apps/). Create a new app, selecting the "installed app" type. Fill in whatever you want for name, just make sure you use the URL of your website root as the redirect URI (see following section). Save the app and note down the consumer key (displayed under the app's name and "installed app" in the list of apps on your prefs page).
 
 ### Set up the OAuth redirect script
-Put the following code in the `<head>` of your site's homepage:
+Put the following code in the `<head>` of your website root:
 
 ```
     <script type="text/javascript">
@@ -29,7 +29,7 @@ Put the following code in the `<head>` of your site's homepage:
 
 This code lets you use your homepage as the redirect URI for OAuth by detecting when the Reddit authorization page redirects to your site (which is done in a popup window), then posting the relevant information (access token and CSRF state) to the Supercomments frame and closing the popup.
 
-If, for some reason, you can't use your homepage for this purpose, you can put this script on any webpage, including one you create expressly for this purpose. Just make sure you set the redirect URI of your Reddit app accordingly (see previous section).
+If, for some reason, you can't use your website root for this purpose, you can put this script on any webpage, including one you create expressly for this purpose. Just make sure you set the redirect URI of your Reddit app accordingly (see previous section).
 
 ### Upload the Supercomments script
 Put the `dist/js/supercomments-embed.min.js` file somewhere on your web server. This is the only file you need to run Supercomments.
