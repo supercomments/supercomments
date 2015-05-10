@@ -31,7 +31,7 @@ This code lets you use your homepage as the redirect URI for OAuth by detecting 
 
 If, for some reason, you can't use your homepage for this purpose, you can put this script on any webpage, including one you create expressly for this purpose. Just make sure you set the redirect URI of your Reddit app accordingly (see previous section).
 
-# Add the Supercomments script
+### Add the Supercomments script
 We are assuming that you already have Disqus running on your site. If not, consult [their instructions](https://javascripting.disqus.com/admin/install/) first. Once you have Disqus running, replace their code with the following:
 
 ```
