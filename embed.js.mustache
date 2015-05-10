@@ -25,7 +25,8 @@ window.disqus_identifier = supercommentsConfig.disqus.identifier;
         }),
         h('#disqus_thread', { style: { 'border-top': '0px', 'padding-top': '0px', 'margin-top': '0px' }}),
         h('#disqusCount.disqus-comment-count', {
-          'data-disqus-identifier': supercommentsConfig.disqus.identifier,
+          'data-disqus-identifier': (supercommentsConfig.disqus.identifier || ''),
+          'data-disqus-url': supercommentsConfig.url,
           style: { display: 'none' }
         }),
         h('noscript', [

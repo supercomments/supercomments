@@ -1,38 +1,61 @@
-# SuperComments
-*Extend Disqus with Reddit comments right on your site.*
+# Supercomments
+*Reddit comment threads without leaving your blog or website!*
 
-It's great when your blog post gets traction on Reddit, but readers have no way to interact with the Reddit community without leaving your site. SuperComments lets you embed Reddit comment threads directly in your webpages. Users can post new comments, reply to existing comments, upvote, downvote and much more.
+Don't you hate it when your blog post gets dozens of comments on Reddit but none on your own site? Supercomments lets you embed Reddit comment threads directly on your blog or website so the visitors don't have to go elsewhere to participate in the conversation. With Supercomments, you can do pretty much anything you can do on Reddit: post new comments, reply to existing comments, upvote, downvote and sort by date or relevance.
 
-SuperComments is designed as an extension to the excellent [Disqus](http://www.disqus.com) commenting system. As such, visitors will be able to access both Disqus and Reddit comment threads in separate tabs using the same user interface.
+![Screenshot](screenshots/screenshot1.png)
+
+Supercomments is designed as an extension to the excellent [Disqus](http://www.disqus.com) commenting system. As such, visitors will be able to access both Disqus and Reddit comment threads in separate tabs using the same user interface. This means you even get features of Disqus that Reddit doesn't offer, like collapsing part of the discussion thread.
 
 ## Installing
 
-The simplest way to install SuperComments is to download the prebuilt bundle from the `dist` directory. There are currently two HTML files, two JS files and a source map:
+### Get your Reddit API key
+Log into Reddit and go to the [app preferences page](https://www.reddit.com/prefs/apps/). Create a new app, selecting the "installed app" type. Fill in whatever you want for name, just make sure you use the URL of your website as the redirect URI. Save the app and note down the consumer key (displayed under the app's name and "installed app" in the list of apps on your prefs page).
 
-* `reddit.html` the main entry point
-* `redditAuth.html` a simple popup window used for OAuth
-* `jquery.min.js` and `jquery.min.map` minified jQuery with source map
-* `supercomments.js` the SuperComments application
-
-Just place those files on your web server, preserving the directory structure, and serve up `reddit.html`.
-
-## Usage
-
-For the current test version, request `reddit.html` directly. You can specify the URL to use as the query string, e.g.:
+### Set up the OAuth redirect script
+Put the following code in the `<head>` of your site's homepage:
 
 ```
-http://localhost:3000/html/reddit/reddit.html?http://www.salsitasoft.com
+    <script type="text/javascript">
+        var code = window.location.href.match(/.*#access_token=(.[^&]+)/);
+        var csrf = window.location.href.match(/.*&state=(.[^&]+)/);
+        if (code && csrf) {
+          window.opener.postMessage({ token: code[1], state: csrf[1] }, '*');
+          window.close();
+        }
+    </script>
 ```
+
+This code lets you use your homepage as the redirect URI for OAuth by detecting when the Reddit authorization page redirects to your site (which is done in a popup window), then posting the relevant information (access token and CSRF state) to the Supercomments frame and closing the popup.
+
+If, for some reason, you can't use your homepage for this purpose, you can put this script on any webpage, including one you create expressly for this purpose. Just make sure you set the redirect URI of your Reddit app accordingly (see previous section).
+
+# Add the Supercomments script
+We are assuming that you already have Disqus running on your site. If not, consult [their instructions](https://javascripting.disqus.com/admin/install/) first. Once you have Disqus running, replace their code with the following:
+
+```
+      var supercommentsConfig = {
+        url: 'http://blog.salsitasoft.com/why-we-dont-do-fixed-price-software-projects/',
+        reddit: {
+          consumerKey: [your_reddit_consumer_key]
+          redirectUri: [your_website_url]
+        },
+        disqus: {
+          identifier: [your_disqus_id] (optional)
+          forum: [your_disqus_shortname]
+        }
+      };
+    </script>
+    <div id="supercomments"></div>
+    <script src="../js/supercomments-embed.js"></script>
+    ```
+
+If you don't know how to get your Disqus ID, you should be okay omitting it since Disqus will use the URL of the post to identify it in this case.
 
 ## Building
 
-If you want to build your own version of SuperComments, just pull the repository and run `gulp` (you must have Gulp installed globally). To run the tests, use `npm test`.
+If you want to build your own version of Supercomments, just pull the repository, run `npm install` and then run `gulp webpack-embed`. This will create the `supercomments-embed.js` file in `dist/js`.
 
-## Status and Next Steps
+Once you've built the normal version, you can create minify it by running `gulp compress-app` and then `gulp compress-embed`. This creates `supercomments.embed.min.js`.
 
-The current version is for testing purposes only. It makes it possible to view and interact with a Reddit comment thread using the Disqus user interface. For the final version we plan the following additional features:
-
-* Better UX for asynchronous requests. Right now the interface seems laggy when making requests to the Reddit API (which is pretty slow). In some cases, such as the initial loading of the thread, a throbber should be displayed. In other cases, like posting a comment, we should do what Disqus does and display a grey version of the comment right away that turns black when it is posted successfully.
-* Embeddable frame. Like Disqus, the SuperComments HTML should be loaded into a page via an `iframe` and use the URL of the containing page automatically.
-* Display both Disqus and Reddit comment threads. The plan is for tabs to be displayed so that the user can switch between the two different views. In the longer term, the threads could potentially be merged, but this will require more development effort. It is also unclear to what extent it will interfere with Disqus's normal functioning if the HTML that its scripts are working on is modified.
-* Support comment threads from other sites such as Hacker News and Twitter.
+To run the tests, use `npm test`.

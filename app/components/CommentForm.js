@@ -120,7 +120,7 @@ var CommentForm = React.createClass({
                                     </button>
                                 </div>
                             </section>
-                        </div>                    
+                        </div>
                     </div>
                 </div>
                 <div>
@@ -129,9 +129,9 @@ var CommentForm = React.createClass({
                     {!this.props.comment ?
                       <div className="guest">
                           <h6 className="guest-form-title">
-                              Comments managed by 
-                              <a href="https://github.com/salsita/supercomments/" target="_blank"> SuperComments&trade; </a>
-                              and hosted on <a href="http://www.reddit.com" target="_blank">Reddit&reg;&nbsp;</a> 
+                              Comments managed by
+                              <a href="https://github.com/salsita/supercomments/" target="_blank"> Supercomments&trade; </a>
+                              and hosted on <a href="http://www.reddit.com" target="_blank">Reddit&reg;&nbsp;</a>
                           </h6>
 
                           <div className="what-is-disqus help-icon">
@@ -159,7 +159,7 @@ var CommentForm = React.createClass({
                           </div>
                         </div> :
                         null
-                      }     
+                      }
                     </section>
                 </div>
             </div>
