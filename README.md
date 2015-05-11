@@ -10,7 +10,7 @@ Supercomments is designed as an extension to the excellent [Disqus](http://www.d
 
 ## Installing
 
-## Create a Disqus site
+### Create a Disqus site
 [Sign up for Disqus](https://disqus.com/admin/signup/) if you don't already have an account, then [create a new site](https://disqus.com/admin/create/). You can skip this step if you already have Disqus on your site and just want to extend it to support Reddit threads using Supercomments.
 
 ### Get your Reddit API key
