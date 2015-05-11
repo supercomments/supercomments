@@ -21,7 +21,6 @@
     "react-loader": "^1.2.0",
     "react-simpletabs": "matthewgertner/react-simpletabs",
     "react-textarea-autosize": "^1.1.0",
-    "request-promise": "^0.4.2",
     "shortid": "^2.2.2",
     "showdown": "showdownjs/showdown#showdown2",
     "snoocore": "^3.0.1"
@@ -42,7 +41,6 @@
     "gulp-webpack": "^1.4.0",
     "jest-cli": "^0.4.0",
     "url-loader": "^0.5.5",
-    "watchify": "^2.6.2",
     "webpack": "^1.8.11"
   },
   "scripts": {
@@ -76,8 +74,9 @@
     "comments",
     "disqus",
     "reddit",
-    "hackernews",
-    "reactjs"
+    "reactjs",
+    "fluxxor",
+    "immutablejs"
   ],
   "author": "Matthew Gertner",
   "license": "MIT"

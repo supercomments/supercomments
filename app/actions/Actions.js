@@ -4,7 +4,7 @@ var Snoocore = require('snoocore');
 var shortid = require('shortid');
 var url = require('url');
 
-const USER_AGENT = 'SuperComments';
+const USER_AGENT = 'Supercomments';
 const AUTH_WINDOW_WIDTH = 1024;
 const AUTH_WINDOW_HEIGHT = 800;
 const AUTH_TIMEOUT_MS = 3600*1000;
@@ -12,7 +12,7 @@ const AUTH_TIMEOUT_MS = 3600*1000;
 function createAPI(consumerKey, redirectUri) {
   return new Snoocore({
     userAgent: USER_AGENT,
-    oauth: { 
+    oauth: {
       type: 'implicit',
       key: consumerKey,
       redirectUri: redirectUri,
@@ -42,23 +42,23 @@ function getBestRedditPost(flux, postUrl) {
 }
 
 function saveSession(token, userName) {
-  var superComments = localStorage.superComments ? JSON.parse(localStorage.superComments) : {};
-  if (!superComments.reddit) {
-    superComments.reddit = {};
+  var supercomments = localStorage.supercomments ? JSON.parse(localStorage.supercomments) : {};
+  if (!supercomments.reddit) {
+    supercomments.reddit = {};
   }
-  superComments.reddit.token = token;
-  superComments.reddit.userName = userName;
-  superComments.reddit.timestamp = Date.now();
-  localStorage.superComments = JSON.stringify(superComments);
+  supercomments.reddit.token = token;
+  supercomments.reddit.userName = userName;
+  supercomments.reddit.timestamp = Date.now();
+  localStorage.supercomments = JSON.stringify(supercomments);
 }
 
 function restoreSession(flux) {
-  if (localStorage.superComments) {
-    var superComments = JSON.parse(localStorage.superComments);
-    if (superComments.reddit && superComments.reddit.token) {
-      if (Date.now() - superComments.reddit.timestamp < AUTH_TIMEOUT_MS) {
-        getRedditAPI(flux).auth(superComments.reddit.token);
-        return superComments.reddit.userName;
+  if (localStorage.supercomments) {
+    var supercomments = JSON.parse(localStorage.supercomments);
+    if (supercomments.reddit && supercomments.reddit.token) {
+      if (Date.now() - supercomments.reddit.timestamp < AUTH_TIMEOUT_MS) {
+        getRedditAPI(flux).auth(supercomments.reddit.token);
+        return supercomments.reddit.userName;
       }
     }
   }
@@ -119,7 +119,7 @@ var Actions = {
 
   logout: function() {
     getRedditAPI(this.flux).deauth().then(() => {
-      delete localStorage.superComments;
+      delete localStorage.supercomments;
       this.dispatch(Constants.LOGOUT);
       var store = this.flux.store('RedditStore');
       this.flux.actions.reloadComments({ post: store.getState().post, sortBy: store.getState().sortBy });
@@ -138,7 +138,7 @@ var Actions = {
       this.flux.actions.itemChanged({
         comment: payload.parent,
         newState: { postMessage: FormMessages.COMMENT_EMPTY, submitPending: false }
-      });      
+      });
     }
     else if (!store.getState().post && !payload.secondChance) {
       // Post might have been added since we loaded the page, so try to get it
@@ -244,7 +244,7 @@ var Actions = {
     getRedditAPI(this.flux)('/api/report').post({
       thing_id: comment.get('name'),
       reason: 'other',
-      other_reason: 'inappropriate (reported via SuperComments)'
+      other_reason: 'inappropriate (reported via Supercomments)'
     }).then(() => {
       this.dispatch(Constants.REPORTED_COMMENT, comment);
     });

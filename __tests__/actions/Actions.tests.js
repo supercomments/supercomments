@@ -114,10 +114,10 @@ describe('login', function() {
 describe('logout', function() {
   it('revokes the token, clears the session store and informs the store', function() {
     fakeFlux.actions.reloadComments = jest.genMockFunction();
-    localStorage.superComments = { token: 'foo' };
+    localStorage.supercomments = { token: 'foo' };
     fakeFlux.actions.logout();
     expect(redditAPI.deauth).toBeCalled();
-    expect(localStorage.superComments).toBeUndefined();
+    expect(localStorage.supercomments).toBeUndefined();
     expect(myActionsSpy.getLastCall()).toEqual(['LOGOUT']);
     expect(fakeFlux.actions.reloadComments).toBeCalledWith({ post: state.post, sortBy: state.sortBy });
   });
@@ -217,7 +217,7 @@ describe('submitComment', function() {
     expect(calls[3]).toEqual([ 'ITEM_CHANGED', {
       comment: payload.parent,
       newState: { postMessage: FormMessages.PAGE_NOT_SUBMITTED, submitPending: false }
-    }]);    
+    }]);
   });
 });
 
