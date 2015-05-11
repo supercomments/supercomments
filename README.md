@@ -11,10 +11,10 @@ Supercomments is designed as an extension to the excellent [Disqus](http://www.d
 ## Installing
 
 ### Get your Reddit API key
-Log into Reddit and go to the [app preferences page](https://www.reddit.com/prefs/apps/). Create a new app, selecting the "installed app" type. Fill in whatever you want for name, just make sure you use the URL of your website root as the redirect URI (see following section). Save the app and note down the consumer key (displayed under the app's name and "installed app" in the list of apps on your prefs page).
+Log into Reddit and go to the [app preferences page](https://www.reddit.com/prefs/apps/). Create a new app, selecting the "installed app" type. Fill in whatever you want for name. For the redirect URI, you can use the URL of any site you control, since you will just be dropping in a short script to handle the OAuth redirect (see next section). For example, you could use the root URL of your website. Save the app and note down the consumer key (displayed under the app's name and "installed app" in the list of apps on your prefs page).
 
 ### Set up the OAuth redirect script
-Put the following code in the `<head>` of your website root:
+Put the following code in the `<head>` of your website root or some other page that you control:
 
 ```
     <script type="text/javascript">
@@ -27,17 +27,16 @@ Put the following code in the `<head>` of your website root:
     </script>
 ```
 
-This code lets you use your homepage as the redirect URI for OAuth by detecting when the Reddit authorization page redirects to your site (which is done in a popup window), then posting the relevant information (access token and CSRF state) to the Supercomments frame and closing the popup.
-
-If, for some reason, you can't use your website root for this purpose, you can put this script on any webpage, including one you create expressly for this purpose. Just make sure you set the redirect URI of your Reddit app accordingly (see previous section).
+Make sure you set the redirect URI of your Reddit app accordingly (see previous section). This code lets you use your page as the redirect URI for OAuth by detecting when the Reddit authorization page redirects to your site (which is done in a popup window), then posting the relevant information (access token and CSRF state) to the Supercomments frame and closing the popup.
 
 ### Upload the Supercomments script
 Put the `dist/js/supercomments-embed.min.js` file somewhere on your web server. This is the only file you need to run Supercomments.
 
 ### Add the Supercomments script
-We are assuming that you already have Disqus running on your site. If not, consult [their instructions](https://javascripting.disqus.com/admin/install/) first. Once you have Disqus running, replace their code with the following:
+Add the following code to your blog or site template in the place you want Supercomments to appear (replacing the Disqus code if you have it installed already):
 
 ```
+    <script>
       var supercommentsConfig = {
         url: window.location.href,
         reddit: {
@@ -56,7 +55,7 @@ We are assuming that you already have Disqus running on your site. If not, consu
 
 Obviously you should replace the path to `supercomments-embed.min.js` with the path pointing to the file on your server.
 
-If you don't know how to get your Disqus ID, you should be okay omitting it since Disqus will use the URL of the post to identify it in this case.
+If you don't know how to get your [Disqus identifier](https://help.disqus.com/customer/portal/articles/472098-javascript-configuration-variables#disqus_identifier), you should be okay omitting it since Disqus will use the URL of the post to identify it in this case.
 
 ## Building
 
