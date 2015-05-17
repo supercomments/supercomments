@@ -1,19 +1,19 @@
 require('babel/polyfill');
 require('bootstrap');
 
-var React = require('react');
-var Fluxxor = require('fluxxor');
-var Comments = require('./components/Comments');
-var Actions = require('./actions/Actions');
+let React = require('react');
+let Fluxxor = require('fluxxor');
+let Comments = require('./components/Comments');
+let Actions = require('./actions/Actions');
 
-var RedditStore = require('./stores/RedditStore');
-var stores = {
+let RedditStore = require('./stores/RedditStore');
+let stores = {
   RedditStore: new RedditStore()
 };
 
-var flux = new Fluxxor.Flux(stores, Actions);
+let flux = new Fluxxor.Flux(stores, Actions);
 
-var config = JSON.parse(atob(frameElement.getAttribute('data-config')));
+let config = JSON.parse(atob(frameElement.getAttribute('data-config')));
 
 flux.actions.updateUrl({ url: config.url, config: { reddit: config.reddit, disqus: config.disqus }});
 if (process.env.NODE_ENV !== 'test') {

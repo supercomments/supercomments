@@ -1,39 +1,39 @@
-var React = require('react');
-var Fluxxor = require('fluxxor');
-var Loader = require('react-loader');
-var Tabs = require('react-simpletabs');
-var CommentsHeader = require('./CommentsHeader');
-var CommentsNavigation = require('./CommentsNavigation');
-var CommentForm = require('./CommentForm');
-var CommentList = require('./CommentList');
-var CommentTooltip = require('./CommentTooltip');
+let React = require('react');
+let Fluxxor = require('fluxxor');
+let Loader = require('react-loader');
+let Tabs = require('react-simpletabs');
+let CommentsHeader = require('./CommentsHeader');
+let CommentsNavigation = require('./CommentsNavigation');
+let CommentForm = require('./CommentForm');
+let CommentList = require('./CommentList');
+let CommentTooltip = require('./CommentTooltip');
 
-var FluxMixin = Fluxxor.FluxMixin(React),
+let FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
-var Comments = React.createClass({
+let Comments = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
-  getInitialState: function() {
+  getInitialState() {
     return { disqus: { commentCount: null }};
   },
 
-  getStateFromFlux: function() {
-    var state = {
+  getStateFromFlux() {
+    let state = {
       reddit: this.getFlux().store('RedditStore').getState()
     };
     return state;
   },
 
-  componentDidMount: function() {
+  componentDidMount() {
     window.addEventListener('message', this.onWindowMessage, false);
   },
 
-  componentWillUnmount: function() {
+  componentWillUnmount() {
     window.removeEventListener('message', this.onWindowMessage, false);
   },
 
-  render: function() {
+  render() {
     return (
       <div>
         <Tabs ref="tabs" onBeforeChange={this.onTabChanged}>
@@ -67,7 +67,7 @@ var Comments = React.createClass({
     );
   },
 
-  onTabChanged: function(selectedIndex) {
+  onTabChanged(selectedIndex) {
     if (selectedIndex === 1) {
       window.parent.postMessage({ msg: 'showDisqus' }, '*');
       // Cancel change, it will be triggered asynchronously by the Disqus frame once it is visible
@@ -78,7 +78,7 @@ var Comments = React.createClass({
     }
   },
 
-  onWindowMessage: function(message) {
+  onWindowMessage(message) {
     if (typeof(message.data) === 'object' && ('msg' in message.data)) {
       if (message.data.msg === 'onDisqusCount') {
         this.setState({ disqus: { commentCount: message.data.count }});

@@ -1,20 +1,20 @@
-var React = require('react/addons');
-var classNames = require('classnames');
-var FormMessages = require('../constants/FormMessages');
-var Fluxxor = require('fluxxor');
-var Textarea = require('react-textarea-autosize');
+let React = require('react/addons');
+let classNames = require('classnames');
+let FormMessages = require('../constants/FormMessages');
+let Fluxxor = require('fluxxor');
+let Textarea = require('react-textarea-autosize');
 
-var FluxMixin = Fluxxor.FluxMixin(React),
+let FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
 const AVATAR_URL = "//a.disquscdn.com/next/embed/assets/img/noavatar92.b677f9ddbee6f4bb22f473ae3bd61b85.png";
 
 // Form error handling
 
-var CommentForm = React.createClass({
+let CommentForm = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
-  getMessageText: function(message) {
+  getMessageText(message) {
     switch(message) {
       case FormMessages.PAGE_NOT_SUBMITTED:
         return <span>You must <a href={`http://www.reddit.com/submit?url=${encodeURIComponent(this.state.url)}`}
@@ -26,37 +26,37 @@ var CommentForm = React.createClass({
     }
   },
 
-  componentDidMount: function() {
+  componentDidMount() {
     if (this.state.formExpanded) {
       this.refs.textarea.getDOMNode().focus();
     }
   },
 
-  componentDidUpdate: function(prevProps, prevState) {
+  componentDidUpdate(prevProps, prevState) {
     if (prevState.formExpanded && !this.state.formExpanded) {
       React.findDOMNode(this.refs.textarea).blur();
     }
   },
 
-  getStateFromFlux: function() {
-    var state = this.getFlux().store('RedditStore').getItemState(this.props.comment);
+  getStateFromFlux() {
+    let state = this.getFlux().store('RedditStore').getItemState(this.props.comment);
     state.userName = this.getFlux().store('RedditStore').getState().userName;
     state.url = this.getFlux().store('RedditStore').getState().url;
     return state;
   },
 
-  render: function() {
-    var formClasses = classNames({
+  render() {
+    let formClasses = classNames({
       reply: !!this.props.comment,
       expanded: this.state.formExpanded,
       authenticated: this.state.userName
     });
-    var alertClasses = classNames({
+    let alertClasses = classNames({
       alert: true,
       error: this.state.postMessage && this.state.postMessage.error,
       success: this.state.postMessage && !this.state.postMessage.error
     });
-    var buttonClasses = classNames({
+    let buttonClasses = classNames({
       btn: true,
       disabled: this.state.submitPending
     });
@@ -106,8 +106,8 @@ var CommentForm = React.createClass({
                           <div className="not-logged-in" style={{
                             color: 'rgb(63, 69, 73)',
                             padding: '11px 0 0 10px',
-                            'font-family': "'Helvetica Neue', arial, sans-serif",
-                            'font-size': '12px'
+                            fontFamily: "'Helvetica Neue', arial, sans-serif",
+                            fontSize: '12px'
                           }}>
                             <a onClick={this.onLogin}>Login to Reddit</a> to post a comment
                           </div>
@@ -167,20 +167,20 @@ var CommentForm = React.createClass({
     );
   },
 
-  onLogin: function() {
+  onLogin() {
     this.getFlux().actions.login();
   },
 
-  onChange: function(e) {
+  onChange(e) {
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { replyBody: e.target.value }});
   },
 
-  onFormClicked: function() {
+  onFormClicked() {
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { formExpanded: true }});
     this.refs.textarea.getDOMNode().focus();
   },
 
-  onSubmit: function(e) {
+  onSubmit(e) {
     e.target.blur();
     e.stopPropagation();
     if (!this.state.submitPending) {
@@ -191,11 +191,11 @@ var CommentForm = React.createClass({
     }
   },
 
-  onDismissError: function() {
+  onDismissError() {
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { postMessage: null }});
   },
 
-  onRedditSubmissionPageOpened: function() {
+  onRedditSubmissionPageOpened() {
     this.getFlux().actions.itemChanged({
       comment: this.props.comment,
       newState: { postMessage: FormMessages.REDDIT_SUBMISSION_PENDING }

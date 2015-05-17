@@ -1,20 +1,20 @@
-var React = require('react');
-var Fluxxor = require('fluxxor');
-var Cursor = require('immutable/contrib/cursor');
-var CommentItem = require('./CommentItem');
+let React = require('react');
+let Fluxxor = require('fluxxor');
+let Cursor = require('immutable/contrib/cursor');
+let CommentItem = require('./CommentItem');
 
-var FluxMixin = Fluxxor.FluxMixin(React),
+let FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
-var CommentList = React.createClass({
+let CommentList = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
-  getStateFromFlux: function() {
+  getStateFromFlux() {
     return this.getFlux().store('RedditStore').getState();
   },
 
-  render: function() {
-    var commentNodes = this.mapComments(null, this.state.permalink);
+  render() {
+    let commentNodes = this.mapComments(null, this.state.permalink);
     return (
       <ul id="post-list" className="post-list">
         {commentNodes}
@@ -22,7 +22,7 @@ var CommentList = React.createClass({
     );
   },
 
-  makeCommentItem: function(comment, postUrl, parentAuthor) {
+  makeCommentItem(comment, postUrl, parentAuthor) {
     return (
       <CommentItem key={comment.get('id')} comment={comment} postUrl={postUrl} parentAuthor={parentAuthor}>
         {this.mapComments(comment, postUrl, comment.get('author'))}
@@ -30,10 +30,10 @@ var CommentList = React.createClass({
     );
   },
 
-  mapComments: function(parent, postUrl) {
-    var store = this.getFlux().store('RedditStore');
+  mapComments(parent, postUrl) {
+    let store = this.getFlux().store('RedditStore');
     if (parent) {
-      var parentAuthor = parent.get('author');
+      let parentAuthor = parent.get('author');
       return parent.get('replies').map((comment) => {
         return this.makeCommentItem(comment, postUrl, parentAuthor);
       }).toArray();

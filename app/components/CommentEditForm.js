@@ -1,22 +1,22 @@
-var React = require('react');
-var Fluxxor = require('fluxxor');
-var Textarea = require('react-textarea-autosize');
+let React = require('react');
+let Fluxxor = require('fluxxor');
+let Textarea = require('react-textarea-autosize');
 
-var FluxMixin = Fluxxor.FluxMixin(React),
+let FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
-var CommentEditForm = React.createClass({
+let CommentEditForm = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
-  componentWillMount: function() {
+  componentWillMount() {
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editBody: this.props.comment.get('body') }});
   },
 
-  getStateFromFlux: function() {
+  getStateFromFlux() {
     return this.getFlux().store('RedditStore').getItemState(this.props.comment);
   },
 
-  render: function() {
+  render() {
     return (
         <form className="edit">
             <div className="textarea-wrapper" >
@@ -43,11 +43,11 @@ var CommentEditForm = React.createClass({
     );
   },
 
-  onChange: function(e) {
-    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editBody: e.target.value }});    
+  onChange(e) {
+    this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editBody: e.target.value }});
   },
 
-  onSubmit: function() {
+  onSubmit() {
     this.getFlux().actions.editComment({
       comment: this.props.comment,
       body: this.state.editBody
@@ -55,7 +55,7 @@ var CommentEditForm = React.createClass({
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editFormVisible: false }});
   },
 
-  onCancel: function() {
+  onCancel() {
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editFormVisible: false }});
   }
 });

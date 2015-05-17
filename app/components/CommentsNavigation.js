@@ -1,30 +1,30 @@
-var React = require('react');
-var Fluxxor = require('fluxxor');
-var classNames = require('classnames');
+let React = require('react');
+let Fluxxor = require('fluxxor');
+let classNames = require('classnames');
 
-var SORT_BY_TEXT = {
+let SORT_BY_TEXT = {
     'best' : 'Best',
     'new' : 'Newest',
     'old' : 'Oldest'
 };
 
-var FluxMixin = Fluxxor.FluxMixin(React),
+let FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
-var CommentsNavigation = React.createClass({
+let CommentsNavigation = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
-  getStateFromFlux: function() {
+  getStateFromFlux() {
     return this.getFlux().store("RedditStore").getState();
   },
 
-  render: function() {
-    var recommendClasses= classNames({
+  render() {
+    let recommendClasses= classNames({
       'dropdown-toggle' : true,
       upvoted: this.state.post.get('likes')
-    });    
-    var postScore = this.state.post ? this.state.post.get('score') : null;
-    var postScoreStyle = postScore ? {} : { display: 'none' };
+    });
+    let postScore = this.state.post ? this.state.post.get('score') : null;
+    let postScoreStyle = postScore ? {} : { display: 'none' };
     return (
         <div className="nav nav-secondary" data-tracking-area="secondary-nav">
             <ul>
