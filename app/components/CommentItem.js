@@ -1,31 +1,31 @@
-var React = require('react');
-var classNames = require('classnames');
-var Showdown = require('showdown');
-var moment = require('moment');
-var Fluxxor = require('fluxxor');
-var CommentForm = require('./CommentForm.js');
-var CommentEditForm = require('./CommentEditForm.js');
+let React = require('react');
+let classNames = require('classnames');
+let Showdown = require('showdown');
+let moment = require('moment');
+let Fluxxor = require('fluxxor');
+let CommentForm = require('./CommentForm.js');
+let CommentEditForm = require('./CommentEditForm.js');
 
-var FluxMixin = Fluxxor.FluxMixin(React),
+let FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
-var converter = new Showdown.Converter();
+let converter = new Showdown.Converter();
 
-var CommentItem = React.createClass({
+let CommentItem = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
-  getStateFromFlux: function() {
-    var state = this.getFlux().store('RedditStore').getItemState(this.props.comment);
+  getStateFromFlux() {
+    let state = this.getFlux().store('RedditStore').getItemState(this.props.comment);
     state.isAuthor = state.userName === this.props.comment.get('author');
     return state;
   },
 
-  shouldComponentUpdate: function(nextProps, nextState) {
+  shouldComponentUpdate(nextProps, nextState) {
     if (this.props.comment.deref() !== nextProps.comment.deref()) {
       return true;
     }
-    var oldKeys = Object.keys(this.state);
-    var newKeys = Object.keys(nextState);
+    let oldKeys = Object.keys(this.state);
+    let newKeys = Object.keys(nextState);
     if (oldKeys.length !== newKeys.length) {
       return true;
     }
@@ -34,35 +34,35 @@ var CommentItem = React.createClass({
     });
   },
 
-  render: function() {
-    var timestamp = moment.unix(this.props.comment.get('created_utc'));
-    var timestampTitle = timestamp.format("dddd, MMMM Do, YYYY h:mm:ss a");
-    var timestampFromNow = timestamp.fromNow();
-    var classes = classNames({
+  render() {
+    let timestamp = moment.unix(this.props.comment.get('created_utc'));
+    let timestampTitle = timestamp.format("dddd, MMMM Do, YYYY h:mm:ss a");
+    let timestampFromNow = timestamp.fromNow();
+    let classes = classNames({
       post: true,
       collapsed: this.state.collapsed
     });
-    var contentClasses = classNames({
+    let contentClasses = classNames({
       'post-content': true,
       disabled: this.state.disabled
     });
-    var upvoteClasses = classNames({
+    let upvoteClasses = classNames({
       'vote-up': true,
       upvoted: this.props.comment.get('likes')
     });
-    var downvoteClasses = classNames({
+    let downvoteClasses = classNames({
       'vote-down': true,
       downvoted: this.props.comment.get('likes') === false
     });
-    var replyClasses = classNames({
+    let replyClasses = classNames({
       reply: true,
       active: this.state.replyFormVisible
     });
-    var editClasses = classNames({
+    let editClasses = classNames({
       edit: true,
       active: this.state.editFormVisible
     });
-    var isDeleted = this.props.comment.get('author') === '[deleted]';
+    let isDeleted = this.props.comment.get('author') === '[deleted]';
     return (
       <li className={classes}>
           <div role="alert"/>
@@ -183,32 +183,32 @@ var CommentItem = React.createClass({
     );
   },
 
-  onCollapseItem: function() {
+  onCollapseItem() {
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { collapsed: true }});
   },
 
-  onExpandItem: function() {
+  onExpandItem() {
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { collapsed: false }});
   },
 
-  onReply: function() {
+  onReply() {
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { replyFormVisible: !this.state.replyFormVisible }});
   },
 
-  onEdit: function() {
+  onEdit() {
     this.getFlux().actions.itemChanged({ comment: this.props.comment, newState: { editFormVisible: !this.state.editFormVisible }});
   },
 
-  onDelete: function() {
+  onDelete() {
     this.getFlux().actions.deleteComment(this.props.comment);
   },
 
-  onUpvote: function(e) {
+  onUpvote(e) {
     if (!this.getFlux().store('RedditStore').getState().userName) {
       this.getFlux().actions.setTooltip({ text: 'You must be logged in to upvote', node: e.target });
     }
     else {
-      var payload = {
+      let payload = {
         thing: this.props.comment,
         dir: this.props.comment.get('likes') ? 0 : 1 // Back to neutral if we already like it
       };
@@ -216,12 +216,12 @@ var CommentItem = React.createClass({
     }
   },
 
-  onDownvote: function(e) {
+  onDownvote(e) {
     if (!this.getFlux().store('RedditStore').getState().userName) {
       this.getFlux().actions.setTooltip({ text: 'You must be logged in to downvote', node: e.target });
     }
     else {
-      var payload = {
+      let payload = {
         thing: this.props.comment,
         // We need to check for `false` explicitly since the Reddit API makes a distinction
         // between `false` (disliked) and `null` (neither liked nor disliked).
@@ -231,7 +231,7 @@ var CommentItem = React.createClass({
     }
   },
 
-  onFlagItem: function() {
+  onFlagItem() {
     this.getFlux().actions.reportComment(this.props.comment);
   }
 });

@@ -1,4 +1,4 @@
-var Constants = [
+let Constants = [
   'UPDATING_URL',
   'UPDATED_URL',
   'LOGGING_IN',

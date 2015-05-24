@@ -1,17 +1,17 @@
-var React = require('react');
-var Fluxxor = require('fluxxor');
+let React = require('react');
+let Fluxxor = require('fluxxor');
 
-var FluxMixin = Fluxxor.FluxMixin(React),
+let FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
-var CommentsUser = React.createClass({
+let CommentsUser = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
-  getStateFromFlux: function() {
+  getStateFromFlux() {
     return this.getFlux().store("RedditStore").getState();
   },
 
-  render: function() {
+  render() {
     if (this.state.userName) {
       return this.renderLoggedIn();
     }
@@ -20,7 +20,7 @@ var CommentsUser = React.createClass({
     }
   },
 
-  renderLoggedIn: function() {
+  renderLoggedIn() {
     return (
       <li className="dropdown user-menu"  >
           <a className="dropdown-toggle" data-toggle="dropdown">
@@ -52,7 +52,7 @@ var CommentsUser = React.createClass({
     );
   },
 
-  renderLoggedOut: function() {
+  renderLoggedOut() {
     return (
       <li className="dropdown user-menu" >
         {this.state.loggingIn ?
@@ -64,11 +64,11 @@ var CommentsUser = React.createClass({
   },
 
 
-  onLogin: function() {
+  onLogin() {
     this.getFlux().actions.login();
   },
 
-  onLogout: function() {
+  onLogout() {
     this.getFlux().actions.logout();
   }
 });

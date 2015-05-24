@@ -1,20 +1,20 @@
-var React = require('react');
-var Fluxxor = require('fluxxor');
-var classNames = require('classnames');
-var CommentsUser = require('./CommentsUser');
+let React = require('react');
+let Fluxxor = require('fluxxor');
+let classNames = require('classnames');
+let CommentsUser = require('./CommentsUser');
 
-var FluxMixin = Fluxxor.FluxMixin(React),
+let FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
-var CommentsHeader = React.createClass({
+let CommentsHeader = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
-  getStateFromFlux: function() {
+  getStateFromFlux() {
     return this.getFlux().store("RedditStore").getState();
   },
 
-  render: function() {
-    var notificationClasses = classNames({
+  render() {
+    let notificationClasses = classNames({
       'notification-menu': true,
       unread: this.state.unreadCount > 0
     });
@@ -53,9 +53,9 @@ var CommentsHeader = React.createClass({
     );
   },
 
-  onInbox: function() {
+  onInbox() {
     this.getFlux().actions.clearUnreadCount();
-  }  
+  }
 });
 
 module.exports = CommentsHeader;

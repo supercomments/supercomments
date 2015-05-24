@@ -1,21 +1,21 @@
-var React = require('react');
-var Fluxxor = require('fluxxor');
+let React = require('react');
+let Fluxxor = require('fluxxor');
 
-var FluxMixin = Fluxxor.FluxMixin(React),
+let FluxMixin = Fluxxor.FluxMixin(React),
     StoreWatchMixin = Fluxxor.StoreWatchMixin;
 
-var CommentTooltip = React.createClass({
+let CommentTooltip = React.createClass({
   mixins: [FluxMixin, StoreWatchMixin('RedditStore')],
 
-  getStateFromFlux: function() {
-    var state = this.getFlux().store("RedditStore").getState();
+  getStateFromFlux() {
+    let state = this.getFlux().store("RedditStore").getState();
     if (state.tooltip) {
       state.bottom = state.tooltip.node.getBoundingClientRect().top;
     }
     return state;
   },
 
-  componentDidUpdate: function(/* prevProps, prevState */) {
+  componentDidUpdate(/* prevProps, prevState */) {
     if (this.state.tooltip) {
       document.addEventListener('click', this.onHideTooltip, false);
     }
@@ -24,7 +24,7 @@ var CommentTooltip = React.createClass({
     }
   },
 
-  render: function() {
+  render() {
     if (!this.state.tooltip) {
       return null;
     }
@@ -37,7 +37,7 @@ var CommentTooltip = React.createClass({
     );
   },
 
-  onHideTooltip: function() {
+  onHideTooltip() {
     this.getFlux().actions.hideTooltip();
   }
 });
