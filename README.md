@@ -10,6 +10,9 @@ Supercomments is designed as an extension to the excellent [Disqus](http://www.d
 
 ## Installing
 
+### Create a Disqus site
+[Sign up for Disqus](https://disqus.com/admin/signup/) if you don't already have an account, then [create a new site](https://disqus.com/admin/create/). You can skip this step if you already have Disqus on your site and just want to extend it to support Reddit threads using Supercomments.
+
 ### Get your Reddit API key
 Log into Reddit and go to the [app preferences page](https://www.reddit.com/prefs/apps/). Create a new app, selecting the "installed app" type. Fill in whatever you want for name. For the redirect URI, you can use the URL of any site you control, since you will just be dropping in a short script to handle the OAuth redirect (see next section). For example, you could use the root URL of your website. Save the app and note down the consumer key (displayed under the app's name and "installed app" in the list of apps on your prefs page).
 
@@ -40,11 +43,11 @@ Add the following code to your blog or site template in the place you want Super
       var supercommentsConfig = {
         url: window.location.href,
         reddit: {
-          consumerKey: [your_reddit_consumer_key]
+          consumerKey: [your_reddit_consumer_key],
           redirectUri: [your_website_url]
         },
         disqus: {
-          identifier: [your_disqus_id] (optional)
+          identifier: [your_disqus_id_(optional)],
           forum: [your_disqus_shortname]
         }
       };
