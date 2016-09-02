@@ -1,0 +1,38 @@
+{
+  "name": "supercomments",
+  "description": "Extending Disqus with Reddit comments (and more to come!)",
+  "version": "2.0.0",
+  "devDependencies": {
+    "babel-eslint": "^6.1.2",
+    "eslint": "^3.4.0",
+    "eslint-config-airbnb": "^10.0.1",
+    "eslint-plugin-import": "^1.14.0",
+    "eslint-plugin-jsx-a11y": "^2.2.1",
+    "eslint-plugin-react": "^6.2.0",
+    "react-scripts": "0.3.1"
+  },
+  "dependencies": {
+    "react": "^15.3.1",
+    "react-dom": "^15.3.1",
+    "react-redux": "^4.4.5",
+    "redux": "^3.5.2",
+    "redux-logger": "^2.6.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "lint": "eslint ./src"
+  },
+  "keywords": [
+    "comments",
+    "disqus",
+    "reddit",
+    "reactjs",
+    "redux",
+    "redux-saga"
+  ],
+  "author": ["Matthew Gertner", "Tomas Weiss"],
+  "license": "MIT"
+}
