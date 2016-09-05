@@ -1,11 +1,11 @@
 import React, { PropTypes } from 'react';
 import { Provider } from 'react-redux';
 
+import Thread from 'containers/Thread';
+
 const Root = ({ store }) => (
   <Provider store={store}>
-    <div>
-      Hello World!
-    </div>
+    <Thread />
   </Provider>
 );
 
