@@ -62,6 +62,8 @@ module.exports = {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
+      'buildAction': __dirname + '/../src/buildAction.js',
+      'constants': __dirname + '/../src/constants',
       'containers': __dirname + '/../src/containers',
       'effects': __dirname + '/../src/effects',
       'reducers': __dirname + '/../src/reducers',
@@ -77,15 +79,6 @@ module.exports = {
     moduleTemplates: ['*-loader']
   },
   module: {
-    // First, run the linter.
-    // It's important to do this before Babel processes the JS.
-    preLoaders: [
-      {
-        test: /\.js$/,
-        loader: 'eslint',
-        include: paths.appSrc,
-      }
-    ],
     loaders: [
       // Process JS with Babel.
       {
