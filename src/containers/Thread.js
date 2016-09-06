@@ -5,18 +5,27 @@ import {
   mapReplies,
   mapComments
 } from 'selectors/entityRepositorySelectors';
-import { getRootThreadReplies } from 'selectors/threadSelectors';
+
+import {
+  getRootThreadReplies,
+  isRootThread
+} from 'selectors/threadSelectors';
+
+import ReplyForm from 'containers/ReplyForm';
+
 import ThreadWrapper from 'components/ThreadWrapper';
 import Comment from 'components/Comment';
 
-const NonConnectedThread = ({ comments, isRootThread }) => (
-  <ThreadWrapper isRootThread={isRootThread}>
+const NonConnectedThread = ({ comments, rootThread }) => (
+  <ThreadWrapper isRootThread={rootThread}>
     {comments.map(comment => (
       <Comment
         key={comment.id}
         {...comment}
-      >
-        <Thread threadId={comment.id} />
+      >{() => ({
+        Thread: () => <Thread threadId={comment.id} />,
+        ReplyForm: () => <ReplyForm threadId={comment.id} />
+      })}
       </Comment>
     ))}
   </ThreadWrapper>
@@ -24,23 +33,24 @@ const NonConnectedThread = ({ comments, isRootThread }) => (
 
 NonConnectedThread.propTypes = {
   comments: PropTypes.array.isRequired,
-  isRootThread: PropTypes.bool.isRequired
+  rootThread: PropTypes.bool.isRequired
 };
 
-const mapStateToProps = (appState, ownProps) => {
-  const {
-    threadId
-  } = ownProps;
-
-  const isRootThread = !threadId;
+const mapStateToProps = (appState, { threadId }) => {
+  const rootThread = isRootThread(threadId);
 
   return {
-    comments: !isRootThread ?
+    comments: !rootThread ?
       mapReplies(appState, threadId) :
       mapComments(appState, getRootThreadReplies(appState)),
-    isRootThread
+    rootThread
   };
 };
 
 const Thread = connect(mapStateToProps)(NonConnectedThread);
+
+Thread.propTypes = {
+  threadId: PropTypes.string.isRequired
+};
+
 export default Thread;

@@ -1,7 +1,8 @@
 import * as Actions from 'constants/actions';
 
 const initialState = {
-  comments: []
+  rootComments: [],
+  replying: []
 };
 
 export default (state = initialState, { type, payload }) => {
@@ -9,7 +10,7 @@ export default (state = initialState, { type, payload }) => {
     case Actions.CommentsHaveBeenLoaded:
       return {
         ...state,
-        comments: payload
+        rootComments: payload
       };
 
     default:

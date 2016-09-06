@@ -8,11 +8,11 @@ const MS_IN_SEC = 1000;
 const htmlEntitiesDecoder = new XmlEntities();
 
 const SCHEMA = {
-  COMMENTS: new Schema('comments')
+  COMMENT: new Schema('comments')
 };
 
-SCHEMA.COMMENTS.define({
-  replies: arrayOf(SCHEMA.COMMENTS)
+SCHEMA.COMMENT.define({
+  replies: arrayOf(SCHEMA.COMMENT)
 });
 
 // TODO: proper snoocore init
@@ -40,4 +40,4 @@ export const fetchComments = postId =>
   reddit(`/comments/${postId}.json`)
     .get()
     .then(([post, list]) => // eslint-disable-line no-unused-vars
-        normalize(mapRedditReplies(list.data.children), arrayOf(SCHEMA.COMMENTS)));
+        normalize(mapRedditReplies(list.data.children), arrayOf(SCHEMA.COMMENT)));

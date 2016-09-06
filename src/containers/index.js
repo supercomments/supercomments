@@ -2,10 +2,11 @@ import React, { PropTypes } from 'react';
 import { Provider } from 'react-redux';
 
 import Thread from 'containers/Thread';
+import { ROOT_THREAD_ID } from 'selectors/threadSelectors';
 
 const Root = ({ store }) => (
   <Provider store={store}>
-    <Thread />
+    <Thread threadId={ROOT_THREAD_ID} />
   </Provider>
 );
 
