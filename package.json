@@ -55,10 +55,13 @@
     "whatwg-fetch": "1.0.0"
   },
   "dependencies": {
+    "html-entities": "^1.2.0",
     "lodash": "^4.15.0",
+    "moment": "^2.14.1",
     "normalizr": "^2.2.1",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
+    "react-moment-proptypes": "^1.2.0",
     "react-redux": "^4.4.5",
     "redux": "^3.5.2",
     "redux-logger": "^2.6.1",

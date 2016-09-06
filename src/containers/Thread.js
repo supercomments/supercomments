@@ -6,19 +6,25 @@ import {
   mapComments
 } from 'selectors/entityRepositorySelectors';
 import { getRootThreadReplies } from 'selectors/threadSelectors';
+import ThreadWrapper from 'components/ThreadWrapper';
+import Comment from 'components/Comment';
 
-const NonConnectedThread = ({ comments }) => (
-  <ul>
-    {comments.map(({ author, id }) => (
-      <li key={id}>{author}
-        <Thread threadId={id} />
-      </li>
+const NonConnectedThread = ({ comments, isRootThread }) => (
+  <ThreadWrapper isRootThread={isRootThread}>
+    {comments.map(comment => (
+      <Comment
+        key={comment.id}
+        {...comment}
+      >
+        <Thread threadId={comment.id} />
+      </Comment>
     ))}
-  </ul>
+  </ThreadWrapper>
 );
 
 NonConnectedThread.propTypes = {
-  comments: PropTypes.array.isRequired
+  comments: PropTypes.array.isRequired,
+  isRootThread: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = (appState, ownProps) => {
@@ -26,10 +32,13 @@ const mapStateToProps = (appState, ownProps) => {
     threadId
   } = ownProps;
 
+  const isRootThread = !threadId;
+
   return {
-    comments: threadId ?
+    comments: !isRootThread ?
       mapReplies(appState, threadId) :
-      mapComments(appState, getRootThreadReplies(appState))
+      mapComments(appState, getRootThreadReplies(appState)),
+    isRootThread
   };
 };
 

@@ -1,5 +1,11 @@
 import Snoocore from 'snoocore';
 import { Schema, normalize, arrayOf } from 'normalizr';
+import { XmlEntities } from 'html-entities';
+import moment from 'moment';
+
+const MS_IN_SEC = 1000;
+
+const htmlEntitiesDecoder = new XmlEntities();
 
 const SCHEMA = {
   COMMENTS: new Schema('comments')
@@ -20,13 +26,18 @@ const reddit = new Snoocore({
   }
 });
 
-const unwrapRedditReplies = replies => replies.map(({ data }) => ({
-  ...data,
-  replies: data.replies ? unwrapRedditReplies(data.replies.data.children) : []
+const mapRedditReplies = (replies, parent = null) => replies.map(({ data }) => ({
+  id: data.id,
+  parentAuthor: parent ? parent.author : null,
+  author: data.author,
+  body: htmlEntitiesDecoder.decode(data.body_html),
+  created: moment(data.created * MS_IN_SEC),
+  score: data.score,
+  replies: data.replies ? mapRedditReplies(data.replies.data.children, data) : []
 }));
 
 export const fetchComments = postId =>
   reddit(`/comments/${postId}.json`)
     .get()
     .then(([post, list]) => // eslint-disable-line no-unused-vars
-        normalize(unwrapRedditReplies(list.data.children), arrayOf(SCHEMA.COMMENTS)));
+        normalize(mapRedditReplies(list.data.children), arrayOf(SCHEMA.COMMENTS)));
