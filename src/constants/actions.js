@@ -1,3 +1,5 @@
+export const LogIn = 'LogIn';
+export const LoggedIn = 'LoggedIn';
 export const EntitiesHaveChanged = 'EntitiesHaveChanged';
 export const CommentsHaveBeenLoaded = 'CommentsHaveBeenLoaded';
 export const SetLoading = 'SetLoading';

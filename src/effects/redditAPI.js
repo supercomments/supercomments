@@ -20,7 +20,7 @@ const reddit = new Snoocore({
   userAgent: 'supercomments',
   oauth: {
     type: 'implicit',
-    key: '_sty7RuHMXLIfA',
+    key: 'CRcRenqfbTCNLw',
     redirectUri: 'http://localhost:3000',
     scope: ['identity', 'read', 'vote']
   }
@@ -41,3 +41,9 @@ export const fetchComments = postId =>
     .get()
     .then(([post, list]) => // eslint-disable-line no-unused-vars
         normalize(mapRedditReplies(list.data.children), arrayOf(SCHEMA.COMMENT)));
+
+export const getAuthUrl = csrf => reddit.getImplicitAuthUrl(csrf);
+
+export const authenticate = token => reddit
+  .auth(token)
+  .then(reddit('/api/v1/me').get);

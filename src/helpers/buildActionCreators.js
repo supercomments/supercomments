@@ -4,6 +4,6 @@ export default actions => Object
     ...memo,
     [action]: payload => ({
       type: actions[action],
-      payload
+      payload: typeof payload === 'object' && payload.persist ? null : payload
     })
   }), {});

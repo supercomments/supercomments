@@ -4,9 +4,10 @@ import { connect } from 'react-redux';
 import buildActionCreators from 'helpers/buildActionCreators';
 import * as Actions from 'constants/actions';
 import { getReplyForm } from 'selectors/threadSelectors';
+import { isAuthenticated, getAuthenticatedUser } from 'selectors/authenticationSelectors';
 import alien from 'assets/alien.png';
 
-const ReplyForm = ({ visible, text, onChange }) => {
+const ReplyForm = ({ visible, authenticated, user, text, onChange, onLogIn }) => {
   if (visible) {
     return (
       <div className="reply-form-container">
@@ -29,27 +30,30 @@ const ReplyForm = ({ visible, text, onChange }) => {
                 />
               </div>
               <div className="post-actions">
-                <div
-                  className="not-logged-in"
-                  style={{
-                    color: 'rgb(63, 69, 73)',
-                    padding: '11px 0 0 10px',
-                    fontFamily: 'Helvetica Neue, arial, sans-serif',
-                    fontSize: '12px'
-                  }}
-                >
-                  <a>Login to Reddit</a><span> to post a comment</span>
-                </div>
-                {false && <div className="logged-in">
-                  <section>
-                    <div className="temp-post" style={{ textAlign: 'right' }}>
-                      <button className="btn post-action__button">
-                        Post as <span>Tomas Weiss</span>
-                      </button>
-                    </div>
-                  </section>
-                </div>
-               }
+                {!authenticated && (
+                  <div
+                    className="not-logged-in"
+                    style={{
+                      color: 'rgb(63, 69, 73)',
+                      padding: '11px 0 0 10px',
+                      fontFamily: 'Helvetica Neue, arial, sans-serif',
+                      fontSize: '12px'
+                    }}
+                  >
+                    <a onClick={onLogIn}>Login to Reddit</a><span> to post a comment</span>
+                  </div>
+                )}
+                {authenticated && (
+                  <div className="logged-in">
+                    <section>
+                      <div className="temp-post" style={{ textAlign: 'right' }}>
+                        <button className="btn post-action__button">
+                          Post as <span>{user}</span>
+                        </button>
+                      </div>
+                    </section>
+                  </div>
+               )}
               </div>
             </div>
           </div>
@@ -64,21 +68,32 @@ const ReplyForm = ({ visible, text, onChange }) => {
 ReplyForm.propTypes = {
   threadId: PropTypes.string.isRequired,
   visible: PropTypes.bool.isRequired,
+  authenticated: PropTypes.bool.isRequired,
+  user: PropTypes.string,
+  text: PropTypes.string,
   onChange: PropTypes.func.isRequired,
-  text: PropTypes.string
+  onLogIn: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (appState, { threadId }) => {
+  const authenticated = isAuthenticated(appState);
   const replyForm = getReplyForm(appState, threadId);
+  const user = getAuthenticatedUser(appState);
 
   if (replyForm) {
-    return replyForm;
+    return {
+      ...replyForm,
+      authenticated,
+      user
+    };
   } else {
     // The state slice for ReplyForm might not exist
     // it's basically the case when the ReplyForm has
     // not been activated yet
     return {
-      visible: false
+      visible: false,
+      authenticated,
+      user
     };
   }
 };
@@ -86,7 +101,8 @@ const mapStateToProps = (appState, { threadId }) => {
 export default connect(
   mapStateToProps,
   buildActionCreators({
-    onChange: Actions.ReplyFormChangeText
+    onChange: Actions.ReplyFormChangeText,
+    onLogIn: Actions.LogIn
   }),
   (stateProps, dispatchProps, ownProps) => ({
     ...ownProps,

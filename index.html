@@ -8,6 +8,15 @@
 
     
     <title>React App</title>
+
+    <script type="text/javascript">
+        var code = window.location.href.match(/.*#access_token=(.[^&]+)/);
+        var csrf = window.location.href.match(/.*&state=(.[^&]+)/);
+        if (code && csrf) {
+          window.opener.postMessage({ type: 'RedditAuthenticated', token: code[1], state: csrf[1] }, '*');
+          window.close();
+        }
+    </script>
   </head>
   <body>
     <div id="root"></div>
