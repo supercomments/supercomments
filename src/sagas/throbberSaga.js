@@ -1,6 +1,6 @@
 import { put } from 'redux-saga/effects';
 
-import buildAction from 'buildAction';
+import buildAction from 'helpers/buildAction';
 import * as Actions from 'constants/actions';
 
 export function* withThrobber(saga) {

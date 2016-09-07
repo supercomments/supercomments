@@ -63,11 +63,11 @@ module.exports = {
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
       'assets': __dirname + '/../src/assets',
-      'buildAction': __dirname + '/../src/buildAction.js',
       'constants': __dirname + '/../src/constants',
       'components': __dirname + '/../src/components',
       'containers': __dirname + '/../src/containers',
       'effects': __dirname + '/../src/effects',
+      'helpers': __dirname + '/../src/helpers',
       'reducers': __dirname + '/../src/reducers',
       'sagas': __dirname + '/../src/sagas',
       'selectors': __dirname + '/../src/selectors'

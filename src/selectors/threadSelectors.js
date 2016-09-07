@@ -13,8 +13,9 @@ export const getRootThreadReplies = createSelector(
   thread => thread.rootComments
 );
 
-export const isReplyingOnThread = createSelector(
+// Get Reply Form instance state slice
+export const getReplyForm = createSelector(
   getThread,
   (appState, threadId) => threadId,
-  (thread, threadId) => ~thread.replying.indexOf(threadId)
+  (thread, threadId) => thread.replyForms[threadId]
 );

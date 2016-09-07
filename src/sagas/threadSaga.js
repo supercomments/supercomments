@@ -1,6 +1,6 @@
 import { call, put } from 'redux-saga/effects';
 
-import buildAction from 'buildAction';
+import buildAction from 'helpers/buildAction';
 import { fetchComments as fetchCommentsAPI } from 'effects/redditAPI';
 import * as Actions from 'constants/actions';
 import { withThrobber } from 'sagas/throbberSaga';
