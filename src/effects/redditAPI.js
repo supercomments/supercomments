@@ -2,6 +2,7 @@ import Snoocore from 'snoocore';
 import { Schema, normalize, arrayOf } from 'normalizr';
 import { XmlEntities } from 'html-entities';
 import moment from 'moment';
+import { eventChannel } from 'redux-saga';
 
 const MS_IN_SEC = 1000;
 
@@ -35,6 +36,11 @@ const mapRedditReplies = (replies, parent = null) => replies.map(({ data }) => (
   score: data.score,
   replies: data.replies ? mapRedditReplies(data.replies.data.children, data) : []
 }));
+
+export const tokenExpiration = () => eventChannel(emitter => {
+  reddit.on('access_token_expired', emitter);
+  return () => reddit.removeListener('access_token_expired', emitter);
+});
 
 export const fetchComments = postId =>
   reddit(`/comments/${postId}.json`)

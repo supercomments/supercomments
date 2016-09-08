@@ -12,8 +12,9 @@
     <script type="text/javascript">
         var code = window.location.href.match(/.*#access_token=(.[^&]+)/);
         var csrf = window.location.href.match(/.*&state=(.[^&]+)/);
+        var expires = window.location.href.match(/.*&expires_in=(.[^&]+)/);
         if (code && csrf) {
-          window.opener.postMessage({ type: 'RedditAuthenticated', token: code[1], state: csrf[1] }, '*');
+          window.opener.postMessage({ type: 'RedditAuthenticated', token: code[1], state: csrf[1], expires: expires[1] }, '*');
           window.close();
         }
     </script>
