@@ -7,9 +7,15 @@ import { withThrobber } from 'sagas/throbberSaga';
 
 export function* fetchComments() {
   yield* withThrobber(function* () {
-    const { entities, result } = yield call(fetchCommentsAPI, '4kdvns');
+    const {
+      list: {
+        entities, result
+      },
+      post
+    } = yield call(fetchCommentsAPI, '4kdvns');
 
     yield put(buildAction(Actions.EntitiesHaveChanged, entities));
     yield put(buildAction(Actions.CommentsHaveBeenLoaded, result));
+    yield put(buildAction(Actions.PostHasBeenLoaded, post));
   });
 }

@@ -13,9 +13,15 @@ export const getRootThreadReplies = createSelector(
   thread => thread.rootComments
 );
 
-// Get Reply Form instance state slice
+// Gets Reply Form instance state slice
 export const getReplyForm = createSelector(
   getThread,
   (appState, threadId) => threadId,
   (thread, threadId) => thread.replyForms[threadId]
+);
+
+// Gets Reddit post data
+export const getPost = createSelector(
+  getThread,
+  thread => thread.post
 );

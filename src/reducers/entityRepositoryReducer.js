@@ -9,7 +9,7 @@ const initialState = {
 export default (state = initialState, { type, payload }) => {
   switch (type) {
     case Actions.EntitiesHaveChanged:
-      return merge(state, payload);
+      return merge({}, state, payload);
 
     default:
       return state;

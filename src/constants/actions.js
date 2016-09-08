@@ -4,6 +4,7 @@ export const LogOutRequest = 'LogOutRequest';
 export const LogOut = 'LogOut';
 export const EntitiesHaveChanged = 'EntitiesHaveChanged';
 export const CommentsHaveBeenLoaded = 'CommentsHaveBeenLoaded';
+export const PostHasBeenLoaded = 'PostHasBeenLoaded';
 export const SetLoading = 'SetLoading';
 export const ResetLoading = 'ResetLoading';
 export const Reply = 'Reply';

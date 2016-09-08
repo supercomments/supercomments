@@ -36,6 +36,10 @@ const mapRedditReplies = (replies, parent = null) => replies.map(({ data }) => (
   replies: data.replies ? mapRedditReplies(data.replies.data.children, data) : []
 }));
 
+const mapPost = post => ({
+  subreddit: `/r/${post.subreddit}`
+});
+
 export const tokenExpiration = () => new Promise(res => {
   const cb = () => {
     reddit.removeListener('access_token_expired', cb);
@@ -48,8 +52,10 @@ export const tokenExpiration = () => new Promise(res => {
 export const fetchComments = postId =>
   reddit(`/comments/${postId}.json`)
     .get()
-    .then(([post, list]) => // eslint-disable-line no-unused-vars
-        normalize(mapRedditReplies(list.data.children), arrayOf(SCHEMA.COMMENT)));
+    .then(([post, list]) => ({
+      list: normalize(mapRedditReplies(list.data.children), arrayOf(SCHEMA.COMMENT)),
+      post: mapPost(post.data.children[0].data)
+    }));
 
 export const getAuthUrl = csrf => reddit.getImplicitAuthUrl(csrf);
 

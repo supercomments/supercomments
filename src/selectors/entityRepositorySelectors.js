@@ -22,3 +22,9 @@ export const mapReplies = createSelector(
   (state, threadId) => threadId,
   (comments, threadId) => comments[threadId].replies.map(commentId => comments[commentId])
 );
+
+// Gets number of comments
+export const getCommentsCount = createSelector(
+  getComments,
+  comments => Object.keys(comments).length
+);

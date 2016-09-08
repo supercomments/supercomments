@@ -3,7 +3,10 @@ import * as Actions from 'constants/actions';
 
 const initialState = {
   rootComments: [],
-  replyForms: {}
+  replyForms: {},
+  post: {
+    subreddit: ''
+  }
 };
 
 const emptyReplyForm = {
@@ -48,6 +51,12 @@ export default (state = initialState, { type, payload }) => {
         text
       }));
     }
+
+    case Actions.PostHasBeenLoaded:
+      return {
+        ...state,
+        post: payload
+      };
 
     default:
       return state;

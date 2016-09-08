@@ -1,19 +1,30 @@
-import React from 'react';
+import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
 
 import UserLogin from 'containers/UserLogin';
+import { getPost } from 'selectors/threadSelectors';
+import { getCommentsCount } from 'selectors/entityRepositorySelectors';
 
-const Header = () => (
+const Header = ({ commentsCount, subreddit }) => (
   <header id="main-nav">
     <nav className="nav nav-primary">
       <ul>
         <li className="nav-tab nav-tab--primary tab-conversation">
           <a className="publisher-nav-color">
-            <span className="comment-count">7 comments</span>
+            <span className="comment-count">
+              {commentsCount} {commentsCount === 1 ? 'comments' : 'comments'}
+            </span>
           </a>
         </li>
         <li className="nav-tab nav-tab--primary tab-community">
-          <a className="publisher-nav-color" id="community-tab">
-            <span className="community-name"><strong>Community Name</strong></span>
+          <a
+            href={subreddit ? `https://reddit.com/${subreddit}` : '#'}
+            id="community-tab"
+            className="publisher-nav-color"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span className="community-name"><strong>{subreddit}</strong></span>
           </a>
         </li>
         <UserLogin />
@@ -22,4 +33,14 @@ const Header = () => (
   </header>
 );
 
-export default Header;
+Header.propTypes = {
+  commentsCount: PropTypes.number.isRequired,
+  subreddit: PropTypes.string.isRequired
+};
+
+const mapStateToProps = appState => ({
+  commentsCount: getCommentsCount(appState),
+  subreddit: getPost(appState).subreddit
+});
+
+export default connect(mapStateToProps)(Header);
