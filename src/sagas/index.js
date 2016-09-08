@@ -5,17 +5,15 @@ import * as Actions from 'constants/actions';
 import {
   onLogin,
   restoreSession,
-  subscribeForTokenExpiration,
-  onLogout
+  onLoggedIn
 } from 'sagas/authenticationSaga';
 import { fetchComments } from 'sagas/threadSaga';
 
 export default function* () {
   yield [
-    fork(subscribeForTokenExpiration),
     fork(restoreSession),
     fork(fetchComments),
     fork(takeEvery, Actions.LogIn, onLogin),
-    fork(takeEvery, Actions.LogOutRequest, onLogout)
+    fork(takeEvery, Actions.LoggedIn, onLoggedIn)
   ];
 }

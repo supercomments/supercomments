@@ -1,10 +1,10 @@
-import { take, put, call } from 'redux-saga/effects';
+import { race, take, put, call } from 'redux-saga/effects';
 import moment from 'moment';
 
 import buildAction from 'helpers/buildAction';
 import * as Actions from 'constants/actions';
 import { RedditAuthenticated } from 'constants/windowMessageTypes';
-import { getAuthUrl, authenticate, tokenExpiration } from 'effects/redditAPI';
+import { getAuthUrl, authenticate, tokenExpiration, logout } from 'effects/redditAPI';
 import {
   openWindowAndWaitForMessage,
   saveToLocalStorage,
@@ -15,21 +15,18 @@ const AUTH_WINDOW_WIDTH = 1024;
 const AUTH_WINDOW_HEIGHT = 800;
 const AUTH_WINDOW_TITLE = 'Reddit Auth';
 
-const isTokenExpired = expires => moment() > moment(expires);
-
-export function* subscribeForTokenExpiration() {
-  const tokenExpirationChan = yield call(tokenExpiration);
-
-  while (true) {
-    yield take(tokenExpirationChan);
-    yield put(buildAction(Actions.LogOut));
-  }
+function* clearRedditAuthInLocalStorage() {
+  yield call(saveToLocalStorage, {
+    reddit: null
+  });
 }
+
+const isTokenExpired = expires => moment() > moment(expires);
 
 export function* restoreSession() {
   const data = yield call(restoreFromLocalStorage);
 
-  if (data) {
+  if (data && data.reddit && data.reddit.token) {
     const {
       reddit: {
         name,
@@ -54,6 +51,7 @@ export function* restoreSession() {
           'stored OAuth token from localStorage'
         );
 
+        yield* clearRedditAuthInLocalStorage();
         yield put(buildAction(Actions.LogOut));
       }
     }
@@ -97,6 +95,19 @@ export function* onLogin() {
   }
 }
 
-export function* onLogout() {
+export function* onLoggedIn() {
+  const {
+    logOutRequest
+  } = yield race({
+    expired: call(tokenExpiration),
+    logOutRequest: take(Actions.LogOutRequest)
+  });
+
   yield put(buildAction(Actions.LogOut));
+
+  if (logOutRequest) {
+    yield call(logout);
+  }
+
+  yield* clearRedditAuthInLocalStorage();
 }
