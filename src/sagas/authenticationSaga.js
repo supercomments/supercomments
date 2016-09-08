@@ -43,16 +43,18 @@ export function* restoreSession() {
     // token and save the user in app state
     if (!isTokenExpired(expires)) {
       try {
-        // re-authenticate reddit API
-        yield call(authenticate, token);
-
         // Just put the user in the App state
         yield put(buildAction(Actions.LoggedIn, name));
+
+        // re-authenticate reddit API
+        yield call(authenticate, token);
       } catch (ex) {
         console.warn(
           'Could not re-authenticate reddit API using ' +
           'stored OAuth token from localStorage'
         );
+
+        yield put(buildAction(Actions.LogOut));
       }
     }
   }
@@ -93,4 +95,8 @@ export function* onLogin() {
       // TODO: ask Matt, should re-fetch list?
     });
   }
+}
+
+export function* onLogout() {
+  yield put(buildAction(Actions.LogOut));
 }

@@ -1,5 +1,6 @@
 export const LogIn = 'LogIn';
 export const LoggedIn = 'LoggedIn';
+export const LogOutRequest = 'LogOutRequest';
 export const LogOut = 'LogOut';
 export const EntitiesHaveChanged = 'EntitiesHaveChanged';
 export const CommentsHaveBeenLoaded = 'CommentsHaveBeenLoaded';

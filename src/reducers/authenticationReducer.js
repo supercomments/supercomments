@@ -12,6 +12,9 @@ export default (state = initialState, { type, payload }) => {
         user: payload
       };
 
+    case Actions.LogOut:
+      return initialState;
+
     default:
       return state;
   }
