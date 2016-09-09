@@ -25,3 +25,9 @@ export const getPost = createSelector(
   getThread,
   thread => thread.post
 );
+
+// Gets current sort
+export const getSort = createSelector(
+  getThread,
+  thread => thread.sort
+);

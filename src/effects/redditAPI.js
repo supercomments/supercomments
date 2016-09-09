@@ -2,6 +2,13 @@ import Snoocore from 'snoocore';
 import { Schema, normalize, arrayOf } from 'normalizr';
 import { XmlEntities } from 'html-entities';
 import moment from 'moment';
+import * as Sort from 'constants/sort';
+
+const MAP_SORT_TO_REDDIT_SORT = {
+  [Sort.Best]: 'top',
+  [Sort.Newest]: 'new',
+  [Sort.Oldest]: 'old'
+};
 
 const MS_IN_SEC = 1000;
 
@@ -49,9 +56,9 @@ export const tokenExpiration = () => new Promise(res => {
   reddit.on('access_token_expired', cb);
 });
 
-export const fetchComments = postId =>
+export const fetchComments = (postId, sort) =>
   reddit(`/comments/${postId}.json`)
-    .get()
+    .get({ sort: MAP_SORT_TO_REDDIT_SORT[sort] })
     .then(([post, list]) => ({
       list: normalize(mapRedditReplies(list.data.children), arrayOf(SCHEMA.COMMENT)),
       post: mapPost(post.data.children[0].data)

@@ -9,3 +9,4 @@ export const SetLoading = 'SetLoading';
 export const ResetLoading = 'ResetLoading';
 export const Reply = 'Reply';
 export const ReplyFormChangeText = 'ReplyFormChangeText';
+export const Sort = 'Sort';

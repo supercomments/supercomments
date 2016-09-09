@@ -1,12 +1,14 @@
 import identityFunction from 'helpers/identityFunction';
 import * as Actions from 'constants/actions';
+import * as Sort from 'constants/sort';
 
 const initialState = {
   rootComments: [],
   replyForms: {},
   post: {
     subreddit: ''
-  }
+  },
+  sort: Sort.Best
 };
 
 const emptyReplyForm = {
@@ -56,6 +58,12 @@ export default (state = initialState, { type, payload }) => {
       return {
         ...state,
         post: payload
+      };
+
+    case Actions.Sort:
+      return {
+        ...state,
+        sort: payload
       };
 
     default:

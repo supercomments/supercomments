@@ -14,6 +14,7 @@ export default function* () {
     fork(restoreSession),
     fork(fetchComments),
     fork(takeEvery, Actions.LogIn, onLogin),
-    fork(takeEvery, Actions.LoggedIn, onLoggedIn)
+    fork(takeEvery, Actions.LoggedIn, onLoggedIn),
+    fork(takeEvery, Actions.Sort, fetchComments)
   ];
 }
