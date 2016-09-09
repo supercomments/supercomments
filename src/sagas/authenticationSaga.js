@@ -40,11 +40,11 @@ export function* restoreSession() {
     // token and save the user in app state
     if (!isTokenExpired(expires)) {
       try {
-        // Just put the user in the App state
-        yield put(buildAction(Actions.LoggedIn, name));
-
         // re-authenticate reddit API
         yield call(authenticate, token);
+
+        // Just put the user in the App state
+        yield put(buildAction(Actions.LoggedIn, name));
       } catch (ex) {
         console.warn(
           'Could not re-authenticate reddit API using ' +
@@ -52,7 +52,6 @@ export function* restoreSession() {
         );
 
         yield* clearRedditAuthInLocalStorage();
-        yield put(buildAction(Actions.LogOut));
       }
     }
   }
