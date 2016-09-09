@@ -7,11 +7,21 @@ import { getReplyForm } from 'selectors/threadSelectors';
 import { isAuthenticated, getAuthenticatedUser } from 'selectors/authenticationSelectors';
 import alien from 'assets/alien.png';
 
-const ReplyForm = ({ visible, authenticated, user, text, onChange, onLogIn }) => {
+const ReplyForm = ({
+  visible,
+  authenticated,
+  user,
+  text,
+  error,
+  onChange,
+  onSubmit,
+  onRetry,
+  onLogIn
+}) => {
   if (visible) {
     return (
       <div className="reply-form-container">
-        <form className="reply expanded authenticated">
+        <form className="reply expanded authenticated" onSubmit={error ? onRetry : onSubmit}>
           <div className="postbox">
             <div className="avatar">
               <a className="user">
@@ -48,7 +58,8 @@ const ReplyForm = ({ visible, authenticated, user, text, onChange, onLogIn }) =>
                     <section>
                       <div className="temp-post" style={{ textAlign: 'right' }}>
                         <button className="btn post-action__button">
-                          Post as <span>{user}</span>
+                          {!error && <span>Post as <span>{user}</span></span>}
+                          {error && <span>Retry</span>}
                         </button>
                       </div>
                     </section>
@@ -71,8 +82,10 @@ ReplyForm.propTypes = {
   authenticated: PropTypes.bool.isRequired,
   user: PropTypes.string,
   text: PropTypes.string,
+  error: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
-  onLogIn: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  onLogIn: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (appState, { threadId }) => {
@@ -102,7 +115,9 @@ export default connect(
   mapStateToProps,
   buildActionCreators({
     onChange: Actions.ReplyFormChangeText,
-    onLogIn: Actions.LogIn
+    onLogIn: Actions.LogIn,
+    onSubmit: Actions.Submit,
+    onRetry: Actions.RetryReplyForm
   }),
   (stateProps, dispatchProps, ownProps) => ({
     ...ownProps,
@@ -111,6 +126,14 @@ export default connect(
     onChange: text => dispatchProps.onChange({
       text,
       threadId: ownProps.threadId
-    })
+    }),
+    onSubmit: ev => {
+      ev.preventDefault();
+      dispatchProps.onSubmit(ownProps.threadId);
+    },
+    onRetry: ev => {
+      ev.preventDefault();
+      dispatchProps.onRetry(ownProps.threadId);
+    }
   })
 )(ReplyForm);

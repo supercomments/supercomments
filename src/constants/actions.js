@@ -10,3 +10,12 @@ export const ResetLoading = 'ResetLoading';
 export const Reply = 'Reply';
 export const ReplyFormChangeText = 'ReplyFormChangeText';
 export const Sort = 'Sort';
+export const Submit = 'Submit';
+
+export const CreateTransientComment = 'CreateTransientComment';
+export const RemoveTransientComment = 'RemoveTransientComment';
+
+export const SendReplyForm = 'SendReplyForm';
+export const SendingReplyFormFailed = 'SendingReplyFormFailed';
+export const RetryReplyForm = 'RetryReplyForm';
+export const CreateComment = 'CreateComment';

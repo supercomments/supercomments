@@ -1,6 +1,7 @@
 import identityFunction from 'helpers/identityFunction';
 import * as Actions from 'constants/actions';
 import * as Sort from 'constants/sort';
+import { isRootThread } from 'selectors/threadSelectors';
 
 const initialState = {
   rootComments: [],
@@ -12,6 +13,7 @@ const initialState = {
 };
 
 const emptyReplyForm = {
+  error: false,
   visible: false,
   text: ''
 };
@@ -65,6 +67,37 @@ export default (state = initialState, { type, payload }) => {
         ...state,
         sort: payload
       };
+
+    case Actions.SendReplyForm:
+      return updateReplyForm(state, payload, replyFormModel => ({
+        ...replyFormModel,
+        visible: false
+      }));
+
+    case Actions.SendingReplyFormFailed:
+      return updateReplyForm(state, payload, replyFormModel => ({
+        ...replyFormModel,
+        visible: true,
+        error: true
+      }));
+
+    case Actions.CreateComment: {
+      const { threadId, commentId } = payload;
+
+      let mutatedState = state;
+      if (isRootThread(threadId)) {
+        mutatedState = {
+          ...state,
+          rootComments: [...state.rootComments, commentId]
+        };
+      }
+
+      return updateReplyForm(mutatedState, threadId, replyFormModel => ({
+        ...replyFormModel,
+        error: false,
+        text: ''
+      }));
+    }
 
     default:
       return state;

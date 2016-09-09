@@ -29,12 +29,13 @@ const reddit = new Snoocore({
     type: 'implicit',
     key: 'CRcRenqfbTCNLw',
     redirectUri: 'http://localhost:3000',
-    scope: ['identity', 'read', 'vote']
+    scope: ['identity', 'read', 'submit', 'vote']
   }
 });
 
 const mapRedditReplies = (replies, parent = null) => replies.map(({ data }) => ({
   id: data.id,
+  thingId: data.name,
   parentAuthor: parent ? parent.author : null,
   author: data.author,
   body: htmlEntitiesDecoder.decode(data.body_html),
@@ -71,3 +72,21 @@ export const authenticate = token => reddit
   .then(reddit('/api/v1/me').get);
 
 export const logout = () => reddit.deauth();
+
+// export const submitComment = (parentId, text) =>
+//   reddit('/api/comment')
+//     .post({
+//       text,
+//       thing_id: parentId
+//     })
+//     .then(({ json: { data } }) => {
+//       if (data.things && data.things.length > 0) {
+//         return normalize(mapRedditReplies(data.things)[0], SCHEMA.COMMENT);
+//       } else {
+//         throw new Error('Reddit API failed to submit the comment');
+//       }
+//     });
+
+export const submitComment = (parentId, text) => new Promise((res, rej) => {
+  setTimeout(rej, 500);
+});
