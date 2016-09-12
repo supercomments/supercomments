@@ -1,10 +1,8 @@
 import identityFunction from 'helpers/identityFunction';
 import * as Actions from 'constants/actions';
 import * as Sort from 'constants/sort';
-import { isRootThread } from 'selectors/threadSelectors';
 
 const initialState = {
-  rootComments: [],
   replyForms: {},
   post: {
     subreddit: ''
@@ -32,11 +30,6 @@ const updateReplyForm = (state, threadId, mutation = identityFunction) => {
 
 export default (state = initialState, { type, payload }) => {
   switch (type) {
-    case Actions.CommentsHaveBeenLoaded:
-      return {
-        ...state,
-        rootComments: payload
-      };
 
     case Actions.Reply: {
       const threadId = payload;
@@ -81,23 +74,8 @@ export default (state = initialState, { type, payload }) => {
         error: true
       }));
 
-    case Actions.CreateComment: {
-      const { threadId, commentId } = payload;
-
-      let mutatedState = state;
-      if (isRootThread(threadId)) {
-        mutatedState = {
-          ...state,
-          rootComments: [...state.rootComments, commentId]
-        };
-      }
-
-      return updateReplyForm(mutatedState, threadId, replyFormModel => ({
-        ...replyFormModel,
-        error: false,
-        text: ''
-      }));
-    }
+    case Actions.ReplySubmitted:
+      return updateReplyForm(state, payload, () => emptyReplyForm);
 
     default:
       return state;

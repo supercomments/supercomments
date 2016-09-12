@@ -16,6 +16,6 @@ export default function* () {
     fork(takeEvery, Actions.LoggedIn, onLoggedIn),
     fork(takeEvery, Actions.LogIn, onLogin),
     fork(takeEvery, Actions.Sort, fetchComments),
-    fork(takeEvery, Actions.Submit, onSubmit)
+    fork(takeEvery, Actions.SubmitReply, onSubmit)
   ];
 }

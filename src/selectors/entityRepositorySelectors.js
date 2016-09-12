@@ -1,6 +1,7 @@
 import { createSelector } from 'reselect';
+import { find } from 'lodash';
 
-import { isRootThread, getPost } from 'selectors/threadSelectors';
+import * as Entities from 'constants/entities';
 
 // Gets the appropriate slice in the global app state
 export const getEntityRepository = appState => appState.entityRepository;
@@ -8,14 +9,7 @@ export const getEntityRepository = appState => appState.entityRepository;
 // Gets list of Comments
 const getComments = createSelector(
   getEntityRepository,
-  entityRepository => entityRepository.comments
-);
-
-// Maps list of Comment IDs to Comments
-export const mapComments = createSelector(
-  getComments,
-  (state, commentIds) => commentIds,
-  (comments, commentIds) => commentIds.map(commentId => comments[commentId])
+  entityRepository => entityRepository[Entities.Comment]
 );
 
 // Maps list of replies for corresponding Thread ID
@@ -38,18 +32,8 @@ export const getComment = createSelector(
   (comments, commentId) => comments[commentId]
 );
 
-
-// Gets thingId by threadId, may return thingId of post it's is provided
-// otherwise thingId of the comment is returned
-export const getThingId = createSelector(
+// Gets root thread
+export const getRootThread = createSelector(
   getComments,
-  getPost,
-  (state, threadId) => threadId,
-  (comments, post, threadId) => {
-    if (isRootThread(threadId)) {
-      return post.thingId;
-    } else {
-      return comments[threadId].thingId;
-    }
-  }
+  comments => find(comments, comment => !!comment.root)
 );

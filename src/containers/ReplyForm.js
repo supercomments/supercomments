@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import buildActionCreators from 'helpers/buildActionCreators';
 import * as Actions from 'constants/actions';
+import * as Entities from 'constants/entities';
 import { getReplyForm } from 'selectors/threadSelectors';
 import { isAuthenticated, getAuthenticatedUser } from 'selectors/authenticationSelectors';
 import alien from 'assets/alien.png';
@@ -85,7 +86,8 @@ ReplyForm.propTypes = {
   error: PropTypes.bool,
   onChange: PropTypes.func.isRequired,
   onSubmit: PropTypes.func.isRequired,
-  onLogIn: PropTypes.func.isRequired
+  onLogIn: PropTypes.func.isRequired,
+  onRetry: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (appState, { threadId }) => {
@@ -116,8 +118,8 @@ export default connect(
   buildActionCreators({
     onChange: Actions.ReplyFormChangeText,
     onLogIn: Actions.LogIn,
-    onSubmit: Actions.Submit,
-    onRetry: Actions.RetryReplyForm
+    onSubmit: Actions.SubmitReply,
+    onRetry: Actions.Retry
   }),
   (stateProps, dispatchProps, ownProps) => ({
     ...ownProps,
@@ -133,7 +135,11 @@ export default connect(
     },
     onRetry: ev => {
       ev.preventDefault();
-      dispatchProps.onRetry(ownProps.threadId);
+
+      dispatchProps.onRetry({
+        entityType: Entities.Comment,
+        id: ownProps.threadId
+      });
     }
   })
 )(ReplyForm);

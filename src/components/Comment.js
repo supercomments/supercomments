@@ -13,6 +13,7 @@ const Comment = ({
   created,
   body,
   score,
+  transient,
   onClickReply
 }) => (
   <li className="post">
@@ -75,14 +76,14 @@ const Comment = ({
             </li>
             <li className="bullet" aria-hidden="true">•</li>
             <li className="reply" >
-              <a onClick={onClickReply}><span className="text">Reply</span></a>
+              {!transient && <a onClick={onClickReply}><span className="text">Reply</span></a>}
             </li>
           </menu>
         </footer>
       </div>
       <ReplyForm threadId={id} />
     </div>
-    <Thread threadId={id} />
+    <Thread isRootThread={false} threadId={id} />
   </li>
 );
 
@@ -90,6 +91,7 @@ Comment.propTypes = {
   id: PropTypes.string.isRequired,
   author: PropTypes.string.isRequired,
   parentAuthor: PropTypes.string,
+  transient: PropTypes.bool,
   created: momentObj,
   body: PropTypes.string.isRequired,
   score: PropTypes.number.isRequired,

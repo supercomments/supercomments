@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import buildActionCreators from 'helpers/buildActionCreators';
 import * as Actions from 'constants/actions';
 import * as Sort from 'constants/sort';
-import { ROOT_THREAD_ID, getPost, getSort } from 'selectors/threadSelectors';
-import { getCommentsCount } from 'selectors/entityRepositorySelectors';
+import { getPost, getSort } from 'selectors/threadSelectors';
+import { getRootThread, getCommentsCount } from 'selectors/entityRepositorySelectors';
 
 import LayoutWrapper from 'components/LayoutWrapper';
 import PrimaryHeader from 'components/PrimaryHeader';
@@ -17,6 +17,7 @@ const RedditSupercomments = ({
   post,
   commentsCount,
   selectedSort,
+  rootThread,
   sortBest,
   sortNewest,
   sortOldest
@@ -34,7 +35,7 @@ const RedditSupercomments = ({
         onSortOldest={sortOldest}
       />
       <div id="posts">
-        <Thread threadId={ROOT_THREAD_ID} />
+        {rootThread && <Thread isRootThread threadId={rootThread.id} />}
       </div>
     </section>
   </LayoutWrapper>
@@ -44,6 +45,7 @@ RedditSupercomments.propTypes = {
   commentsCount: PropTypes.number.isRequired,
   selectedSort: PropTypes.string.isRequired,
   post: PropTypes.object.isRequired,
+  rootThread: PropTypes.object,
   sortBest: PropTypes.func.isRequired,
   sortNewest: PropTypes.func.isRequired,
   sortOldest: PropTypes.func.isRequired
@@ -52,7 +54,8 @@ RedditSupercomments.propTypes = {
 const mapStateToProps = appState => ({
   selectedSort: getSort(appState),
   commentsCount: getCommentsCount(appState),
-  post: getPost(appState)
+  post: getPost(appState),
+  rootThread: getRootThread(appState)
 });
 
 export default connect(

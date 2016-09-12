@@ -3,21 +3,13 @@ import { connect } from 'react-redux';
 
 import buildActionCreators from 'helpers/buildActionCreators';
 import * as Actions from 'constants/actions';
-import {
-  mapReplies,
-  mapComments
-} from 'selectors/entityRepositorySelectors';
-
-import {
-  getRootThreadReplies,
-  isRootThread
-} from 'selectors/threadSelectors';
+import { mapReplies } from 'selectors/entityRepositorySelectors';
 
 import ThreadWrapper from 'components/ThreadWrapper';
 import Comment from 'components/Comment';
 
-const NonConnectedThread = ({ comments, rootThread, onClickReply }) => (
-  <ThreadWrapper isRootThread={rootThread}>
+const NonConnectedThread = ({ comments, isRootThread, onClickReply }) => (
+  <ThreadWrapper isRootThread={isRootThread}>
     {comments.map(comment => (
       <Comment
         onClickReply={() => onClickReply(comment.id)}
@@ -30,20 +22,13 @@ const NonConnectedThread = ({ comments, rootThread, onClickReply }) => (
 
 NonConnectedThread.propTypes = {
   comments: PropTypes.array.isRequired,
-  rootThread: PropTypes.bool.isRequired,
+  isRootThread: PropTypes.bool.isRequired,
   onClickReply: PropTypes.func.isRequired
 };
 
-const mapStateToProps = (appState, { threadId }) => {
-  const rootThread = isRootThread(threadId);
-
-  return {
-    comments: !rootThread ?
-      mapReplies(appState, threadId) :
-      mapComments(appState, getRootThreadReplies(appState)),
-    rootThread
-  };
-};
+const mapStateToProps = (appState, { threadId }) => ({
+  comments: mapReplies(appState, threadId)
+});
 
 const Thread = connect(
   mapStateToProps,
@@ -53,7 +38,8 @@ const Thread = connect(
 )(NonConnectedThread);
 
 Thread.propTypes = {
-  threadId: PropTypes.string.isRequired
+  threadId: PropTypes.string.isRequired,
+  isRootThread: PropTypes.bool.isRequired
 };
 
 export default Thread;

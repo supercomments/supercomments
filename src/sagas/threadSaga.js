@@ -1,12 +1,14 @@
+import moment from 'moment';
 import { call, put, select } from 'redux-saga/effects';
 
 import buildAction from 'helpers/buildAction';
 import { fetchComments as fetchCommentsAPI, submitComment } from 'effects/redditAPI';
 import * as Actions from 'constants/actions';
-import { waitFor } from 'sagas/helpers';
+import * as Entities from 'constants/entities';
 import { withThrobber } from 'sagas/throbberSaga';
+import { optimisticallyCreateEntity } from 'sagas/entityRepositorySaga';
 import { getSort, getReplyForm } from 'selectors/threadSelectors';
-import { getThingId } from 'selectors/entityRepositorySelectors';
+import { getComment } from 'selectors/entityRepositorySelectors';
 import { getAuthenticatedUser } from 'selectors/authenticationSelectors';
 
 export function* fetchComments() {
@@ -15,76 +17,50 @@ export function* fetchComments() {
 
     const {
       list: {
-        entities, result
+        entities
       },
       post
-    } = yield call(fetchCommentsAPI, '51xl1a', sort);
+    } = yield call(fetchCommentsAPI, '52dsam', sort);
 
     yield put(buildAction(Actions.EntitiesHaveChanged, entities));
-    yield put(buildAction(Actions.CommentsHaveBeenLoaded, result));
     yield put(buildAction(Actions.PostHasBeenLoaded, post));
   });
-}
-
-function* createTransientComment(threadId, transientId, text, author) {
-  yield put(buildAction(Actions.CreateTransientComment, {
-    threadId,
-    text,
-    transientId,
-    author
-  }));
-  yield put(buildAction(Actions.SendReplyForm, threadId));
 }
 
 export function* onSubmit({ payload }) {
   const threadId = payload;
 
   const author = yield select(getAuthenticatedUser);
-  const thingId = yield select(appState => getThingId(appState, threadId));
-  const transientId = `transient-${Date.now().toString()}`;
+  const parentComment = yield select(appState => getComment(appState, threadId));
 
-  let created = false;
-  while (!created) {
-    try {
+  yield* optimisticallyCreateEntity(
+    Entities.Comment,
+    submitComment,
+    function* createEntity() {
+      yield put(buildAction(Actions.SendReplyForm, threadId));
+
       const { text } = yield select(appState => getReplyForm(appState, threadId));
 
-      // First thing obviously is creating transient Comment entity
-      // so that user can immediately see the Comment in the UI
-      yield* createTransientComment(
-        threadId,
-        transientId,
-        text,
-        author
-      );
-
-      // Call the reddit API
-      const { entities, result } = yield call(submitComment, thingId, text);
-
-      // Just remove the transient record, update Entity repository with
-      // newly created Comment entity which is provided by the API submit call
-      // and finally just put the reference on the new Comment in tree of Comments
-      yield put(buildAction(Actions.RemoveTransientComment, { threadId, transientId }));
-      yield put(buildAction(Actions.EntitiesHaveChanged, entities));
-      yield put(buildAction(Actions.CreateComment, {
-        commentId: result,
-        threadId
-      }));
-
-      // Since transaction has been completed,
-      // which means that Comment has been sucesfully
-      // submitted on Reddit, we can just cancel the Saga
-      created = true;
-    } catch (ex) {
-      console.warn(ex);
-
-      // When Reddit API fails, we just remove the transient Comment
-      // and re-enable ReplyForm so that user can retry.
-      yield put(buildAction(Actions.RemoveTransientComment, { threadId, transientId }));
+      return {
+        thingId: null,
+        parent: parentComment.id,
+        parentAuthor: parentComment.author,
+        author,
+        body: text,
+        score: 1,
+        created: moment(),
+        replies: []
+      };
+    },
+    entity => ({
+      thingId: parentComment.thingId,
+      text: entity.body
+    }),
+    function* onRollback() {
       yield put(buildAction(Actions.SendingReplyFormFailed, threadId));
+    },
+    actionPayload => actionPayload.entityType === Entities.Comment && actionPayload.id === threadId
+  );
 
-      // We can't just wait for any Retry action,
-      // it's important to wait for Retry action for specific thread
-      yield* waitFor(Actions.RetryReplyForm, retryThreadId => retryThreadId === threadId);
-    }
-  }
+  yield put(buildAction(Actions.ReplySubmitted, threadId));
 }
