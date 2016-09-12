@@ -22,7 +22,7 @@ export const mapReplies = createSelector(
 // Gets number of comments
 export const getCommentsCount = createSelector(
   getComments,
-  comments => Object.keys(comments).length
+  comments => Object.keys(comments).filter(id => !comments[id].root).length
 );
 
 // Gets comment by id

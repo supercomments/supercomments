@@ -3,17 +3,18 @@ import { connect } from 'react-redux';
 
 import buildActionCreators from 'helpers/buildActionCreators';
 import * as Actions from 'constants/actions';
-import { mapReplies } from 'selectors/entityRepositorySelectors';
+import { getComment, mapReplies } from 'selectors/entityRepositorySelectors';
 
 import ThreadWrapper from 'components/ThreadWrapper';
 import Comment from 'components/Comment';
 
-const NonConnectedThread = ({ comments, isRootThread, onClickReply }) => (
+const NonConnectedThread = ({ author, comments, isRootThread, onClickReply }) => (
   <ThreadWrapper isRootThread={isRootThread}>
     {comments.map(comment => (
       <Comment
         onClickReply={() => onClickReply(comment.id)}
         key={comment.id}
+        parentAuthor={author}
         {...comment}
       />
     ))}
@@ -21,12 +22,14 @@ const NonConnectedThread = ({ comments, isRootThread, onClickReply }) => (
 );
 
 NonConnectedThread.propTypes = {
+  author: PropTypes.string,
   comments: PropTypes.array.isRequired,
   isRootThread: PropTypes.bool.isRequired,
   onClickReply: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (appState, { threadId }) => ({
+  author: getComment(appState, threadId).author,
   comments: mapReplies(appState, threadId)
 });
 

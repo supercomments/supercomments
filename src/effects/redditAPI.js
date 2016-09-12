@@ -38,10 +38,9 @@ const mapRedditReplies = replies => replies.map(({ data }) => ({
   id: data.id,
   thingId: data.name,
   parent: data.parent_id.substring(3),
-  parentAuthor: 'foobar',
   author: data.author,
   body: htmlEntitiesDecoder.decode(data.body_html),
-  created: moment(data.created * MS_IN_SEC),
+  created: moment(data.created_utc * MS_IN_SEC),
   score: data.score,
   replies: data.replies ? mapRedditReplies(data.replies.data.children) : []
 }));

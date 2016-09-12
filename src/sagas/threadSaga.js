@@ -20,7 +20,7 @@ export function* fetchComments() {
         entities
       },
       post
-    } = yield call(fetchCommentsAPI, '52dsam', sort);
+    } = yield call(fetchCommentsAPI, '4cocqf', sort);
 
     yield put(buildAction(Actions.EntitiesHaveChanged, entities));
     yield put(buildAction(Actions.PostHasBeenLoaded, post));
@@ -44,7 +44,6 @@ export function* onSubmit({ payload }) {
       return {
         thingId: null,
         parent: parentComment.id,
-        parentAuthor: parentComment.author,
         author,
         body: text,
         score: 1,
