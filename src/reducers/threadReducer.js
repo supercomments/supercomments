@@ -12,6 +12,7 @@ const initialState = {
 
 const emptyReplyForm = {
   error: false,
+  root: false,
   visible: false,
   text: ''
 };
@@ -52,7 +53,15 @@ export default (state = initialState, { type, payload }) => {
     case Actions.PostHasBeenLoaded:
       return {
         ...state,
-        post: payload
+        post: payload,
+        replyForms: {
+          ...state.replyForms,
+          [payload.id]: {
+            ...(state.replyForms[payload.id] || emptyReplyForm),
+            root: true,
+            visible: true
+          }
+        }
       };
 
     case Actions.Sort:
@@ -75,7 +84,16 @@ export default (state = initialState, { type, payload }) => {
       }));
 
     case Actions.ReplySubmitted:
-      return updateReplyForm(state, payload, () => emptyReplyForm);
+      if (state.replyForms[payload].root) {
+        return updateReplyForm(state, payload, replyFormModel => ({
+          ...replyFormModel,
+          error: false,
+          text: '',
+          visible: true
+        }));
+      } else {
+        return updateReplyForm(state, payload, () => emptyReplyForm);
+      }
 
     default:
       return state;

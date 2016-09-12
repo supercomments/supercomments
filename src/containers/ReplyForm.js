@@ -9,6 +9,7 @@ import { isAuthenticated, getAuthenticatedUser } from 'selectors/authenticationS
 import alien from 'assets/alien.png';
 
 const ReplyForm = ({
+  root,
   visible,
   authenticated,
   user,
@@ -19,9 +20,9 @@ const ReplyForm = ({
   onRetry,
   onLogIn
 }) => {
-  if (visible) {
+  if (visible || root) {
     return (
-      <div className="reply-form-container">
+      <div className={root ? 'textarea-wrapper--top-level' : 'reply-form-container'}>
         <form className="reply expanded authenticated" onSubmit={error ? onRetry : onSubmit}>
           <div className="postbox">
             <div className="avatar">
@@ -36,6 +37,7 @@ const ReplyForm = ({
               <div>
                 <textarea
                   className="textarea"
+                  placeholder="Join the discussion"
                   value={text}
                   onChange={ev => onChange(ev.target.value)}
                 />
@@ -54,7 +56,7 @@ const ReplyForm = ({
                     <a onClick={onLogIn}>Login to Reddit</a><span> to post a comment</span>
                   </div>
                 )}
-                {authenticated && (
+                {authenticated && visible && (
                   <div className="logged-in">
                     <section>
                       <div className="temp-post" style={{ textAlign: 'right' }}>
@@ -79,6 +81,7 @@ const ReplyForm = ({
 
 ReplyForm.propTypes = {
   threadId: PropTypes.string.isRequired,
+  root: PropTypes.bool.isRequired,
   visible: PropTypes.bool.isRequired,
   authenticated: PropTypes.bool.isRequired,
   user: PropTypes.string,
@@ -106,6 +109,7 @@ const mapStateToProps = (appState, { threadId }) => {
     // it's basically the case when the ReplyForm has
     // not been activated yet
     return {
+      root: false,
       visible: false,
       authenticated,
       user

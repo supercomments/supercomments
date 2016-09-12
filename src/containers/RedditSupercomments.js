@@ -12,6 +12,7 @@ import PrimaryHeader from 'components/PrimaryHeader';
 import SecondaryHeader from 'components/SecondaryHeader';
 
 import Thread from 'containers/Thread';
+import ReplyForm from 'containers/ReplyForm';
 
 const RedditSupercomments = ({
   post,
@@ -35,6 +36,7 @@ const RedditSupercomments = ({
         onSortOldest={sortOldest}
       />
       <div id="posts">
+        {rootThread && <ReplyForm threadId={rootThread.id} />}
         {rootThread && <Thread isRootThread threadId={rootThread.id} />}
       </div>
     </section>
