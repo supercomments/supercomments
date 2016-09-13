@@ -20,6 +20,7 @@ const ReplyForm = ({
   onRetry,
   onLogIn
 }) => {
+  // Root Reply Form is always visible
   if (visible || root) {
     return (
       <div className={root ? 'textarea-wrapper--top-level' : 'reply-form-container'}>
@@ -109,8 +110,8 @@ const mapStateToProps = (appState, { threadId }) => {
     // it's basically the case when the ReplyForm has
     // not been activated yet
     return {
-      root: false,
-      visible: false,
+      root: false, // This can never be root because root is always visible
+      visible: false, // Default state is hidden
       authenticated,
       user
     };

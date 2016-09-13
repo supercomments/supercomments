@@ -1,11 +1,13 @@
 import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
+import Loader from 'react-loader';
 
 import buildActionCreators from 'helpers/buildActionCreators';
 import * as Actions from 'constants/actions';
 import * as Sort from 'constants/sort';
 import { getSort } from 'selectors/threadSelectors';
 import { getCommentsCount, getPost } from 'selectors/entityRepositorySelectors';
+import { isLoading } from 'selectors/throbberSelectors';
 
 import LayoutWrapper from 'components/LayoutWrapper';
 import PrimaryHeader from 'components/PrimaryHeader';
@@ -15,6 +17,7 @@ import Thread from 'containers/Thread';
 import ReplyForm from 'containers/ReplyForm';
 
 const RedditSupercomments = ({
+  loading,
   post,
   commentsCount,
   selectedSort,
@@ -25,27 +28,29 @@ const RedditSupercomments = ({
 }) => {
   if (post) {
     return (
-      <LayoutWrapper>
-        <PrimaryHeader
-          subreddit={post.subreddit}
-          commentsCount={commentsCount}
-        />
-        <section id="conversation">
-          <SecondaryHeader
-            sort={selectedSort}
-            votes={post.votes}
-            upvoted={post.upvoted}
-            onSortBest={sortBest}
-            onSortNewest={sortNewest}
-            onSortOldest={sortOldest}
-            onUpvotePost={upvotePost}
+      <Loader loaded={!loading}>
+        <LayoutWrapper>
+          <PrimaryHeader
+            subreddit={post.subreddit}
+            commentsCount={commentsCount}
           />
-          <div id="posts">
-            <ReplyForm threadId={post.id} />
-            <Thread isRootThread threadId={post.id} />
-          </div>
-        </section>
-      </LayoutWrapper>
+          <section id="conversation">
+            <SecondaryHeader
+              sort={selectedSort}
+              votes={post.votes}
+              upvoted={post.upvoted}
+              onSortBest={sortBest}
+              onSortNewest={sortNewest}
+              onSortOldest={sortOldest}
+              onUpvotePost={upvotePost}
+            />
+            <div id="posts">
+              <ReplyForm threadId={post.id} />
+              <Thread isRootThread threadId={post.id} />
+            </div>
+          </section>
+        </LayoutWrapper>
+      </Loader>
     );
   } else {
     return null;
@@ -53,6 +58,7 @@ const RedditSupercomments = ({
 };
 
 RedditSupercomments.propTypes = {
+  loading: PropTypes.bool.isRequired,
   commentsCount: PropTypes.number.isRequired,
   selectedSort: PropTypes.string.isRequired,
   post: PropTypes.object,
@@ -63,6 +69,7 @@ RedditSupercomments.propTypes = {
 };
 
 const mapStateToProps = appState => ({
+  loading: isLoading(appState),
   selectedSort: getSort(appState),
   commentsCount: getCommentsCount(appState),
   post: getPost(appState)

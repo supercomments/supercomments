@@ -10,6 +10,7 @@ import {
   saveToLocalStorage,
   restoreFromLocalStorage } from 'effects/windowEffects';
 import { withThrobber } from 'sagas/throbberSaga';
+import { fetchComments } from 'sagas/threadSaga';
 
 const AUTH_WINDOW_WIDTH = 1024;
 const AUTH_WINDOW_HEIGHT = 800;
@@ -89,7 +90,7 @@ export function* onLogin() {
         }
       });
 
-      // TODO: ask Matt, should re-fetch list?
+      yield* fetchComments();
     });
   }
 }
@@ -102,11 +103,14 @@ export function* onLoggedIn() {
     logOutRequest: take(Actions.LogOutRequest)
   });
 
-  yield put(buildAction(Actions.LogOut));
+  yield* withThrobber(function* () {
+    yield put(buildAction(Actions.LogOut));
 
-  if (logOutRequest) {
-    yield call(logout);
-  }
+    if (logOutRequest) {
+      yield call(logout);
+    }
 
-  yield* clearRedditAuthInLocalStorage();
+    yield* clearRedditAuthInLocalStorage();
+    yield* fetchComments();
+  });
 }

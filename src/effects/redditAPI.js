@@ -41,11 +41,12 @@ const reddit = new Snoocore({
 const mapRedditReplies = replies => replies.map(({ data }) => ({
   id: data.id,
   name: data.name,
+  upvoted: !!data.likes,
+  votes: data.score,
   parent: data.parent_id.substring(3),
   author: data.author,
   body: htmlEntitiesDecoder.decode(data.body_html),
   created: moment(data.created_utc * MsInSec),
-  votes: data.score,
   replies: data.replies ? mapRedditReplies(data.replies.data.children) : []
 }));
 

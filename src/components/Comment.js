@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import { momentObj } from 'react-moment-proptypes';
+import cx from 'classnames';
 
 import alien from 'assets/alien.png';
 
@@ -15,6 +16,7 @@ const Comment = ({
   created,
   body,
   votes,
+  upvoted,
   transient,
   onClickReply
 }) => (
@@ -64,7 +66,14 @@ const Comment = ({
         <footer className="comment__footer">
           <menu className="comment-footer__menu">
             <li className="voting">
-              <a className={`vote-up count-${votes}`} title="Vote up">
+              <a
+                className={cx({
+                  'vote-up': true,
+                  [`count-${votes}`]: true,
+                  upvoted
+                })}
+                title="Vote up"
+              >
                 <span className="updatable count">{votes}</span>
                 <span className="control">
                   <i aria-hidden="true" className="icon icon-arrow-2" />

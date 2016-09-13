@@ -13,18 +13,20 @@ import { getAuthenticatedUser } from 'selectors/authenticationSelectors';
 import { getRedditId } from 'selectors/setupSelectors';
 
 export function* fetchComments() {
-  yield* withThrobber(function* () {
-    const sort = yield select(getSort);
-    const redditId = yield select(getRedditId);
+  const sort = yield select(getSort);
+  const redditId = yield select(getRedditId);
 
-    const {
-      entities,
-      result
-    } = yield call(fetchCommentsAPI, redditId, sort);
+  const {
+    entities,
+    result
+  } = yield call(fetchCommentsAPI, redditId, sort);
 
-    yield put(buildAction(Actions.EntitiesHaveChanged, entities));
-    yield put(buildAction(Actions.PostHasBeenLoaded, result));
-  });
+  yield put(buildAction(Actions.EntitiesHaveChanged, entities));
+  yield put(buildAction(Actions.PostHasBeenLoaded, result));
+}
+
+export function* fetchCommentsWithThrobber() {
+  yield* withThrobber(fetchComments);
 }
 
 export function* onSubmit({ payload }) {
@@ -47,6 +49,7 @@ export function* onSubmit({ payload }) {
         author,
         body: text,
         votes: 1,
+        upvoted: true,
         created: moment(),
         replies: []
       };

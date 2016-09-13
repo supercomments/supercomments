@@ -7,15 +7,15 @@ import {
   restoreSession,
   onLoggedIn
 } from 'sagas/authenticationSaga';
-import { fetchComments, onSubmit } from 'sagas/threadSaga';
+import { fetchCommentsWithThrobber, onSubmit } from 'sagas/threadSaga';
 
 export default function* () {
   yield [
     fork(takeEvery, Actions.Setup, restoreSession),
-    fork(takeEvery, Actions.Setup, fetchComments),
+    fork(takeEvery, Actions.Setup, fetchCommentsWithThrobber),
     fork(takeEvery, Actions.LoggedIn, onLoggedIn),
     fork(takeEvery, Actions.LogIn, onLogin),
-    fork(takeEvery, Actions.Sort, fetchComments),
+    fork(takeEvery, Actions.Sort, fetchCommentsWithThrobber),
     fork(takeEvery, Actions.SubmitReply, onSubmit)
   ];
 }
