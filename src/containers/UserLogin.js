@@ -19,6 +19,9 @@ const UserLogin = ({
         className="nav-tab nav-tab--primary dropdown user-menu"
       >
         <li>
+          <a href={`https://www.reddit.com/user/${user}`} target="_blank" rel="noopener noreferrer">Your Profile</a>
+          <a href="https://www.reddit.com/prefs" target="_blank" rel="noopener noreferrer">Edit Settings</a>
+          <a href="https://www.reddit.com/wiki/faq" target="_blank" rel="noopener noreferrer">Help</a>
           <a onClick={logOut}>Logout</a>
         </li>
       </Dropdown>
