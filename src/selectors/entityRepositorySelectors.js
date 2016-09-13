@@ -1,7 +1,7 @@
 import { createSelector } from 'reselect';
-import { find } from 'lodash';
 
 import * as Entities from 'constants/entities';
+import { getRedditId } from 'selectors/setupSelectors';
 
 // Gets the appropriate slice in the global app state
 export const getEntityRepository = appState => appState.entityRepository;
@@ -12,17 +12,10 @@ const getComments = createSelector(
   entityRepository => entityRepository[Entities.Comment]
 );
 
-// Maps list of replies for corresponding Thread ID
-export const mapReplies = createSelector(
-  getComments,
-  (state, threadId) => threadId,
-  (comments, threadId) => comments[threadId].replies.map(commentId => comments[commentId])
-);
-
 // Gets number of comments
 export const getCommentsCount = createSelector(
   getComments,
-  comments => Object.keys(comments).filter(id => !comments[id].root).length
+  comments => Object.keys(comments).length
 );
 
 // Gets comment by id
@@ -32,8 +25,38 @@ export const getComment = createSelector(
   (comments, commentId) => comments[commentId]
 );
 
-// Gets root thread
-export const getRootThread = createSelector(
+// Gets post (there's just one post in the app, which is defined while setting up the app)
+export const getPost = createSelector(
+  getEntityRepository,
+  getRedditId,
+  (entityRepository, redditId) => entityRepository.Post[redditId]
+);
+
+
+// Maps list of replies for corresponding Thread ID
+export const mapPostReplies = createSelector(
+  getPost,
   getComments,
-  comments => find(comments, comment => !!comment.root)
+  (post, comments) => post.comments.map(commentId => comments[commentId])
+);
+
+// Maps list of replies for corresponding Thread ID
+export const mapCommentReplies = createSelector(
+  getComments,
+  (state, threadId) => threadId,
+  (comments, threadId) => comments[threadId].replies.map(commentId => comments[commentId])
+);
+
+// Gets thread by threadId, thread might be either Comment or Post (root thread)
+export const getThread = createSelector(
+  getPost,
+  getComments,
+  (state, threadId) => threadId,
+  (post, comments, threadId) => {
+    if (post.id === threadId) {
+      return post;
+    } else {
+      return comments[threadId];
+    }
+  }
 );

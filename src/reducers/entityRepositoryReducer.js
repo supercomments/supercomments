@@ -5,7 +5,8 @@ import * as Actions from 'constants/actions';
 import * as Entities from 'constants/entities';
 
 const initialState = {
-  [Entities.Comment]: {}
+  [Entities.Comment]: {},
+  [Entities.Post]: {}
 };
 
 const updateEntity = (state, type, mutation = identityFunction) => ({
@@ -25,16 +26,29 @@ export default (state = initialState, { type, payload }) => {
       // Comments form a tree, we need to link
       // newly created Comment to the parent
       if (entityType === Entities.Comment) {
-        stateReference = updateEntity(stateReference, Entities.Comment, comments => ({
-          ...comments,
-          [entity.parent]: {
-            ...comments[entity.parent],
-            replies: [
-              ...comments[entity.parent].replies,
-              entity.id
-            ]
-          }
-        }));
+        if (stateReference[Entities.Post][entity.parent]) {
+          stateReference = updateEntity(stateReference, Entities.Post, posts => ({
+            ...posts,
+            [entity.parent]: {
+              ...posts[entity.parent],
+              comments: [
+                ...posts[entity.parent].comments,
+                entity.id
+              ]
+            }
+          }));
+        } else {
+          stateReference = updateEntity(stateReference, Entities.Comment, comments => ({
+            ...comments,
+            [entity.parent]: {
+              ...comments[entity.parent],
+              replies: [
+                ...comments[entity.parent].replies,
+                entity.id
+              ]
+            }
+          }));
+        }
       }
 
       return updateEntity(stateReference, entityType, entities => ({
@@ -50,13 +64,23 @@ export default (state = initialState, { type, payload }) => {
       if (entityType === Entities.Comment) {
         const comment = state[Entities.Comment][id];
 
-        stateReference = updateEntity(state, Entities.Comment, comments => ({
-          ...comments,
-          [comment.parent]: {
-            ...comments[comment.parent],
-            replies: comments[comment.parent].replies.filter(replyId => replyId !== id)
-          }
-        }));
+        if (state[Entities.Post][comment.parent]) {
+          stateReference = updateEntity(state, Entities.Post, posts => ({
+            ...posts,
+            [comment.parent]: {
+              ...posts[comment.parent],
+              comments: posts[comment.parent].comments.filter(replyId => replyId !== id)
+            }
+          }));
+        } else {
+          stateReference = updateEntity(state, Entities.Comment, comments => ({
+            ...comments,
+            [comment.parent]: {
+              ...comments[comment.parent],
+              replies: comments[comment.parent].replies.filter(replyId => replyId !== id)
+            }
+          }));
+        }
       }
 
       return updateEntity(stateReference, entityType, entities => {

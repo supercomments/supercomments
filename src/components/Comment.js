@@ -3,6 +3,8 @@ import { momentObj } from 'react-moment-proptypes';
 
 import alien from 'assets/alien.png';
 
+import TimeAgo from 'components/TimeAgo';
+
 import ReplyForm from 'containers/ReplyForm';
 import Thread from 'containers/Thread';
 
@@ -12,7 +14,7 @@ const Comment = ({
   parentAuthor,
   created,
   body,
-  score,
+  votes,
   transient,
   onClickReply
 }) => (
@@ -45,7 +47,7 @@ const Comment = ({
           </span>
           <span className="post-meta">
             <span className="bullet time-ago-bullet" aria-hidden="true">&nbsp;•&nbsp;</span>
-            <a className="time-ago" title={created.format()}>{created.fromNow()}</a>
+            <a className="time-ago" title={created.format()}><TimeAgo>{created}</TimeAgo></a>
           </span>
         </header>
         <div className="post-body-inner">
@@ -62,8 +64,8 @@ const Comment = ({
         <footer className="comment__footer">
           <menu className="comment-footer__menu">
             <li className="voting">
-              <a className={`vote-up count-${score}`} title="Vote up">
-                <span className="updatable count">{score}</span>
+              <a className={`vote-up count-${votes}`} title="Vote up">
+                <span className="updatable count">{votes}</span>
                 <span className="control">
                   <i aria-hidden="true" className="icon icon-arrow-2" />
                 </span>
@@ -94,7 +96,7 @@ Comment.propTypes = {
   transient: PropTypes.bool,
   created: momentObj,
   body: PropTypes.string.isRequired,
-  score: PropTypes.number.isRequired,
+  votes: PropTypes.number.isRequired,
   onClickReply: PropTypes.func.isRequired
 };
 

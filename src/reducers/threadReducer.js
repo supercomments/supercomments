@@ -4,9 +4,6 @@ import * as Sort from 'constants/sort';
 
 const initialState = {
   replyForms: {},
-  post: {
-    subreddit: ''
-  },
   sort: Sort.Best
 };
 
@@ -53,11 +50,10 @@ export default (state = initialState, { type, payload }) => {
     case Actions.PostHasBeenLoaded:
       return {
         ...state,
-        post: payload,
         replyForms: {
           ...state.replyForms,
-          [payload.id]: {
-            ...(state.replyForms[payload.id] || emptyReplyForm),
+          [payload]: {
+            ...(state.replyForms[payload] || emptyReplyForm),
             root: true,
             visible: true
           }

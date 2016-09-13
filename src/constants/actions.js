@@ -1,3 +1,5 @@
+export const Setup = 'Setup';
+
 export const LogIn = 'LogIn';
 export const LoggedIn = 'LoggedIn';
 export const LogOutRequest = 'LogOutRequest';
@@ -8,6 +10,7 @@ export const ResetLoading = 'ResetLoading';
 
 export const PostHasBeenLoaded = 'PostHasBeenLoaded';
 export const Sort = 'Sort';
+export const UpvotePost = 'UpvotePost';
 
 export const Reply = 'Reply';
 export const ReplyFormChangeText = 'ReplyFormChangeText';

@@ -8,22 +8,22 @@ import * as Entities from 'constants/entities';
 import { withThrobber } from 'sagas/throbberSaga';
 import { optimisticallyCreateEntity } from 'sagas/entityRepositorySaga';
 import { getSort, getReplyForm } from 'selectors/threadSelectors';
-import { getComment } from 'selectors/entityRepositorySelectors';
+import { getThread } from 'selectors/entityRepositorySelectors';
 import { getAuthenticatedUser } from 'selectors/authenticationSelectors';
+import { getRedditId } from 'selectors/setupSelectors';
 
 export function* fetchComments() {
   yield* withThrobber(function* () {
     const sort = yield select(getSort);
+    const redditId = yield select(getRedditId);
 
     const {
-      list: {
-        entities
-      },
-      post
-    } = yield call(fetchCommentsAPI, '4cocqf', sort);
+      entities,
+      result
+    } = yield call(fetchCommentsAPI, redditId, sort);
 
     yield put(buildAction(Actions.EntitiesHaveChanged, entities));
-    yield put(buildAction(Actions.PostHasBeenLoaded, post));
+    yield put(buildAction(Actions.PostHasBeenLoaded, result));
   });
 }
 
@@ -31,7 +31,7 @@ export function* onSubmit({ payload }) {
   const threadId = payload;
 
   const author = yield select(getAuthenticatedUser);
-  const parentComment = yield select(appState => getComment(appState, threadId));
+  const thread = yield select(appState => getThread(appState, threadId));
 
   yield* optimisticallyCreateEntity(
     Entities.Comment,
@@ -43,16 +43,16 @@ export function* onSubmit({ payload }) {
 
       return {
         thingId: null,
-        parent: parentComment.id,
+        parent: threadId,
         author,
         body: text,
-        score: 1,
+        votes: 1,
         created: moment(),
         replies: []
       };
     },
     entity => ({
-      thingId: parentComment.thingId,
+      thingId: thread.name,
       text: entity.body
     }),
     function* onRollback() {

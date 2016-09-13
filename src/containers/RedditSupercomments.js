@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import buildActionCreators from 'helpers/buildActionCreators';
 import * as Actions from 'constants/actions';
 import * as Sort from 'constants/sort';
-import { getPost, getSort } from 'selectors/threadSelectors';
-import { getRootThread, getCommentsCount } from 'selectors/entityRepositorySelectors';
+import { getSort } from 'selectors/threadSelectors';
+import { getCommentsCount, getPost } from 'selectors/entityRepositorySelectors';
 
 import LayoutWrapper from 'components/LayoutWrapper';
 import PrimaryHeader from 'components/PrimaryHeader';
@@ -18,52 +18,61 @@ const RedditSupercomments = ({
   post,
   commentsCount,
   selectedSort,
-  rootThread,
   sortBest,
   sortNewest,
-  sortOldest
-}) => (
-  <LayoutWrapper>
-    <PrimaryHeader
-      subreddit={post.subreddit}
-      commentsCount={commentsCount}
-    />
-    <section id="conversation">
-      <SecondaryHeader
-        sort={selectedSort}
-        onSortBest={sortBest}
-        onSortNewest={sortNewest}
-        onSortOldest={sortOldest}
-      />
-      <div id="posts">
-        {rootThread && <ReplyForm threadId={rootThread.id} />}
-        {rootThread && <Thread isRootThread threadId={rootThread.id} />}
-      </div>
-    </section>
-  </LayoutWrapper>
-);
+  sortOldest,
+  upvotePost
+}) => {
+  if (post) {
+    return (
+      <LayoutWrapper>
+        <PrimaryHeader
+          subreddit={post.subreddit}
+          commentsCount={commentsCount}
+        />
+        <section id="conversation">
+          <SecondaryHeader
+            sort={selectedSort}
+            votes={post.votes}
+            upvoted={post.upvoted}
+            onSortBest={sortBest}
+            onSortNewest={sortNewest}
+            onSortOldest={sortOldest}
+            onUpvotePost={upvotePost}
+          />
+          <div id="posts">
+            <ReplyForm threadId={post.id} />
+            <Thread isRootThread threadId={post.id} />
+          </div>
+        </section>
+      </LayoutWrapper>
+    );
+  } else {
+    return null;
+  }
+};
 
 RedditSupercomments.propTypes = {
   commentsCount: PropTypes.number.isRequired,
   selectedSort: PropTypes.string.isRequired,
-  post: PropTypes.object.isRequired,
-  rootThread: PropTypes.object,
+  post: PropTypes.object,
   sortBest: PropTypes.func.isRequired,
   sortNewest: PropTypes.func.isRequired,
-  sortOldest: PropTypes.func.isRequired
+  sortOldest: PropTypes.func.isRequired,
+  upvotePost: PropTypes.func.isRequired
 };
 
 const mapStateToProps = appState => ({
   selectedSort: getSort(appState),
   commentsCount: getCommentsCount(appState),
-  post: getPost(appState),
-  rootThread: getRootThread(appState)
+  post: getPost(appState)
 });
 
 export default connect(
   mapStateToProps,
   buildActionCreators({
-    sort: Actions.Sort
+    sort: Actions.Sort,
+    upvotePost: Actions.UpvotePost
   }),
   (stateProps, dispatchProps, ownProps) => ({
     ...ownProps,

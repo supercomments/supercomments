@@ -3,24 +3,28 @@ import { Schema, normalize, arrayOf } from 'normalizr';
 import { XmlEntities } from 'html-entities';
 import moment from 'moment';
 import * as Sort from 'constants/sort';
+import { MsInSec } from 'constants/timing';
 import * as Entities from 'constants/entities';
 
-const MAP_SORT_TO_REDDIT_SORT = {
+const MapSortToRedditSort = {
   [Sort.Best]: 'top',
   [Sort.Newest]: 'new',
   [Sort.Oldest]: 'old'
 };
 
-const MS_IN_SEC = 1000;
-
 const htmlEntitiesDecoder = new XmlEntities();
 
-const SCHEMA = {
-  COMMENT: new Schema(Entities.Comment)
+const ApiSchema = {
+  [Entities.Comment]: new Schema(Entities.Comment),
+  [Entities.Post]: new Schema(Entities.Post)
 };
 
-SCHEMA.COMMENT.define({
-  replies: arrayOf(SCHEMA.COMMENT)
+ApiSchema[Entities.Comment].define({
+  replies: arrayOf(ApiSchema[Entities.Comment])
+});
+
+ApiSchema[Entities.Post].define({
+  comments: arrayOf(ApiSchema[Entities.Comment])
 });
 
 // TODO: proper snoocore init
@@ -36,21 +40,22 @@ const reddit = new Snoocore({
 
 const mapRedditReplies = replies => replies.map(({ data }) => ({
   id: data.id,
-  thingId: data.name,
+  name: data.name,
   parent: data.parent_id.substring(3),
   author: data.author,
   body: htmlEntitiesDecoder.decode(data.body_html),
-  created: moment(data.created_utc * MS_IN_SEC),
-  score: data.score,
+  created: moment(data.created_utc * MsInSec),
+  votes: data.score,
   replies: data.replies ? mapRedditReplies(data.replies.data.children) : []
 }));
 
-const mapPost = (post, replies = []) => ({
+const mapRedditPost = (post, comments) => ({
   id: post.id,
-  thingId: post.name,
+  name: post.name,
+  upvoted: !!post.likes,
+  votes: post.score,
   subreddit: `/r/${post.subreddit}`,
-  replies,
-  root: true
+  comments
 });
 
 export const tokenExpiration = () => new Promise(res => {
@@ -64,31 +69,20 @@ export const tokenExpiration = () => new Promise(res => {
 
 export const fetchComments = (postId, sort) =>
   reddit(`/comments/${postId}.json`)
-    .get({ sort: MAP_SORT_TO_REDDIT_SORT[sort] })
+    .get({ sort: MapSortToRedditSort[sort] })
     .then(([post, list]) => ({
-      list: normalize(
-        mapRedditReplies(list.data.children, post.data.children[0].data),
-        arrayOf(SCHEMA.COMMENT)
-      ),
+      comments: mapRedditReplies(list.data.children, post.data.children[0].data),
       post: post.data.children[0].data
     }))
-    .then(({ list: { entities, result }, post }) => {
-      const rootComment = mapPost(post, result);
-
-      const entitiesWithRoot = {
-        ...entities,
-        [Entities.Comment]: {
-          ...entities[Entities.Comment],
-          [rootComment.id]: rootComment
-        }
-      };
+    .then(({ comments, post }) => {
+      const {
+        entities,
+        result
+      } = normalize(mapRedditPost(post, comments), ApiSchema[Entities.Post]);
 
       return {
-        list: {
-          entities: entitiesWithRoot,
-          result
-        },
-        post
+        entities,
+        result
       };
     });
 
@@ -100,7 +94,7 @@ export const submitComment = ({ thingId, text }) =>
     })
     .then(({ json: { data } }) => {
       if (data.things && data.things.length > 0) {
-        return normalize(mapRedditReplies(data.things)[0], SCHEMA.COMMENT);
+        return normalize(mapRedditReplies(data.things)[0], ApiSchema[Entities.Comment]);
       } else {
         throw new Error('Reddit API failed to submit the comment');
       }
