@@ -8,7 +8,7 @@ import configureStore from './store';
 const store = configureStore();
 
 store.dispatch(buildAction(Actions.Setup, {
-  id: '52jtld'
+  id: '52kejn'
 }));
 
 const doRender = () => {
