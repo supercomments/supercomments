@@ -17,6 +17,7 @@ const Comment = ({
   body,
   votes,
   upvoted,
+  downvoted,
   transient,
   onClickReply
 }) => (
@@ -70,7 +71,8 @@ const Comment = ({
                 className={cx({
                   'vote-up': true,
                   [`count-${votes}`]: true,
-                  upvoted
+                  upvoted,
+                  downvoted
                 })}
                 title="Vote up"
               >
@@ -103,6 +105,8 @@ Comment.propTypes = {
   author: PropTypes.string.isRequired,
   parentAuthor: PropTypes.string,
   transient: PropTypes.bool,
+  upvoted: PropTypes.bool.isRequired,
+  downvoted: PropTypes.bool.isRequired,
   created: momentObj,
   body: PropTypes.string.isRequired,
   votes: PropTypes.number.isRequired,

@@ -42,6 +42,7 @@ const mapRedditReplies = replies => replies.map(({ data }) => ({
   id: data.id,
   name: data.name,
   upvoted: !!data.likes,
+  downvoted: data.likes === false,
   votes: data.score,
   parent: data.parent_id.substring(3),
   author: data.author,
