@@ -109,3 +109,10 @@ export const authenticate = token => reddit
   .then(reddit('/api/v1/me').get);
 
 export const logout = () => reddit.deauth();
+
+export const vote = ({ thingId, direction }) =>
+  reddit('/api/vote')
+    .post({
+      dir: direction,
+      id: thingId
+    });

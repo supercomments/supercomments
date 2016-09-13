@@ -19,7 +19,9 @@ const Comment = ({
   upvoted,
   downvoted,
   transient,
-  onClickReply
+  onClickReply,
+  onToggleUpvote,
+  onToggleDownvote
 }) => (
   <li className="post">
     <div className="post-content">
@@ -70,18 +72,23 @@ const Comment = ({
               <a
                 className={cx({
                   'vote-up': true,
-                  [`count-${votes}`]: true,
                   upvoted,
                   downvoted
                 })}
                 title="Vote up"
+                onClick={onToggleUpvote}
               >
                 <span className="updatable count">{votes}</span>
                 <span className="control">
                   <i aria-hidden="true" className="icon icon-arrow-2" />
                 </span>
               </a>
-              <span role="button" className="vote-down count-0" title="Vote down">
+              <span
+                role="button"
+                className="vote-down"
+                title="Vote down"
+                onClick={onToggleDownvote}
+              >
                 <span className="control">
                   <i aria-hidden="true" className="icon icon-arrow" />
                 </span>
@@ -110,7 +117,9 @@ Comment.propTypes = {
   created: momentObj,
   body: PropTypes.string.isRequired,
   votes: PropTypes.number.isRequired,
-  onClickReply: PropTypes.func.isRequired
+  onClickReply: PropTypes.func.isRequired,
+  onToggleUpvote: PropTypes.func.isRequired,
+  onToggleDownvote: PropTypes.func.isRequired
 };
 
 export default Comment;

@@ -10,7 +10,7 @@ export const ResetLoading = 'ResetLoading';
 
 export const PostHasBeenLoaded = 'PostHasBeenLoaded';
 export const Sort = 'Sort';
-export const UpvotePost = 'UpvotePost';
+export const ToggleUpvotePost = 'ToggleUpvotePost';
 
 export const Reply = 'Reply';
 export const ReplyFormChangeText = 'ReplyFormChangeText';
@@ -20,10 +20,15 @@ export const SendingReplyFormFailed = 'SendingReplyFormFailed';
 export const RetryReplyForm = 'RetryReplyForm';
 export const ReplySubmitted = 'ReplySubmitted';
 
+export const ToggleUpvote = 'ToggleUpvote';
+export const ToggleDownvote = 'ToggleDownvote';
+
 export const EntitiesHaveChanged = 'EntitiesHaveChanged';
 export const CreateEntity = 'CreateEntity';
 export const DeleteEntity = 'DeleteEntity';
 export const RemoveTransientEntity = 'RemoveTransientEntity';
+export const UpdateEntity = 'UpdateEntity';
+export const CommitEntity = 'CommitEntity';
 
 export const AllowRetry = 'AllowRetry';
 export const Retry = 'Retry';

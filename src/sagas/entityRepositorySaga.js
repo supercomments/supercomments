@@ -1,8 +1,9 @@
-import { call, put } from 'redux-saga/effects';
+import { call, put, select } from 'redux-saga/effects';
 
 import * as Actions from 'constants/actions';
 import buildAction from 'helpers/buildAction';
 import { waitFor } from 'sagas/helpers';
+import { getEntity } from 'selectors/entityRepositorySelectors';
 
 /**
  * Optimistically creats an entity in Entity repository. When API effect fails,
@@ -87,5 +88,43 @@ export function* optimisticallyCreateEntity(
       // Now let's wait for appropriate Retry action
       yield* waitFor(Actions.Retry, retrySelector);
     }
+  }
+}
+
+export function* optimisticallUpdateEntity(
+  id,
+  entityType,
+  updateEffect,
+  createEntity,
+  extractEffectParams
+) {
+  const originalEntity = yield select(appState => getEntity(appState, entityType, id));
+
+  try {
+    const mutatedEntity = yield* createEntity();
+
+    yield put(buildAction(Actions.UpdateEntity, {
+      id,
+      entityType,
+      entity: {
+        ...mutatedEntity,
+        transient: true
+      }
+    }));
+
+    yield call(updateEffect, extractEffectParams(mutatedEntity));
+
+    yield put(buildAction(Actions.CommitEntity, {
+      id,
+      entityType
+    }));
+  } catch (ex) {
+    console.warn('An error while trying to optimistically update an entity has occurred', ex);
+
+    yield put(buildAction(Actions.UpdateEntity, {
+      id,
+      entityType,
+      entity: originalEntity
+    }));
   }
 }

@@ -7,7 +7,13 @@ import {
   restoreSession,
   onLoggedIn
 } from 'sagas/authenticationSaga';
-import { fetchCommentsWithThrobber, onSubmit } from 'sagas/threadSaga';
+import {
+  fetchCommentsWithThrobber,
+  onSubmit,
+  onToggleUpvotePost,
+  onToggleUpvote,
+  onToggleDownvote
+} from 'sagas/threadSaga';
 
 export default function* () {
   yield [
@@ -16,6 +22,9 @@ export default function* () {
     fork(takeEvery, Actions.LoggedIn, onLoggedIn),
     fork(takeEvery, Actions.LogIn, onLogin),
     fork(takeEvery, Actions.Sort, fetchCommentsWithThrobber),
-    fork(takeEvery, Actions.SubmitReply, onSubmit)
+    fork(takeEvery, Actions.SubmitReply, onSubmit),
+    fork(takeEvery, Actions.ToggleUpvotePost, onToggleUpvotePost),
+    fork(takeEvery, Actions.ToggleUpvote, onToggleUpvote),
+    fork(takeEvery, Actions.ToggleDownvote, onToggleDownvote)
   ];
 }

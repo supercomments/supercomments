@@ -6,6 +6,14 @@ import { getRedditId } from 'selectors/setupSelectors';
 // Gets the appropriate slice in the global app state
 export const getEntityRepository = appState => appState.entityRepository;
 
+// Gets entity from Entity Repository
+export const getEntity = createSelector(
+  getEntityRepository,
+  (appState, entityType) => entityType,
+  (appState, entityType, id) => id,
+  (entityRepository, entityType, id) => entityRepository[entityType][id]
+);
+
 // Gets list of Comments
 const getComments = createSelector(
   getEntityRepository,

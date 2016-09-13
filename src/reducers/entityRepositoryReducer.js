@@ -90,6 +90,34 @@ export default (state = initialState, { type, payload }) => {
       });
     }
 
+    case Actions.UpdateEntity: {
+      const {
+        id,
+        entityType,
+        entity
+      } = payload;
+
+      return updateEntity(state, entityType, entities => ({
+        ...entities,
+        [id]: entity
+      }));
+    }
+
+    case Actions.CommitEntity: {
+      const {
+        id,
+        entityType
+      } = payload;
+
+      return updateEntity(state, entityType, entities => ({
+        ...entities,
+        [id]: {
+          ...entities[id],
+          transient: false
+        }
+      }));
+    }
+
     default:
       return state;
   }

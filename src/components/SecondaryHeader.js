@@ -10,7 +10,7 @@ const SecondaryHeader = ({
   onSortBest,
   onSortNewest,
   onSortOldest,
-  onUpvotePost
+  onToggleUpvotePost
 }) => (
   <div className="nav nav-secondary">
     <ul>
@@ -21,9 +21,10 @@ const SecondaryHeader = ({
               'dropdown-toggle': true,
               upvoted
             })}
+            onClick={onToggleUpvotePost}
           >
             <span className="icon-heart" />&nbsp;
-            <span className="label label-default" onClick={onUpvotePost}>Upvote</span>
+            <span className="label label-default">Upvote</span>
             <span className="label label-recommended">Upvoted</span>
             <span className="label label-count">{votes}</span>
           </a>
@@ -60,7 +61,7 @@ SecondaryHeader.propTypes = {
   onSortBest: PropTypes.func.isRequired,
   onSortNewest: PropTypes.func.isRequired,
   onSortOldest: PropTypes.func.isRequired,
-  onUpvotePost: PropTypes.func.isRequired
+  onToggleUpvotePost: PropTypes.func.isRequired
 };
 
 export default SecondaryHeader;

@@ -8,6 +8,7 @@ import * as Sort from 'constants/sort';
 import { getSort } from 'selectors/threadSelectors';
 import { getCommentsCount, getPost } from 'selectors/entityRepositorySelectors';
 import { isLoading } from 'selectors/throbberSelectors';
+import { isAuthenticated } from 'selectors/authenticationSelectors';
 
 import LayoutWrapper from 'components/LayoutWrapper';
 import PrimaryHeader from 'components/PrimaryHeader';
@@ -24,7 +25,7 @@ const RedditSupercomments = ({
   sortBest,
   sortNewest,
   sortOldest,
-  upvotePost
+  toggleUpvotePost
 }) => {
   if (post) {
     return (
@@ -42,7 +43,7 @@ const RedditSupercomments = ({
               onSortBest={sortBest}
               onSortNewest={sortNewest}
               onSortOldest={sortOldest}
-              onUpvotePost={upvotePost}
+              onToggleUpvotePost={toggleUpvotePost}
             />
             <div id="posts">
               <ReplyForm threadId={post.id} />
@@ -58,6 +59,7 @@ const RedditSupercomments = ({
 };
 
 RedditSupercomments.propTypes = {
+  authenticated: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
   commentsCount: PropTypes.number.isRequired,
   selectedSort: PropTypes.string.isRequired,
@@ -65,10 +67,11 @@ RedditSupercomments.propTypes = {
   sortBest: PropTypes.func.isRequired,
   sortNewest: PropTypes.func.isRequired,
   sortOldest: PropTypes.func.isRequired,
-  upvotePost: PropTypes.func.isRequired
+  toggleUpvotePost: PropTypes.func.isRequired
 };
 
 const mapStateToProps = appState => ({
+  authenticated: isAuthenticated(appState),
   loading: isLoading(appState),
   selectedSort: getSort(appState),
   commentsCount: getCommentsCount(appState),
@@ -79,7 +82,8 @@ export default connect(
   mapStateToProps,
   buildActionCreators({
     sort: Actions.Sort,
-    upvotePost: Actions.UpvotePost
+    toggleUpvotePost: Actions.ToggleUpvotePost,
+    logIn: Actions.LogIn
   }),
   (stateProps, dispatchProps, ownProps) => ({
     ...ownProps,
@@ -87,6 +91,13 @@ export default connect(
     ...dispatchProps,
     sortBest: () => dispatchProps.sort(Sort.Best),
     sortNewest: () => dispatchProps.sort(Sort.Newest),
-    sortOldest: () => dispatchProps.sort(Sort.Oldest)
+    sortOldest: () => dispatchProps.sort(Sort.Oldest),
+    toggleUpvotePost: () => {
+      if (stateProps.authenticated) {
+        dispatchProps.toggleUpvotePost();
+      } else {
+        dispatchProps.logIn();
+      }
+    }
   })
 )(RedditSupercomments);
