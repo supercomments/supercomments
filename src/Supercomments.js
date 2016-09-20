@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 
 import * as Tabs from './constants/tabs';
 import FramedTabpanel from './components/FramedTabpanel';
+import Footer from './components/Footer';
 
 export default class Supercomments extends Component {
 
@@ -62,17 +63,20 @@ export default class Supercomments extends Component {
     } = this.props;
 
     return (
-      <FramedTabpanel
-        url={url}
-        disqus={disqus}
-        tab={tab}
-        disqusComments={disqusComments}
-        redditComments={redditComments}
-        onChangeTab={this.boundOnChangeTab}
-        onDiscussCommentsChanged={this.boundOnDiscussCommentsChanged}
-        onDiscussCommentsIncremented={this.boundOnDiscussCommentsIncremented}
-        onRedditCommentsChanged={this.boundOnRedditCommentsChanged}
-      />
+      <div>
+        <FramedTabpanel
+          url={url}
+          disqus={disqus}
+          tab={tab}
+          disqusComments={disqusComments}
+          redditComments={redditComments}
+          onChangeTab={this.boundOnChangeTab}
+          onDiscussCommentsChanged={this.boundOnDiscussCommentsChanged}
+          onDiscussCommentsIncremented={this.boundOnDiscussCommentsIncremented}
+          onRedditCommentsChanged={this.boundOnRedditCommentsChanged}
+        />
+        <Footer />
+      </div>
     );
   }
 }
