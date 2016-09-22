@@ -10,8 +10,8 @@ export default {
     './src/index.js'
   ],
   output: {
-    path: path.resolve(__dirname, 'dev'),
-    filename: 'supercomments.js'
+    path: path.resolve(__dirname, '../dev'),
+    filename: 'supercomments-embed.js'
   },
   module: {
     loaders: [{

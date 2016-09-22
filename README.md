@@ -21,19 +21,20 @@ Put the following code in the `<head>` of your website root or some other page t
 
 ```
     <script type="text/javascript">
-        var code = window.location.href.match(/.*#access_token=(.[^&]+)/);
-        var csrf = window.location.href.match(/.*&state=(.[^&]+)/);
-        if (code && csrf) {
-          window.opener.postMessage({ token: code[1], state: csrf[1] }, '*');
-          window.close();
-        }
+      var code = window.location.href.match(/.*#access_token=(.[^&]+)/);
+      var csrf = window.location.href.match(/.*&state=(.[^&]+)/);
+      var expires = window.location.href.match(/.*&expires_in=(.[^&]+)/);
+      if (code && csrf) {
+        window.opener.postMessage({ type: 'RedditAuthenticated', token: code[1], state: csrf[1], expires: expires[1] }, '*');
+        window.close();
+      }
     </script>
 ```
 
 Make sure you set the redirect URI of your Reddit app accordingly (see previous section). This code lets you use your page as the redirect URI for OAuth by detecting when the Reddit authorization page redirects to your site (which is done in a popup window), then posting the relevant information (access token and CSRF state) to the Supercomments frame and closing the popup.
 
 ### Upload the Supercomments script
-Put the `dist/js/supercomments-embed.min.js` file somewhere on your web server. This is the only file you need to run Supercomments.
+Put the `dist/supercomments-embed.min.js` file somewhere on your web server. This is the only file you need to run Supercomments.
 
 ### Add the Supercomments script
 Add the following code to your blog or site template in the place you want Supercomments to appear (replacing the Disqus code if you have it installed already):
@@ -48,7 +49,7 @@ Add the following code to your blog or site template in the place you want Super
         },
         disqus: {
           identifier: [your_disqus_id_(optional)],
-          forum: [your_disqus_shortname]
+          shortName: [your_disqus_shortname]
         }
       };
     </script>
@@ -60,10 +61,26 @@ Obviously you should replace the path to `supercomments-embed.min.js` with the p
 
 If you don't know how to get your [Disqus identifier](https://help.disqus.com/customer/portal/articles/472098-javascript-configuration-variables#disqus_identifier), you should be okay omitting it since Disqus will use the URL of the post to identify it in this case.
 
+### Using Supercomments as React Component
+1. Install the supercomments using `npm` - `npm install supercomments --save`
+2. Use the Component:
+
+```javascript
+import React from 'react';
+import { render } from 'react-dom';
+import Supercomments from './Supercomments';
+
+render(
+  <Supercomments
+    url={window.supercommentsConfig.url}
+    reddit={window.supercommentsConfig.reddit}
+    disqus={window.supercommentsConfig.disqus}
+  />,
+  document.getElementById('supercomments')
+);
+
+```
+
 ## Building
 
-If you want to build your own version of Supercomments, just pull the repository, run `npm install` and then run `gulp webpack-embed`. This will create the `supercomments-embed.js` file in `dist/js`.
-
-Once you've built the normal version, you can create minify it by running `gulp compress-app` and then `gulp compress-embed`. This creates `supercomments.embed.min.js`.
-
-To run the tests, use `npm test`.
+If you want to build your own version of Supercomments, just pull the repository, run `npm install`. This will create the `supercomments-embed.min.js` file in `dist`.

@@ -2,7 +2,7 @@
   "name": "supercomments",
   "version": "2.0.0",
   "description": "Extending Disqus with Reddit comments (and more to come!)",
-  "main": "dist/reddit-comments.min.js",
+  "main": "dist/supercomments-umd.min.js",
   "engines": {
     "node": ">=5.0.0",
     "npm": ">=3.0.0"
@@ -36,7 +36,7 @@
     "classnames": "^2.2.5",
     "iframe-resizer": "^3.5.5",
     "react-frame-component": "^0.6.5",
-    "reddit-comments": "^1.0.2"
+    "reddit-comments": "^1.0.3"
   },
   "peerDependencies": {
     "react": "^15.0.0 || ^0.14.0",
@@ -44,7 +44,12 @@
   },
   "scripts": {
     "start": "webpack-dev-server --config ./webpack/webpack.config.dev.babel.js --port 3000 --hot --content-base ./dev",
-    "build:umd": "export NODE_ENV=production && webpack --config ./webpack/webpack.config.prod.babel.js",
-    "lint": "eslint ./src"
+    "build:umd": "export NODE_ENV=production && webpack --config ./webpack/webpack.config.umd.prod.babel.js",
+    "build:embed": "export NODE_ENV=production && webpack --config ./webpack/webpack.config.embed.prod.babel.js",
+    "lint": "eslint ./src",
+    "preversion": "npm run lint",
+    "version": "npm run build:umd && npm run build:embed",
+    "postversion": "git push && git push --tags",
+    "prepublish": "npm run build:umd"
   }
 }

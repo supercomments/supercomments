@@ -15,7 +15,20 @@
     </script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="text/javascript" src="/supercomments.js"></script>
+    <script>
+      var supercommentsConfig = {
+        url: window.location.href,
+        reddit: {
+          consumerKey: 'CRcRenqfbTCNLw',
+          redirectUri: 'http://localhost:3000'
+        },
+        disqus: {
+          identifier: '82',
+          shortName: 'javascripting'
+        }
+      };
+    </script>
+    <div id="supercomments"></div>
+    <script type="text/javascript" src="/supercomments-embed.js"></script>
   </body>
 </html>
