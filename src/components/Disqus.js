@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { findDOMNode } from 'react-dom';
 
+import getDisqusCssIframeTemplate from '../getDisqusCssIframeTemplate';
+
 export default class Disqus extends Component {
 
   static propTypes = {
@@ -8,7 +10,16 @@ export default class Disqus extends Component {
     url: PropTypes.string.isRequired,
     identifier: PropTypes.string,
     onCommentsChanged: PropTypes.func.isRequired,
-    onNewComment: PropTypes.func.isRequired
+    onNewComment: PropTypes.func.isRequired,
+    onObtainedCssPath: PropTypes.func.isRequired
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      disqusVersion: null
+    };
   }
 
   componentDidMount() {
@@ -17,7 +28,8 @@ export default class Disqus extends Component {
       url,
       identifier,
       onCommentsChanged,
-      onNewComment
+      onNewComment,
+      onObtainedCssPath
     } = this.props;
 
     window.disqus_config = function () {
@@ -46,9 +58,37 @@ export default class Disqus extends Component {
     .observe(this.commentCounterElement, {
       childList: true
     });
+
+    window.addEventListener('message', (message) => {
+      if (typeof message.data === 'object' && message.data.type === 'disqusCSS') {
+        onObtainedCssPath(message.data.cssPath);
+      }
+    });
+
+    const disqusMutationObserver = new MutationObserver(() => {
+      if (this.disqusElement) {
+        disqusMutationObserver.disconnect();
+
+        const src = this.disqusElement.firstChild.src;
+        const versionMatch = src.match(/&version=([^&]+)&/);
+
+        if (versionMatch && versionMatch.length > 1) {
+          const disqusVersion = versionMatch[1];
+
+          this.setState({
+            disqusVersion
+          });
+        }
+      }
+    });
+    disqusMutationObserver.observe(this.disqusElement, { childList: true });
   }
 
   render() {
+    const {
+      disqusVersion
+    } = this.state;
+
     const {
       identifier,
       url
@@ -65,7 +105,18 @@ export default class Disqus extends Component {
           data-disqus-identifier={identifier}
           data-disqus-url={url}
         />
-        <div id="disqus_thread" />
+        <div
+          ref={(el) => {
+            this.disqusElement = findDOMNode(el);
+          }}
+          id="disqus_thread"
+        />
+        {disqusVersion && (
+          <iframe
+            style={{ display: 'none' }}
+            srcDoc={getDisqusCssIframeTemplate(disqusVersion)}
+          />
+        )}
       </div>
     );
   }

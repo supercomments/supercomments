@@ -25,11 +25,21 @@ export default class FramedTabpanel extends Component {
     onRedditCommentsChanged: PropTypes.func.isRequired
   }
 
-  componentDidMount() {
-    iframeResizer({
-      checkOrigin: false,
-      scrolling: true
-    }, this.frameElement);
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      disqusCssPath: null
+    };
+
+    this.boundObtainedDisqusCssPath = this.obtainedDisqusCssPath.bind(this);
+    this.iframeResizerInstantiated = false;
+  }
+
+  obtainedDisqusCssPath(disqusCssPath) {
+    this.setState({
+      disqusCssPath
+    });
   }
 
   render() {
@@ -50,51 +60,59 @@ export default class FramedTabpanel extends Component {
 
     return (
       <div>
-        <Frame
-          ref={(el) => {
-            this.frameElement = findDOMNode(el);
-          }}
-          style={{
-            border: 'none',
-            width: '100%'
-          }}
-          initialContent={iframeTemplate}
-        >
-          <div>
-            <div className="tabs">
-              <nav className="tabs-navigation">
-                <ul className="tabs-menu">
-                  <li
-                    className={cx({
-                      'tabs-menu-item': true,
-                      'is-active': tab === Tabs.Disqus
-                    })}
-                    onClick={tab === Tabs.Disqus ? emptyFn : () => onChangeTab(Tabs.Disqus)}
-                  >
-                    <a>Disqus ({disqusComments})</a>
-                  </li>
-                  <li
-                    className={cx({
-                      'tabs-menu-item': true,
-                      'is-active': tab === Tabs.Reddit
-                    })}
-                    onClick={tab === Tabs.Reddit ? emptyFn : () => onChangeTab(Tabs.Reddit)}
-                  >
-                    <a>Reddit ({redditComments})</a>
-                  </li>
-                </ul>
-              </nav>
+        {this.state.disqusCssPath && (
+          <Frame
+            ref={(el) => {
+              if (el && !this.iframeResizerInstantiated) {
+                iframeResizer({
+                  checkOrigin: false,
+                  scrolling: true
+                }, findDOMNode(el));
+                this.iframeResizerInstantiated = true;
+              }
+            }}
+            style={{
+              border: 'none',
+              width: '100%'
+            }}
+            initialContent={iframeTemplate(this.state.disqusCssPath)}
+          >
+            <div>
+              <div className="tabs">
+                <nav className="tabs-navigation">
+                  <ul className="tabs-menu">
+                    <li
+                      className={cx({
+                        'tabs-menu-item': true,
+                        'is-active': tab === Tabs.Disqus
+                      })}
+                      onClick={tab === Tabs.Disqus ? emptyFn : () => onChangeTab(Tabs.Disqus)}
+                    >
+                      <a>Disqus ({disqusComments})</a>
+                    </li>
+                    <li
+                      className={cx({
+                        'tabs-menu-item': true,
+                        'is-active': tab === Tabs.Reddit
+                      })}
+                      onClick={tab === Tabs.Reddit ? emptyFn : () => onChangeTab(Tabs.Reddit)}
+                    >
+                      <a>Reddit ({redditComments})</a>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+              <article className="tab-panel">
+                <HideableComponent visible={tab === Tabs.Reddit}>
+                  <RedditComments
+                    url={url}
+                    onChangeCommentCount={onRedditCommentsChanged}
+                  />
+                </HideableComponent>
+              </article>
             </div>
-            <article className="tab-panel">
-              <HideableComponent visible={tab === Tabs.Reddit}>
-                <RedditComments
-                  url={url}
-                  onChangeCommentCount={onRedditCommentsChanged}
-                />
-              </HideableComponent>
-            </article>
-          </div>
-        </Frame>
+          </Frame>
+        )}
         <HideableComponent visible={tab === Tabs.Disqus}>
           <Disqus
             shortName={shortName}
@@ -102,6 +120,7 @@ export default class FramedTabpanel extends Component {
             url={url}
             onCommentsChanged={onDiscussCommentsChanged}
             onNewComment={onDiscussCommentsIncremented}
+            onObtainedCssPath={this.boundObtainedDisqusCssPath}
           />
         </HideableComponent>
       </div>
