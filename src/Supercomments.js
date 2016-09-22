@@ -8,7 +8,8 @@ export default class Supercomments extends Component {
 
   static propTypes = {
     url: PropTypes.string.isRequired,
-    disqus: PropTypes.object.isRequired
+    disqus: PropTypes.object.isRequired,
+    reddit: PropTypes.object.isRequired
   }
 
   constructor(props) {
@@ -59,7 +60,8 @@ export default class Supercomments extends Component {
 
     const {
       url,
-      disqus
+      disqus,
+      reddit
     } = this.props;
 
     return (
@@ -67,6 +69,7 @@ export default class Supercomments extends Component {
         <FramedTabpanel
           url={url}
           disqus={disqus}
+          reddit={reddit}
           tab={tab}
           disqusComments={disqusComments}
           redditComments={redditComments}

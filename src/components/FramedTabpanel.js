@@ -16,6 +16,7 @@ export default class FramedTabpanel extends Component {
   static propTypes = {
     url: PropTypes.string.isRequired,
     disqus: PropTypes.object.isRequired,
+    reddit: PropTypes.object.isRequired,
     tab: PropTypes.string.isRequired,
     disqusComments: PropTypes.number.isRequired,
     redditComments: PropTypes.number.isRequired,
@@ -48,6 +49,10 @@ export default class FramedTabpanel extends Component {
       disqus: {
         shortName,
         identifier
+      },
+      reddit: {
+        consumerKey,
+        redirectUri
       },
       tab,
       disqusComments,
@@ -106,6 +111,8 @@ export default class FramedTabpanel extends Component {
                 <HideableComponent visible={tab === Tabs.Reddit}>
                   <RedditComments
                     url={url}
+                    consumerKey={consumerKey}
+                    redirectUri={redirectUri}
                     onChangeCommentCount={onRedditCommentsChanged}
                   />
                 </HideableComponent>
