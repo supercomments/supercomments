@@ -47,8 +47,7 @@
     "build:umd": "export NODE_ENV=production && webpack --config ./webpack/webpack.config.umd.prod.babel.js",
     "build:embed": "export NODE_ENV=production && webpack --config ./webpack/webpack.config.embed.prod.babel.js",
     "lint": "eslint ./src",
-    "preversion": "npm run lint",
-    "version": "npm run build:umd && npm run build:embed",
+    "preversion": "npm run lint && npm run build:umd && npm run build:embed",
     "postversion": "git push && git push --tags",
     "prepublish": "npm run build:umd"
   }
