@@ -17,7 +17,6 @@ export default disqusCssPath => `
         //# sourceMappingURL=iframeResizer.contentWindow.map
       </script>
       <link rel="stylesheet" href="${disqusCssPath}" />
-      <link rel="stylesheet" href="//a.disquscdn.com/next/embed/styles/loading.8023a7350e47171f7bb79707886cd7c5.css" />
       <style>
       /*!
        * 
