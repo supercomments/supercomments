@@ -1,6 +1,6 @@
 {
   "name": "supercomments",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Extending Disqus with Reddit comments (and more to come!)",
   "main": "dist/supercomments-umd.min.js",
   "engines": {
